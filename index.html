@@ -4,33 +4,52 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./styles/style.css" />
+    <link rel="stylesheet" href="./styles/login.css" />
     <link rel="icon" href="#" />
     <title>Join</title>
   </head>
 
   <body>
-    <header>
-      <img src="" alt="" />
+    <header class="login-header">
+      <img class="login-logo" src="./assets/img/join_logo.svg" alt="Join" />
 
-      <h2>Not a Join user?</h2>
-
-      <button>[Sign up]</button>
+      <div class="login-header-actions">
+        <span class="login-header-text">Not a Join user?</span>
+        <a class="btn btn-dark" href="./sites/sign-up.html">Sign up</a>
+      </div>
     </header>
 
-    <main>
-      <h1>Login - Container</h1>
+    <main class="login-main">
+      <section class="login-card" aria-labelledby="login-title">
+        <h1 id="login-title">Log in</h1>
+        <div class="login-underline"></div>
 
-      <div>
-        <!-- div1 = LogIn -->
-        <!-- div2 = inputs -->
-        <!-- div3 = login/guestlog in-->
-      </div>
+        <form class="login-form" action="#" novalidate>
+          <label class="input-field">
+            <input type="email" name="email" placeholder="Email" autocomplete="email" />
+            <span class="input-icon" aria-hidden="true">
+              <img src="./assets/icons/mail.svg" alt="" />
+            </span>
+          </label>
+
+          <label class="input-field">
+            <input type="password" name="password" placeholder="Password" autocomplete="current-password" />
+            <span class="input-icon" aria-hidden="true">
+              <img src="./assets/icons/lock.svg" alt="" />
+            </span>
+          </label>
+
+          <div class="login-actions">
+            <button class="btn btn-dark" type="submit">Log in</button>
+            <button class="btn btn-light" type="button">Guest Log in</button>
+          </div>
+        </form>
+      </section>
     </main>
 
-    <footer>
-      <a href="#">Privacy Policy</a>
-
-      <a href="#">Legal notice</a>
+    <footer class="login-footer">
+      <a href="./sites/privacy-policy.html">Privacy Policy</a>
+      <a href="./sites/legal-notice.html">Legal notice</a>
     </footer>
   </body>
 </html>
