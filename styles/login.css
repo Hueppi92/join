@@ -44,7 +44,6 @@ body {
 	align-items: center;
 	justify-content: center;
 	z-index: 998;
-	animation: splash-fade 2000ms ease 300ms forwards;
 	pointer-events: none;
 }
 
@@ -55,29 +54,8 @@ body {
 	width: 100px;
 	height: auto;
 	transform: translate(-50%, -50%);
-	animation: splash-move 500ms ease 300ms forwards;
 	z-index: 999;
 	pointer-events: none;
-}
-
-@keyframes splash-move {
-	from {
-		left: 50%;
-		top: 50%;
-		transform: translate(-50%, -50%);
-	}
-	to {
-		left: 80px;
-		top: 64px;
-		transform: translate(0, 0);
-	}
-}
-
-@keyframes splash-fade {
-	to {
-		opacity: 0;
-		visibility: hidden;
-	}
 }
 
 a {
@@ -108,12 +86,6 @@ button {
 	height: auto;
 	opacity: 0;
 	animation: none;
-}
-
-@keyframes logo-reveal {
-	to {
-		opacity: 1;
-	}
 }
 
 .login-header-actions {
