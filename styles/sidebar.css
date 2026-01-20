@@ -1,7 +1,15 @@
 aside {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     width: 232px;
     height: 100vh;
     background-color: #2A3647;
+    padding-top: 64px;
+}
+
+nav {
+    margin-top: 64px;
 }
 
 aside img {
@@ -11,6 +19,7 @@ aside img {
 
 ul li {
     list-style: none;
+    margin: 15px 0;
 }
 
 a {
