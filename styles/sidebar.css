@@ -8,28 +8,27 @@ aside {
     padding-top: 64px;
 }
 
-nav {
-    margin-top: 64px;
+.nav-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 80px;
 }
 
-aside img {
-    width: 100px;
-    height: 122px;
-}
-
-ul li {
-    list-style: none;
-    margin: 15px 0;
-}
-
-a {
+.nav-container a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #FFFFFF;
     text-decoration: none;
-    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 32px;
 }
 
-ul img {
-    margin-right: 10px;
-    height: 30px;
-    width: 30px;
-    vertical-align: middle;
+.privacy-container {
+    margin-top: auto;
+    margin-bottom: 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
