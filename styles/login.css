@@ -30,6 +30,54 @@ body {
 	background: var(--bg);
 	color: var(--text);
 	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+/* Splash animation for the logo and overlay */
+
+.login-splash {
+	position: fixed;
+	inset: 0;
+	background: #ffffff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 998;
+	animation: splash-fade 2000ms ease 300ms forwards;
+	pointer-events: none;
+}
+
+.login-splash-logo {
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	width: 100px;
+	height: auto;
+	transform: translate(-50%, -50%);
+	animation: splash-move 500ms ease 300ms forwards;
+	z-index: 999;
+	pointer-events: none;
+}
+
+@keyframes splash-move {
+	from {
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+	}
+	to {
+		left: 80px;
+		top: 64px;
+		transform: translate(0, 0);
+	}
+}
+
+@keyframes splash-fade {
+	to {
+		opacity: 0;
+		visibility: hidden;
+	}
 }
 
 a {
@@ -58,6 +106,14 @@ button {
 .login-logo {
 	width: 100px;
 	height: auto;
+	opacity: 0;
+	animation: none;
+}
+
+@keyframes logo-reveal {
+	to {
+		opacity: 1;
+	}
 }
 
 .login-header-actions {
@@ -72,10 +128,11 @@ button {
 }
 
 .login-main {
+	flex: 1;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: 32px 24px 0 24px;
+	padding: 32px 24px;
 }
 
 .login-card {
@@ -211,6 +268,11 @@ button {
 
 .signup-header {
 	justify-content: flex-start;
+}
+
+.signup-header .login-logo {
+	opacity: 1;
+	animation: none;
 }
 
 .signup-card {
