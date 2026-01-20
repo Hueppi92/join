@@ -1,4 +1,6 @@
-/* also used for sign-up page */
+/* Login and Sign-up page styles */
+
+/* Login page styles */
 
 :root {
 	--bg: #f6f7f8;
@@ -203,4 +205,97 @@ button {
 
 .login-footer a:hover {
 	color: var(--primary-hover);
+}
+
+/* Sign-up page styles */
+
+.signup-header {
+	justify-content: flex-start;
+}
+
+.signup-card {
+	position: relative;
+	padding-top: 56px;
+}
+
+.signup-back {
+	position: absolute;
+	top: 56px;
+	left: 56px;
+	width: 32px;
+	height: 32px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	transition: background var(--transition);
+}
+
+.signup-back:hover {
+	background: #f0f0f0;
+}
+
+.signup-back img {
+	width: 24px;
+	height: 24px;
+}
+
+.checkbox-row {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	font-size: 16px;
+	color: #666666;
+}
+
+.checkbox-input {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.checkbox-box {
+	width: 16px;
+	height: 16px;
+	border: 2px solid var(--primary);
+	border-radius: 3px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	transition: border-color var(--transition), background var(--transition);
+}
+
+.checkbox-input:checked + .checkbox-box {
+	background: var(--primary);
+	border-color: var(--primary);
+}
+
+.checkbox-input:checked + .checkbox-box::after {
+	content: "";
+	width: 6px;
+	height: 10px;
+	border: solid #ffffff;
+	border-width: 0 2px 2px 0;
+	transform: rotate(45deg);
+	margin-bottom: 2px;
+}
+
+.checkbox-text {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.checkbox-link {
+	color: var(--primary-hover);
+}
+
+.checkbox-link:hover {
+	text-decoration: underline;
+}
+
+.signup-actions {
+	margin-top: 16px;
 }
