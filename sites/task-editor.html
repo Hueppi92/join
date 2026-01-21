@@ -22,21 +22,37 @@
 
       <!-- LEFT -->
       <form class="new_task">
-        <div class="add_task_row">
-          <label>Title 
+        <div class="left_row">
+          <label>Title
             <span class="error">*</span>
           </label>
-          <input class="first_input" type="text" placeholder="Enter a title">
+
+          <div class="left_single_row">
+            <input class="first_input" type="text" placeholder="Enter a title">
+          </div>
+          
         </div>
 
-        <div class="add_task_row">
+        <div class="left_row">
           <label>Description</label>
-          <textarea placeholder="Enter a Description"></textarea>
+
+          <div class="left_single_row">
+            <textarea placeholder="Enter a Description"></textarea>
+          </div>
+          
         </div>
 
-        <div class="add_task_row">
-          <label>Due date *</label>
-          <input class="first_input" type="date">
+        <div class="left_row date_field">
+          <label>Due date 
+            <span class="error">*</span>
+          </label>
+
+          <div class="left_single_row">
+            <input type="text" placeholder="dd/mm/yyyy">
+            <img src="../assets/icons/calendar.svg">
+          </div>
+
+          <!-- <small class="error_text">This field is required</small> -->
         </div>
       </form>
 
@@ -49,14 +65,14 @@
         <div class="settings_block">
           <label>Priority</label>
           <div class="priority_row">
-            <button class="prio">Urgent 
+            <button class="prio">Urgent
               <span class="urgent">↑</span>
             </button>
-            
-            <button class="prio">Medium 
+
+            <button class="prio">Medium
               <span class="medium">=</span>
             </button>
-            
+
             <button class="prio">Low
               <span class="low">↓</span>
             </button>
@@ -71,7 +87,7 @@
         </div>
 
         <div class="settings_block">
-          <label>Category 
+          <label>Category
             <span class="error">*</span>
           </label>
           <select>
