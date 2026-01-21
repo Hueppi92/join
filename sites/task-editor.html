@@ -22,21 +22,23 @@
 
       <!-- LEFT -->
       <form class="new_task">
-        <div class="left_row">
+        <div class="left_row title_field">
           <label>Title
             <span class="error">*</span>
           </label>
 
           <div class="left_single_row">
-            <input class="first_input" type="text" placeholder="Enter a title">
+            <input id="titleInput" class="first_input" type="text" placeholder="Enter a title">
           </div>
+
+          <small class="error_text">This field is required</small>
           
         </div>
 
-        <div class="left_row">
+        <div class="left_row description_field">
           <label>Description</label>
 
-          <div class="left_single_row">
+          <div class="left_single_row description_box">
             <textarea placeholder="Enter a Description"></textarea>
           </div>
           
@@ -48,11 +50,11 @@
           </label>
 
           <div class="left_single_row">
-            <input type="text" placeholder="dd/mm/yyyy">
-            <img src="../assets/icons/calendar.svg">
+            <input id="dateInput" type="text" placeholder="dd/mm/yyyy">
+            <img class="calendar_icon" src="../assets/icons/calendar.svg">
           </div>
 
-          <!-- <small class="error_text">This field is required</small> -->
+          <small class="error_text">This field is required</small>
         </div>
       </form>
 
@@ -140,4 +142,5 @@
   </main>
 </body>
 
+<script src="../scripts/taskeditor.js"></script>
 </html>
