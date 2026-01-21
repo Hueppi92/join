@@ -1,25 +1,127 @@
 <!DOCTYPE html>
 <html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./styles/style.css" />
-    <link rel="icon" href="#" />
-    <title>[Join - Task Editor / Editor Preview]</title>
-  </head>
 
-  <body>
-    <!-- header per js (look at summary.html) -->
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../styles/summary.css" />
+  <link rel="stylesheet" href="../styles/task-editor.css" />
+  <link rel="stylesheet" href="../styles/sidebar.css" />
+  <link rel="icon" href="#" />
+  <title>[Join - Task Editor / Editor Preview]</title>
+</head>
 
-    <!-- sidebar per js (look at summary.html) -->
+<body>
 
-    <main>
-      <h1>Task Editor - Container</h1>
+  <main class="content-container">
+    <section class="task_header">
+      <h1>Add Task</h1>
+    </section>
 
-      <!-- content per js-render -->
-      <!-- div1 = title, descr, date -->
-      <!-- div2 = tabs, selectors, input -->
-      <!-- div3 = alert, clear + create buttons -->
-    </main>
-  </body>
+    <div class="editor_wrapper">
+
+      <!-- LEFT -->
+      <form class="new_task">
+        <div class="add_task_row">
+          <label>Title 
+            <span class="error">*</span>
+          </label>
+          <input class="first_input" type="text" placeholder="Enter a title">
+        </div>
+
+        <div class="add_task_row">
+          <label>Description</label>
+          <textarea placeholder="Enter a Description"></textarea>
+        </div>
+
+        <div class="add_task_row">
+          <label>Due date *</label>
+          <input class="first_input" type="date">
+        </div>
+      </form>
+
+      <!-- DIVIDER -->
+      <div class="editor_divider"></div>
+
+      <!-- RIGHT -->
+      <div class="task_settings">
+
+        <div class="settings_block">
+          <label>Priority</label>
+          <div class="priority_row">
+            <button class="prio">Urgent 
+              <span class="urgent">↑</span>
+            </button>
+            
+            <button class="prio">Medium 
+              <span class="medium">=</span>
+            </button>
+            
+            <button class="prio">Low
+              <span class="low">↓</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="settings_block">
+          <label>Assigned to</label>
+          <select>
+            <option>Select contacts to assign</option>
+          </select>
+        </div>
+
+        <div class="settings_block">
+          <label>Category 
+            <span class="error">*</span>
+          </label>
+          <select>
+            <option>Select task category</option>
+          </select>
+        </div>
+
+        <div class="settings_block">
+          <label>Subtasks</label>
+          <input type="text" placeholder="Add new subtask">
+        </div>
+      </div>
+
+    </div>
+
+    <div class="task_footer">
+      <p>
+        <span class="error">*</span>
+        This field is required
+      </p>
+
+      <div class="footer_actions">
+        <button class="clear_btn">Clear ✕</button>
+        <button class="create_btn">Create Task ✓</button>
+      </div>
+    </div>
+
+    <aside>
+      <img src="../assets/img/join_logo.svg" alt="Join Logo" />
+      <nav class="sidebar-navigation">
+        <div class="sidebar-navigation-item">
+          <a href="./summary.html"><img src="../assets/icons/summary_icon.svg" alt="Summary Icon">Summary</a>
+        </div>
+        <div class="sidebar-navigation-item">
+          <a href="./task-editor.html"><img src="../assets/icons/addTask_icon.svg" alt="Add Task Icon">Add Task</a>
+        </div>
+        <div class="sidebar-navigation-item">
+          <a href="./taskboard.html"><img src="../assets/icons/board_icon.svg" alt="Board Icon">Board</a>
+        </div>
+        <div class="sidebar-navigation-item">
+          <a href="./contacts.html"><img src="../assets/icons/contacts_icon.svg" alt="Contacts Icon">Contacts</a>
+        </div>
+      </nav>
+      <div class="sidebar-legal-links">
+        <a href="./privacy-policy.html">Privacy Policy</a>
+        <a href="./legal-notice.html">Legal notice</a>
+      </div>
+    </aside>
+
+  </main>
+</body>
+
 </html>
