@@ -1,0 +1,191 @@
+:root {
+    --dark-blue: #2a3647;
+    --light-blue: #29abe2;
+    --bg-color: #f6f7f8;
+    --white: #ffffff;
+}
+
+body {
+    font-family: "Inter", sans-serif;
+    background-color: var(--bg-color);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.content-container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 40px;
+}
+
+/* Header */
+.summary-header {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.summary-header h1 {
+    font-size: 72px;
+    margin: 0;
+    color: var(--dark-blue);
+}
+
+.divider {
+    width: 3px;
+    height: 60px;
+    background-color: var(--light-blue);
+    border-radius: 2px;
+}
+
+.summary-header p {
+    font-size: 27px;
+    margin: 0;
+}
+
+/* Layout */
+.dashboard-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 60px;
+}
+
+.metrics-section {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    flex: 1;
+    max-width: 560px;
+}
+
+/* Cards */
+.card {
+    background: var(--white);
+    border-radius: 30px;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    transition: all 0.15s ease-in-out;
+    cursor: pointer;
+}
+
+.card:hover {
+    background-color: var(--dark-blue);
+    transform: scale(1.02);
+}
+
+.card:hover .number, 
+.card:hover .label, 
+.card:hover .date {
+    color: var(--white);
+}
+
+/* Rows */
+.row-top, .row-bottom {
+    display: flex;
+    gap: 25px;
+}
+
+.small-card {
+    flex: 1;
+    justify-content: center;
+    gap: 20px;
+    height: 120px;
+    padding: 20px;
+}
+
+.mini-card {
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    height: 120px;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Urgent Card Specifics */
+.urgent-card {
+    padding: 28px 48px;
+    justify-content: space-between;
+    gap: 0;
+}
+
+.urgent-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.urgent-metrics {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.v-divider {
+    width: 2px;
+    height: 102px;
+    background-color: #D1D1D1;
+}
+
+.urgent-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Icon Hover Logic */
+.icon-container {
+    width: 69px;
+    height: 69px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-hover { display: none; }
+.card:hover .icon-standard { display: none; }
+.card:hover .icon-hover { display: block; }
+
+/* Typography */
+.number {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1;
+    color: black;
+}
+
+.card-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.label {
+    font-size: 16px;
+    color: var(--dark-blue);
+}
+
+.date {
+    font-size: 21px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+/* Greeting */
+.greeting-section h2 {
+    font-size: 47px;
+    font-weight: 400;
+    margin: 0;
+}
+
+.user-name {
+    font-size: 64px;
+    font-weight: 700;
+    color: var(--light-blue);
+}
