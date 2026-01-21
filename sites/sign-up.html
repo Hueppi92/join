@@ -3,22 +3,73 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./styles/style.css" />
-    <title>Join - Registration</title>
+    <link rel="stylesheet" href="../style.css" />
+    <link rel="stylesheet" href="../styles/login.css" />
+    <title>Join - Sign up</title>
   </head>
 
   <body>
-    <header>
-      <img src="" alt="" />
+    <header class="login-header signup-header">
+      <img class="login-logo" src="../assets/img/join_logo_dark.svg" alt="Join" />
     </header>
 
-    <main>
-      <h1>Sign up - Container</h1>
+    <main class="login-main">
+      <section class="login-card signup-card" aria-labelledby="signup-title">
+        <a class="signup-back" href="../index.html" aria-label="Back to login">
+          <img src="../assets/icons/left_default.svg" alt="" />
+        </a>
+
+        <h1 id="signup-title">Sign up</h1>
+        <div class="login-underline"></div>
+
+        <form class="login-form" action="#" novalidate>
+          <label class="input-field">
+            <input type="text" name="name" placeholder="Name" autocomplete="name" />
+            <span class="input-icon" aria-hidden="true">
+              <img src="../assets/icons/person.svg" alt="" />
+            </span>
+          </label>
+
+          <label class="input-field">
+            <input type="email" name="email" placeholder="Email" autocomplete="email" />
+            <span class="input-icon" aria-hidden="true">
+              <img src="../assets/icons/mail.svg" alt="" />
+            </span>
+          </label>
+
+          <label class="input-field">
+            <input type="password" name="password" placeholder="Password" autocomplete="new-password" />
+            <span class="input-icon" aria-hidden="true">
+              <img src="../assets/icons/lock.svg" alt="" />
+            </span>
+          </label>
+
+          <label class="input-field">
+            <input type="password" name="confirmPassword" placeholder="Confirm Password" autocomplete="new-password" />
+            <span class="input-icon" aria-hidden="true">
+              <img src="../assets/icons/lock.svg" alt="" />
+            </span>
+          </label>
+
+          <label class="checkbox-row">
+            <input class="checkbox-input" type="checkbox" name="privacy" />
+            <span class="checkbox-box" aria-hidden="true"></span>
+            <span class="checkbox-text">
+              I accept the
+              <a class="checkbox-link" href="./privacy-policy.html">Privacy policy</a>
+            </span>
+          </label>
+
+          <div class="login-actions signup-actions">
+            <button class="btn btn-dark" type="submit">Sign up</button>
+          </div>
+        </form>
+      </section>
     </main>
 
-    <footer>
-      <a href="#">Privacy Policy</a>
-      <a href="#">Legal notice</a>
+    <footer class="login-footer">
+      <a href="./privacy-policy.html">Privacy Policy</a>
+      <a href="./legal-notice.html">Legal notice</a>
     </footer>
   </body>
 </html>
