@@ -14,8 +14,54 @@ header {
     height: 96px;
     background-color: #FFFFFF;
     border-bottom: 1px solid #d1d1d1;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
     z-index: 1;
+}
+
+header h2 {
+    margin: 0;
+    padding: 36px 348px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #000000;
+    font-weight: 400;
+    vertical-align: middle;
+}
+
+.header-btn {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.profile-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border: 3px solid #2A3647;
+    border-radius: 50%;
+    background-color: white;
+    color: #29ABE2;
+    font-weight: bold;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.help-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background-color: white;
+    cursor: pointer;
 }
 
 aside {
