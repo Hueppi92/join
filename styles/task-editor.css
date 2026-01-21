@@ -122,47 +122,246 @@
 .task_settings {
     display: flex;
     flex-direction: column;
-    gap: 25px;
+    gap: 48px;
     width: 440px;
-}
-
-.settings_block {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
 }
 
 /* PRIORITY */
 .priority_row {
     display: flex;
-    gap: 12px;
+    gap: 16px;
+    width: 440px;
 }
 
 .prio {
     flex: 1;
     height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+
     border-radius: 10px;
-    border: 1px solid #ccc;
-    background: white;
+    border: 1px solid #D1D1D1;
+    background: #ffffff;
+
+    font-family: Inter, sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 120%;
+
     cursor: pointer;
+    transition: all 120ms ease-in-out;
 }
 
-.urgent {
-    color: #ff3d00;
+.prio:hover {
+    background: #f6f7f8;
 }
 
-.medium {
-    color: #ffab00;
+.prio div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    line-height: 0;
 }
 
-.low {
-    color: #7ae229;
+.prio div img {
+    width: 12px;
+    height: auto;
+    filter: brightness(0) invert(1);
+    /* Basis für Farb-Filter */
 }
 
 .prio.active {
-    background: #ffab00;
-    color: white;
+    background: #FFAB00;
+    color: #ffffff;
     border: none;
+}
+
+.prio .urgent {
+    filter:
+        brightness(0) saturate(100%) invert(31%) sepia(99%) saturate(5484%) hue-rotate(356deg) brightness(100%) contrast(107%);
+}
+
+.prio .medium {
+    filter:
+        brightness(0) saturate(100%) invert(67%) sepia(93%) saturate(1042%) hue-rotate(358deg) brightness(103%) contrast(102%);
+}
+
+.prio .low {
+    filter:
+        brightness(0) saturate(100%) invert(74%) sepia(39%) saturate(594%) hue-rotate(51deg) brightness(95%) contrast(95%);
+}
+
+.prio.active div img {
+    filter: brightness(0) invert(1);
+}
+
+.settings_block {
+    display: flex;
+    flex-direction: column;
+
+    width: 440px;
+    height: 48px;
+    gap: 6px;
+
+}
+
+.select_native {
+    position: relative;
+    width: 440px;
+}
+
+.select_native select {
+    width: 100%;
+    height: 48px;
+
+    font-family: Inter, sans-serif;
+    font-size: 20px;
+    line-height: 120%;
+    color: #000000;
+
+    padding: 0 48px 0 16px;
+
+    background: #ffffff;
+    border: 1px solid #D1D1D1;
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.select_native::after {
+    content: "";
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    width: 24px;
+    height: 24px;
+
+    background: url("../assets/icons/arrow_drop_down.png") no-repeat center;
+
+    filter:
+        brightness(0) saturate(100%) invert(17%) sepia(19%) saturate(1020%) hue-rotate(176deg) brightness(95%) contrast(93%);
+
+    pointer-events: none;
+}
+
+.select_native select:has(option:checked[disabled]) {
+    color: #000000;
+}
+
+.select_native select:hover {
+    background: #f6f7f8;
+}
+
+.select_native select:focus {
+    outline: none;
+    border-color: #2A3647;
+}
+
+.subtasks_block {
+    height: auto;
+    gap: 6px;
+}
+
+.subtask_input {
+    position: relative;
+    width: 440px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+
+    background: #ffffff;
+    border: 1px solid #D1D1D1;
+    border-radius: 10px;
+}
+
+.subtask_input input {
+    flex: 1;
+    height: 100%;
+    padding: 0 48px 0 16px;
+
+    font-family: Inter, sans-serif;
+    font-size: 20px;
+    line-height: 120%;
+
+    border: none;
+    outline: none;
+}
+
+.subtask_add_btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    width: 24px;
+    height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    background: none;
+    cursor: pointer;
+
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 120ms ease-in-out;
+}
+
+.subtask_input.has-text .subtask_add_btn {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.subtask_add_btn p {
+    font-size: 24px;
+    filter:
+        brightness(0) saturate(100%) invert(17%) sepia(19%) saturate(1020%) hue-rotate(176deg) brightness(95%) contrast(93%);
+}
+
+.subtask_list {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.subtask_list li {
+    height: 32px;
+    padding: 0 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background: #F6F7F8;
+    border-radius: 8px;
+
+    font-family: Inter, sans-serif;
+    font-size: 16px;
+    color: #2A3647;
+}
+
+.subtask_list li button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #FF3D00;
 }
 
 /* FOOTER */

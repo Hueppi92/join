@@ -32,7 +32,7 @@
           </div>
 
           <small class="error_text">This field is required</small>
-          
+
         </div>
 
         <div class="left_row description_field">
@@ -41,11 +41,11 @@
           <div class="left_single_row description_box">
             <textarea placeholder="Enter a Description"></textarea>
           </div>
-          
+
         </div>
 
         <div class="left_row date_field">
-          <label>Due date 
+          <label>Due date
             <span class="error">*</span>
           </label>
 
@@ -66,40 +66,69 @@
 
         <div class="settings_block">
           <label>Priority</label>
-          <div class="priority_row">
-            <button class="prio">Urgent
-              <span class="urgent">↑</span>
+
+          <div class="priority_row" id="priorityRow">
+            <button type="button" class="prio urgent_btn" data-prio="urgent">
+              Urgent
+              <div>
+                <img src="../assets/icons/arrowUp.svg" class="urgent">
+                <img src="../assets/icons/arrowUp.svg" class="urgent">
+              </div>
             </button>
 
-            <button class="prio">Medium
-              <span class="medium">=</span>
+            <button type="button" class="prio medium_btn active" data-prio="medium">
+              Medium
+              <div>
+                <img src="../assets/icons/sameIcon.svg" class="medium">
+                <img src="../assets/icons/sameIcon.svg" class="medium">
+              </div>
             </button>
 
-            <button class="prio">Low
-              <span class="low">↓</span>
+            <button type="button" class="prio low_btn" data-prio="low">
+              Low
+              <div>
+                <img src="../assets/icons/arrowDown.svg" class="low">
+                <img src="../assets/icons/arrowDown.svg" class="low">
+              </div>
             </button>
           </div>
         </div>
 
         <div class="settings_block">
           <label>Assigned to</label>
-          <select>
-            <option>Select contacts to assign</option>
-          </select>
+          <div class="select_native">
+            <select>
+              <option selected disabled>Select contacts to assign</option>
+              <option>Alex</option>
+              <option>Maria</option>
+              <option>John</option>
+            </select>
+          </div>
         </div>
 
         <div class="settings_block">
-          <label>Category
-            <span class="error">*</span>
-          </label>
-          <select>
-            <option>Select task category</option>
-          </select>
+          <label>Category <span class="error">*</span></label>
+          <div class="select_native">
+            <select>
+              <option selected disabled>Select task category</option>
+              <option>Design</option>
+              <option>Backend</option>
+              <option>Bug</option>
+            </select>
+          </div>
         </div>
 
-        <div class="settings_block">
+        <div class="settings_block subtasks_block">
           <label>Subtasks</label>
-          <input type="text" placeholder="Add new subtask">
+
+          <div class="subtask_input">
+            <input id="subtaskInput" type="text" placeholder="Add new subtask">
+            <button type="button" class="subtask_add_btn">
+              <p>+</p>
+            </button>
+          </div>
+
+          <ul id="subtaskList" class="subtask_list"></ul>
         </div>
       </div>
 
@@ -143,4 +172,5 @@
 </body>
 
 <script src="../scripts/taskeditor.js"></script>
+
 </html>
