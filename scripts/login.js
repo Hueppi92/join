@@ -191,4 +191,24 @@ function setHeaderLogoVisibility(headerLogo, isVisible) {
 	headerLogo.style.opacity = isVisible ? '1' : '0';
 }
 
-document.addEventListener('DOMContentLoaded', runSplashAnimation);
+/**
+ * Wires the guest login button to open the summary page.
+ */
+function initGuestLogin() {
+	const guestButton = document.querySelector('.guest-login');
+	if (!guestButton) return;
+
+	guestButton.addEventListener('click', handleGuestLogin);
+}
+
+/**
+ * Navigates to the summary page for guest access.
+ */
+function handleGuestLogin() {
+	window.location.href = './sites/summary.html';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+	runSplashAnimation();
+	initGuestLogin();
+});
