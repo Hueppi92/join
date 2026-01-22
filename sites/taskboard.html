@@ -4,51 +4,49 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./styles/style.css" />
-    <link rel="icon" href="#" />
+    <link rel="stylesheet" href="../styles/sidebar.css" />
+    <link rel="stylesheet" href="./styles/taskboard.css" />
+    <link rel="icon" href="" />
     <title>[Join - Task Board / Board Preview]</title>
   </head>
-
   <body>
-    <!-- header per js (look at summary.html) -->
-
-    <!-- sidebar per js (look at summary.html) -->
-    <main>
-      <h1>Task Editor - Container</h1>
-
-      <!-- content per js-render -->
-      <!-- div1 = "board", search, button -->
+    <div>
+      <div><img src="../assets/icons/Board.svg" alt="Board heading text in black sans-serif font displaying the word Board as a page title"></div>
       <div>
-        <div class="board">
-          <form id="todo_form">
-            <input id="todo_input" type="text" placeholder="Search Task..." />
-            <button type="submit" onclick="add()">Add New Task</button>
-          </form>
-          <div class="container">
-            <div class="todo">
-              <h2>To-Do</h2>
-              <div id="todo_tasks" class="task-list"></div>
-            </div>
-            <div class="in-progress">
-              <h2>In Progress</h2>
-              <div id="in_progress_tasks" class="task-list">
-                <p class="task" draggable="true">Projekt wird bearbeitet</p>
-              </div>
-            </div>
-            <div class="await-feedback">
-              <h2>Await Feedback</h2>
-              <div id="await_feedback_tasks" class="task-list">
-                <p class="task" draggable="true">Projekt wird überprüft</p>
-              </div>
-            </div>
-            <div class="done">
-              <h2>Done</h2>
-              <div id="done_tasks" class="task-list">
-                <p class="task" draggable="true">Projekt ist abgeschlossen</p>
-              </div>
-            </div>
-          </div>
+        <div>
+          <input type="text">
+        </div>
+        <div>
+            <button><img src="../assets/icons/button2_click.svg" alt="Add Task button with dark blue text and border, rounded rectangular shape with subtle drop shadow"></button>
+        </div>
+        <div>
+          <div></div>
+          <div></div>
         </div>
       </div>
+    </div>
+    <main>
+      <aside>
+      <img src="../assets/img/join_logo.svg" alt="Join Logo" />
+        <nav class="sidebar-navigation">
+          <div class="sidebar-navigation-item">
+            <a href="./summary.html"><img src="../assets/icons/summary_icon.svg" alt="Summary Icon">Summary</a>
+          </div>
+          <div class="sidebar-navigation-item">
+            <a href="./task-editor.html"><img src="../assets/icons/addTask_icon.svg" alt="Add Task Icon">Add Task</a>
+          </div>
+          <div class="sidebar-navigation-item">
+            <a href="./taskboard.html"><img src="../assets/icons/board_icon.svg" alt="Board Icon">Board</a>
+          </div>
+          <div class="sidebar-navigation-item">
+            <a href="./contacts.html"><img src="../assets/icons/contacts_icon.svg" alt="Contacts Icon">Contacts</a>
+          </div>
+        </nav>
+      <div class="sidebar-legal-links">
+        <a href="./privacy-policy.html">Privacy Policy</a>
+        <a href="./legal-notice.html">Legal notice</a>
+      </div>
+    </aside>
     </main>
   </body>
 </html>
