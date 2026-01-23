@@ -3,50 +3,97 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./styles/style.css" />
-    <link rel="stylesheet" href="/styles/sidebar.css">
+    <link rel="stylesheet" href="/styles/task-board.css" />
+    <link rel="stylesheet" href="/styles/sidebar.css" />
     <link rel="icon" href="#" />
     <title>[Join - Task Board / Board Preview]</title>
   </head>
   <body>
-   
     <main>
-       <div>
-      <div><img src="../assets/icons/Board.svg" alt="Board heading text in black sans-serif font displaying the word Board as a page title"></div>
-      <div>
-        <div>
-          <input type="text">
-        </div>
-        <div>
-            <button><img src="../assets/icons/button2_click.svg" alt="Add Task button with dark blue text and border, rounded rectangular shape with subtle drop shadow"></button>
-        </div>
-        <div>
-          <div></div>
-          <div></div>
+       <header>
+      <h2>Kanban Project Management Tool</h2>
+      <div class="header-btn">
+        <button class="help-btn"><img src="../assets/icons/help_icon.svg" alt="Help Icon"></button>
+        <button class="profile-btn">DF</button>
+      </div>
+    </header>
+      <div class="board-container">
+        <div class="board-header">
+        <h1>Board</h1>
+<div class="search-add">
+            <input type="text" placeholder="Find Task" />
+            <button class="add-task">Add task +</button>
+          </div>
+          </div>
+        <div class="board">
+        
+          <div class="column" id="todo">
+            <h2>To do</h2>
+            <div class="task-list">
+              <div class="empty-msg">No tasks To do</div>
+            </div>
+          </div>
+          <div class="column" id="in-progress">
+            <h2>In progress</h2>
+            <div class="task-list">
+              <!-- Tasks kommen hierhin -->
+            </div>
+          </div>
+          <div class="column" id="await-feedback">
+            <h2>Await feedback</h2>
+            <div class="task-list">
+              <!-- Tasks kommen hierhin -->
+            </div>
+          </div>
+          <div class="column" id="done">
+            <h2>Done</h2>
+            <div class="task-list">
+              <!-- Tasks kommen hierhin -->
+            </div>
+          </div>
         </div>
       </div>
-    </div>
       <aside>
-      <img src="../assets/img/join_logo.svg" alt="Join Logo" />
+        <img src="../assets/img/join_logo.svg" alt="Join Logo" />
         <nav class="sidebar-navigation">
           <div class="sidebar-navigation-item">
-            <a href="./summary.html"><img src="../assets/icons/summary_icon.svg" alt="Summary Icon">Summary</a>
+            <a href="./summary.html"
+              ><img
+                src="../assets/icons/summary_icon.svg"
+                alt="Summary Icon"
+              />Summary</a
+            >
           </div>
           <div class="sidebar-navigation-item">
-            <a href="./task-editor.html"><img src="../assets/icons/addTask_icon.svg" alt="Add Task Icon">Add Task</a>
+            <a href="./task-editor.html"
+              ><img
+                src="../assets/icons/addTask_icon.svg"
+                alt="Add Task Icon"
+              />Add Task</a
+            >
           </div>
           <div class="sidebar-navigation-item">
-            <a href="./taskboard.html"><img src="../assets/icons/board_icon.svg" alt="Board Icon">Board</a>
+            <a href="./taskboard.html"
+              ><img
+                src="../assets/icons/board_icon.svg"
+                alt="Board Icon"
+              />Board</a
+            >
           </div>
           <div class="sidebar-navigation-item">
-            <a href="./contacts.html"><img src="../assets/icons/contacts_icon.svg" alt="Contacts Icon">Contacts</a>
+            <a href="./contacts.html"
+              ><img
+                src="../assets/icons/contacts_icon.svg"
+                alt="Contacts Icon"
+              />Contacts</a
+            >
           </div>
         </nav>
-      <div class="sidebar-legal-links">
-        <a href="./privacy-policy.html">Privacy Policy</a>
-        <a href="./legal-notice.html">Legal notice</a>
-      </div>
-    </aside>
+        <div class="sidebar-legal-links">
+          <a href="./privacy-policy.html">Privacy Policy</a>
+          <a href="./legal-notice.html">Legal notice</a>
+        </div>
+      </aside>
     </main>
   </body>
 </html>
