@@ -192,6 +192,208 @@ function setHeaderLogoVisibility(headerLogo, isVisible) {
 }
 
 /**
+ * Enables password visibility toggles.
+ */
+function initPasswordToggles() {
+	document.querySelectorAll('input[type="password"]').forEach(setupPasswordToggle);
+}
+
+/**
+ * Wires a password input with toggle icons.
+ * @param {HTMLInputElement} input
+ */
+function setupPasswordToggle(input) {
+	const wrapper = input.closest('.input-field');
+	const iconBox = wrapper ? wrapper.querySelector('.input-icon') : null;
+	const icon = iconBox ? iconBox.querySelector('img') : null;
+	if (!iconBox || !icon) return;
+
+	iconBox.classList.add('password-toggle');
+	const lockSrc = icon.getAttribute('src') || '';
+	const offSrc = lockSrc.replace(/[^/]+$/, 'visibility_off.svg');
+	const onSrc = lockSrc.replace(/[^/]+$/, 'visibility.svg');
+
+	const updateIcon = () => {
+		if (!input.value) {
+			icon.src = lockSrc;
+			return;
+		}
+		icon.src = input.type === 'password' ? offSrc : onSrc;
+	};
+
+	iconBox.addEventListener('click', () => {
+		if (!input.value) return;
+		input.type = input.type === 'password' ? 'text' : 'password';
+		updateIcon();
+	});
+
+	input.addEventListener('input', updateIcon);
+	updateIcon();
+}
+
+/**
+ * Initializes Firebase login handling for the login form.
+ */
+function initLoginForm() {
+	const form = document.querySelector('.login-form');
+	if (!form) return;
+
+	const fields = getLoginFields(form);
+	if (!fields) return;
+
+	bindLoginFieldEvents(fields);
+	form.addEventListener('submit', (event) => handleLoginSubmit(event, fields));
+}
+
+/**
+ * Collects login form fields.
+ * @param {HTMLFormElement} form
+ * @returns {{form: HTMLFormElement, emailInput: HTMLInputElement, passwordInput: HTMLInputElement, submitButton: HTMLButtonElement, message: HTMLElement} | null}
+ */
+function getLoginFields(form) {
+	const emailInput = form.querySelector('input[name="email"]');
+	const passwordInput = form.querySelector('input[name="password"]');
+	const submitButton = form.querySelector('button[type="submit"]');
+	if (!emailInput || !passwordInput || !submitButton) return null;
+
+	return { form, emailInput, passwordInput, submitButton, message: ensureFormMessage(form) };
+}
+
+/**
+ * Ensures the form has a message element for feedback.
+ * @param {HTMLFormElement} form
+ * @returns {HTMLElement}
+ */
+function ensureFormMessage(form) {
+	let message = form.querySelector('.form-message');
+	if (message) return message;
+
+	message = document.createElement('p');
+	message.className = 'form-message';
+	message.setAttribute('role', 'alert');
+	message.style.marginTop = '12px';
+	message.style.fontSize = '14px';
+	message.style.color = '#FF3D00';
+	form.appendChild(message);
+	return message;
+}
+
+/**
+ * Binds events to update login form button state.
+ * @param {ReturnType<typeof getLoginFields>} fields
+ */
+function bindLoginFieldEvents(fields) {
+	const updateState = () => updateLoginButtonState(fields);
+	fields.emailInput.addEventListener('input', updateState);
+	fields.passwordInput.addEventListener('input', updateState);
+	updateLoginButtonState(fields);
+}
+
+/**
+ * Enables/disables the login button based on form validity.
+ * @param {ReturnType<typeof getLoginFields>} fields
+ */
+function updateLoginButtonState(fields) {
+	const isValid = isLoginInputValid(fields);
+	const isLoading = fields.submitButton.dataset.loading === '1';
+	fields.submitButton.disabled = isLoading || !isValid;
+}
+
+/**
+ * Validates login inputs.
+ * @param {ReturnType<typeof getLoginFields>} fields
+ * @returns {boolean}
+ */
+function isLoginInputValid(fields) {
+	return isEmailValid(fields.emailInput.value) && fields.passwordInput.value.trim().length > 0;
+}
+
+/**
+ * Validates email address format.
+ * @param {string} value
+ * @returns {boolean}
+ */
+function isEmailValid(value) {
+	return /^\S+@\S+\.\S+$/.test(value.trim());
+}
+
+/**
+ * Handles Firebase login submission.
+ * @param {SubmitEvent} event
+ * @param {ReturnType<typeof getLoginFields>} fields
+ */
+async function handleLoginSubmit(event, fields) {
+	event.preventDefault();
+	setFormMessage(fields.message, '');
+
+	if (!isLoginInputValid(fields)) {
+		setFormMessage(fields.message, 'Bitte gültige Zugangsdaten eingeben.');
+		return;
+	}
+
+	setLoadingState(fields, true);
+	try {
+		await firebase.auth().signInWithEmailAndPassword(
+			fields.emailInput.value.trim(),
+			fields.passwordInput.value
+		);
+		sessionStorage.setItem('skipSplash', '1');
+		window.location.href = './sites/summary.html';
+	} catch (error) {
+		setFormMessage(fields.message, getAuthErrorMessage(error));
+		console.error('Firebase login error:', error);
+	} finally {
+		setLoadingState(fields, false);
+	}
+}
+
+/**
+ * Sets the loading state for the login form.
+ * @param {ReturnType<typeof getLoginFields>} fields
+ * @param {boolean} isLoading
+ */
+function setLoadingState(fields, isLoading) {
+	fields.submitButton.dataset.loading = isLoading ? '1' : '0';
+	updateLoginButtonState(fields);
+}
+
+/**
+ * Updates the form message.
+ * @param {HTMLElement} message
+ * @param {string} text
+ */
+function setFormMessage(message, text) {
+	message.textContent = text;
+}
+
+/**
+ * Maps Firebase auth errors to readable messages.
+ * @param {unknown} error
+ * @returns {string}
+ */
+function getAuthErrorMessage(error) {
+	const fallback = 'Login fehlgeschlagen. Bitte versuche es erneut.';
+	if (!error || typeof error !== 'object' || !('code' in error)) return fallback;
+
+	switch (error.code) {
+		case 'auth/invalid-credential':
+		case 'auth/invalid-login-credentials':
+			return 'E-Mail oder Passwort ist falsch.';
+		case 'auth/invalid-email':
+			return 'Bitte eine gültige E-Mail-Adresse eingeben.';
+		case 'auth/user-not-found':
+		case 'auth/wrong-password':
+			return 'E-Mail oder Passwort ist falsch.';
+		case 'auth/user-disabled':
+			return 'Dieser Nutzer ist deaktiviert.';
+		case 'auth/too-many-requests':
+			return 'Zu viele Versuche. Bitte später erneut versuchen.';
+		default:
+			return fallback;
+	}
+}
+
+/**
  * Wires the guest login button to open the summary page.
  */
 function initGuestLogin() {
@@ -211,4 +413,6 @@ function handleGuestLogin() {
 document.addEventListener('DOMContentLoaded', () => {
 	runSplashAnimation();
 	initGuestLogin();
+	initLoginForm();
+	initPasswordToggles();
 });
