@@ -291,13 +291,10 @@ button {
 	transition: background var(--transition);
 }
 
-.signup-back:hover {
-	background: #f0f0f0;
-}
 
 .signup-back img {
-	width: 24px;
-	height: 24px;
+	width: 32px;
+	height: 32px;
 }
 
 .signup-back:hover img {
