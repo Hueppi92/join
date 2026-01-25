@@ -337,6 +337,7 @@ async function handleLoginSubmit(event, fields) {
 			fields.emailInput.value.trim(),
 			fields.passwordInput.value
 		);
+		sessionStorage.removeItem('guestLogin');
 		sessionStorage.setItem('skipSplash', '1');
 		window.location.href = './sites/summary.html';
 	} catch (error) {
@@ -407,6 +408,7 @@ function initGuestLogin() {
  * Navigates to the summary page for guest access.
  */
 function handleGuestLogin() {
+	sessionStorage.setItem('guestLogin', '1');
 	window.location.href = './sites/summary.html';
 }
 

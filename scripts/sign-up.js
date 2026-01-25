@@ -205,6 +205,7 @@ async function handleSignupSubmit(event, fields) {
 			email: fields.emailInput.value.trim(),
 			createdAt: Date.now(),
 		});
+		sessionStorage.removeItem('guestLogin');
 		sessionStorage.setItem('skipSplash', '1');
 		window.location.href = './summary.html';
 	} catch (error) {
