@@ -300,6 +300,10 @@ button {
 	height: 24px;
 }
 
+.signup-back:hover img {
+	content: url("../assets/icons/left_hover.svg");
+}
+
 .checkbox-row {
 	display: flex;
 	align-items: center;
@@ -307,6 +311,7 @@ button {
 	gap: 12px;
 	font-size: 16px;
 	color: #666666;
+	cursor: pointer;
 }
 
 .checkbox-input {
@@ -317,29 +322,30 @@ button {
 }
 
 .checkbox-box {
-	width: 16px;
-	height: 16px;
-	border: 2px solid var(--primary);
-	border-radius: 3px;
+	width: 24px;
+	height: 24px;
+	border-radius: 4px;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	transition: border-color var(--transition), background var(--transition);
+	background: url("../assets/icons/checkBox_default.svg") no-repeat center / contain;
+	transition: background var(--transition);
+}
+
+.checkbox-row:hover .checkbox-box {
+	background-image: url("../assets/icons/checkBox_hover%20disable.svg");
 }
 
 .checkbox-input:checked + .checkbox-box {
-	background: var(--primary);
-	border-color: var(--primary);
+	background-image: url("../assets/icons/checked.svg");
 }
 
 .checkbox-input:checked + .checkbox-box::after {
-	content: "";
-	width: 6px;
-	height: 10px;
-	border: solid #ffffff;
-	border-width: 0 2px 2px 0;
-	transform: rotate(45deg);
-	margin-bottom: 2px;
+	content: none;
+}
+
+.checkbox-row:hover .checkbox-input:checked + .checkbox-box {
+	background-image: url("../assets/icons/hover%20checked.svg");
 }
 
 .checkbox-text {
