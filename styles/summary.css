@@ -19,6 +19,7 @@ body {
     width: 100%;
     max-width: 1200px;
     padding: 40px;
+    margin-left: 328px;
 }
 
 /* Header */
@@ -27,6 +28,7 @@ body {
     align-items: center;
     gap: 30px;
     margin-bottom: 50px;
+    margin-top: 206px;
 }
 
 .summary-header h1 {
