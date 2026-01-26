@@ -105,6 +105,10 @@ aside > img {
     background-color: #091931;
 }
 
+.sidebar-navigation-item.active {
+    background-color: #091931;
+}
+
 .sidebar-navigation-item a {
     display: flex;
     align-items: center;
