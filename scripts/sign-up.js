@@ -199,6 +199,7 @@ async function handleSignupSubmit(event, fields) {
 			fields.emailInput.value.trim(),
 			fields.passwordInput.value
 		);
+		sessionStorage.setItem('userId', credential.user.uid);
 		await credential.user.updateProfile({ displayName: fields.nameInput.value.trim() });
 		await firebase.database().ref(`users/${credential.user.uid}`).set({
 			name: fields.nameInput.value.trim(),

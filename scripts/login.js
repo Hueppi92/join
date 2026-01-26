@@ -333,10 +333,11 @@ async function handleLoginSubmit(event, fields) {
 
 	setLoadingState(fields, true);
 	try {
-		await firebase.auth().signInWithEmailAndPassword(
+		const credential = await firebase.auth().signInWithEmailAndPassword(
 			fields.emailInput.value.trim(),
 			fields.passwordInput.value
 		);
+		sessionStorage.setItem('userId', credential.user.uid);
 		sessionStorage.removeItem('guestLogin');
 		sessionStorage.setItem('skipSplash', '1');
 		window.location.href = './sites/summary.html';
@@ -409,6 +410,7 @@ function initGuestLogin() {
  */
 function handleGuestLogin() {
 	sessionStorage.setItem('guestLogin', '1');
+	sessionStorage.removeItem('userId');
 	window.location.href = './sites/summary.html';
 }
 

@@ -1,7 +1,6 @@
-const userId = "u1"; // eingeloggter User
-
 async function loadSummary() {
     try {
+        const userId = await resolveActiveUserId();
         const userName = await getUserName(userId);
         const tasks = await getTasks();
 
@@ -15,6 +14,13 @@ async function loadSummary() {
     }
 }
 
+async function resolveActiveUserId() {
+    if (window.userContext?.resolveUserId) {
+        return window.userContext.resolveUserId();
+    }
+    return sessionStorage.getItem('userId');
+}
+
 async function getTasks() {
     const tasksRef = db.ref("tasks");
     const snapshot = await tasksRef.get();
@@ -22,6 +28,7 @@ async function getTasks() {
 }
 
 async function getUserName(userId) {
+    if (!userId) return "Guest";
     const userRef = db.ref("users/" + userId);
     const snapshot = await userRef.get();
     return snapshot.val()?.name || "Guest";
