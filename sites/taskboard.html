@@ -6,89 +6,54 @@
     <link rel="stylesheet" href="../styles/task-board.css" />
     <link rel="stylesheet" href="../styles/sidebar.css" />
     <link rel="icon" href="#" />
-    <title>[Join - Task Board / Board Preview]</title>
+    <title>Join - Task Board</title>
   </head>
   <body>
-    
-       <header>
+    <header>
       <h2>Kanban Project Management Tool</h2>
       <div class="header-btn">
         <button class="help-btn"><img src="../assets/icons/help_icon.svg" alt="Help Icon"></button>
         <button class="profile-btn">DF</button>
       </div>
     </header>
+
     <main>
       <div class="board-container">
         <div class="board-header">
-        <h1>Board</h1>
-<div class="search-add">
-            <input type="text" placeholder="Find Task" />
+          <h1>Board</h1>
+          <div class="search-add">
+            <input type="text" placeholder="Find Task" id="task-search" />
             <button class="add-task">Add task +</button>
           </div>
-          </div>
+        </div>
+
         <div class="board">
-        
           <div class="column" id="todo">
             <h2>To do</h2>
-            <div class="task-list">
-              <div class="empty-msg">No tasks To do</div>
-            </div>
+            <div class="task-list"></div>
           </div>
           <div class="column" id="in-progress">
             <h2>In progress</h2>
-            <div class="task-list">
-              <!-- Tasks kommen hierhin -->
-            </div>
+            <div class="task-list"></div>
           </div>
           <div class="column" id="await-feedback">
             <h2>Await feedback</h2>
-            <div class="task-list">
-              <!-- Tasks kommen hierhin -->
-            </div>
+            <div class="task-list"></div>
           </div>
           <div class="column" id="done">
             <h2>Done</h2>
-            <div class="task-list">
-              <!-- Tasks kommen hierhin -->
-            </div>
+            <div class="task-list"></div>
           </div>
         </div>
       </div>
+
       <aside>
         <img src="../assets/img/join_logo.svg" alt="Join Logo" />
         <nav class="sidebar-navigation">
-          <div class="sidebar-navigation-item">
-            <a href="./summary.html"
-              ><img
-                src="../assets/icons/summary_icon.svg"
-                alt="Summary Icon"
-              />Summary</a
-            >
-          </div>
-          <div class="sidebar-navigation-item">
-            <a href="./task-editor.html"
-              ><img
-                src="../assets/icons/addTask_icon.svg"
-                alt="Add Task Icon"
-              />Add Task</a
-            >
-          </div>
-          <div class="sidebar-navigation-item">
-            <a href="./taskboard.html"
-              ><img
-                src="../assets/icons/board_icon.svg"
-                alt="Board Icon"
-              />Board</a
-            >
-          </div>
-          <div class="sidebar-navigation-item">
-            <a href="./contacts.html"
-              ><img
-                src="../assets/icons/contacts_icon.svg"
-                alt="Contacts Icon"
-              />Contacts</a
-            >
-          </div>
+          <div class="sidebar-navigation-item"><a href="./summary.html"><img src="../assets/icons/summary_icon.svg" alt="Summary Icon">Summary</a></div>
+          <div class="sidebar-navigation-item"><a href="./task-editor.html"><img src="../assets/icons/addTask_icon.svg" alt="Add Task Icon">Add Task</a></div>
+          <div class="sidebar-navigation-item"><a href="./taskboard.html"><img src="../assets/icons/board_icon.svg" alt="Board Icon">Board</a></div>
+          <div class="sidebar-navigation-item"><a href="./contacts.html"><img src="../assets/icons/contacts_icon.svg" alt="Contacts Icon">Contacts</a></div>
         </nav>
         <div class="sidebar-legal-links">
           <a href="./privacy-policy.html">Privacy Policy</a>
@@ -96,10 +61,14 @@
         </div>
       </aside>
     </main>
+
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script src="../scripts/firebaseConfig.js"></script>
+
+    <!-- Project Scripts -->
     <script src="../scripts/db.js"></script>
     <script src="../scripts/auth-guard.js"></script>
     <script src="../scripts/taskboard.js"></script>
