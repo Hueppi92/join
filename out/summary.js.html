@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: summary.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: summary.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>
+/**
+ * Main initialization function for the summary page.
+ * Fetches user data and tasks to trigger the rendering of the dashboard.
+ * @async
+ */
+async function loadSummary() {
+    try {
+        const userId = await resolveActiveUserId();
+        const userName = await getUserName(userId);
+        const tasks = await getTasks();
+
+        renderUserName(userName);
+        setGreeting();
+        renderSummary(tasks);
+
+        console.log("Init (loadSummary) erfolgreich");
+    } catch (error) {
+        console.error("Fehler in loadSummary:", error);
+    }
+}
+
+/**
+ * Resolves the currently active user ID from a global context or session storage.
+ * @async
+ * @returns {Promise&lt;string|null>} The active user ID or null if not found.
+ */
+async function resolveActiveUserId() {
+    if (window.userContext?.resolveUserId) {
+        return window.userContext.resolveUserId();
+    }
+    return sessionStorage.getItem('userId');
+}
+
+/**
+ * Fetches all task data from the Firebase "tasks" reference.
+ * @async
+ * @returns {Promise&lt;Object>} An object containing all tasks from the database.
+ */
+async function getTasks() {
+    const tasksRef = db.ref("tasks");
+    const snapshot = await tasksRef.get();
+    return snapshot.val() || {};
+}
+
+/**
+ * Retrieves the name of a specific user from Firebase by their ID.
+ * @async
+ * @param {string} userId - The unique ID of the user to fetch.
+ * @returns {Promise&lt;string>} The user's name or "Guest" as a fallback.
+ */
+async function getUserName(userId) {
+    if (!userId) return "Guest";
+    const userRef = db.ref("users/" + userId);
+    const snapshot = await userRef.get();
+    return snapshot.val()?.name || "Guest";
+}
+
+/**
+ * Displays the user's name in the designated HTML element.
+ * @param {string} name - The name to be rendered.
+ */
+function renderUserName(name) {
+    document.getElementById("user-name").innerText = name;
+}
+
+/**
+ * Calculates and renders task statistics (total, status, and urgency) to the UI.
+ * @param {Object} tasks - The task object where keys are IDs and values are task details.
+ */
+function renderSummary(tasks) {
+    const totalTasks = Object.keys(tasks).length;
+    const todoCount = Object.values(tasks).filter(t => t.status === "todo").length;
+    const inProgressCount = Object.values(tasks).filter(t => t.status === "in-progress").length;
+    const doneCount = Object.values(tasks).filter(t => t.status === "done").length;
+    const urgentCount = Object.values(tasks).filter(t => t.priority === "urgent").length;
+
+    document.getElementById("total-tasks").innerText = totalTasks;
+    document.getElementById("todo-tasks").innerText = todoCount;
+    document.getElementById("inprogress-tasks").innerText = inProgressCount;
+    document.getElementById("done-tasks").innerText = doneCount;
+    document.getElementById("urgent-tasks").innerText = urgentCount;
+}
+
+/**
+ * Determines the current time of day and displays an appropriate greeting message.
+ */
+function setGreeting() {
+     var today = new Date()
+    var curHr = today.getHours()
+
+    if (curHr >= 0 &amp;&amp; curHr &lt; 6) {
+        document.getElementById("greet").innerHTML = 'What are you doing that early?';
+    } else if (curHr >= 6 &amp;&amp; curHr &lt;= 12) {
+        document.getElementById("greet").innerHTML = 'Good Morning,';
+    } else if (curHr >= 12 &amp;&amp; curHr &lt; 17) {
+        document.getElementById("greet").innerHTML = 'Good Afternoon,';
+    } else {
+        document.getElementById("greet").innerHTML = 'Good Evening,';
+    }
+}
+
+loadSummary();
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#animateSplashLogo">animateSplashLogo</a></li><li><a href="global.html#bindLoginFieldEvents">bindLoginFieldEvents</a></li><li><a href="global.html#bindSignupFieldEvents">bindSignupFieldEvents</a></li><li><a href="global.html#clearFieldError">clearFieldError</a></li><li><a href="global.html#clearSkipSplash">clearSkipSplash</a></li><li><a href="global.html#ensureFieldMessage">ensureFieldMessage</a></li><li><a href="global.html#ensureFormMessage">ensureFormMessage</a></li><li><a href="global.html#fadeOutOverlay">fadeOutOverlay</a></li><li><a href="global.html#finishSplashAnimation">finishSplashAnimation</a></li><li><a href="global.html#getAuthErrorMessage">getAuthErrorMessage</a></li><li><a href="global.html#getCenterDelta">getCenterDelta</a></li><li><a href="global.html#getLoginFields">getLoginFields</a></li><li><a href="global.html#getSignupFields">getSignupFields</a></li><li><a href="global.html#getSplashElements">getSplashElements</a></li><li><a href="global.html#getSplashStartScale">getSplashStartScale</a></li><li><a href="global.html#getTasks">getTasks</a></li><li><a href="global.html#getUserName">getUserName</a></li><li><a href="global.html#handleGuestLogin">handleGuestLogin</a></li><li><a href="global.html#handleLoginSubmit">handleLoginSubmit</a></li><li><a href="global.html#handleSignupSubmit">handleSignupSubmit</a></li><li><a href="global.html#hideElement">hideElement</a></li><li><a href="global.html#initGuestLogin">initGuestLogin</a></li><li><a href="global.html#initLoginForm">initLoginForm</a></li><li><a href="global.html#initPasswordToggles">initPasswordToggles</a></li><li><a href="global.html#initSignupBackButton">initSignupBackButton</a></li><li><a href="global.html#initSignupForm">initSignupForm</a></li><li><a href="global.html#isEmailValid">isEmailValid</a></li><li><a href="global.html#isLoginInputValid">isLoginInputValid</a></li><li><a href="global.html#isSignupInputValid">isSignupInputValid</a></li><li><a href="global.html#loadSummary">loadSummary</a></li><li><a href="global.html#prepareSplashLogo">prepareSplashLogo</a></li><li><a href="global.html#renderSummary">renderSummary</a></li><li><a href="global.html#renderUserName">renderUserName</a></li><li><a href="global.html#resolveActiveUserId">resolveActiveUserId</a></li><li><a href="global.html#runSplashAnimation">runSplashAnimation</a></li><li><a href="global.html#setFieldError">setFieldError</a></li><li><a href="global.html#setFormMessage">setFormMessage</a></li><li><a href="global.html#setGreeting">setGreeting</a></li><li><a href="global.html#setHeaderLogoVisibility">setHeaderLogoVisibility</a></li><li><a href="global.html#setLoadingState">setLoadingState</a></li><li><a href="global.html#setupPasswordToggle">setupPasswordToggle</a></li><li><a href="global.html#shouldSkipSplash">shouldSkipSplash</a></li><li><a href="global.html#showFinalSplashState">showFinalSplashState</a></li><li><a href="global.html#syncAnimationEnd">syncAnimationEnd</a></li><li><a href="global.html#updateLoginButtonState">updateLoginButtonState</a></li><li><a href="global.html#updateSignupButtonState">updateSignupButtonState</a></li><li><a href="global.html#validateSignupFields">validateSignupFields</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Tue Jan 27 2026 20:41:09 GMT+0100 (Mitteleuropäische Normalzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

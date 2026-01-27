@@ -1,0 +1,12 @@
+{
+    "source": {
+        "include": ["."], 
+        "exclude": ["node_modules", "out"],
+        "includePattern": ".+\\.js(doc|x)?$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "opts": {
+        "destination": "./out/",
+        "recurse": true
+    }
+}

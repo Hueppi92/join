@@ -1,4 +1,32 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: sign-up.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: sign-up.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
  * Sets a flag to skip the splash animation when returning to the login page.
  */
 function initSignupBackButton() {
@@ -163,10 +191,10 @@ function updateSignupButtonState(fields) {
  */
 function isSignupInputValid(fields) {
 	return (
-		fields.nameInput.value.trim().length > 0 &&
-		isEmailValid(fields.emailInput.value) &&
-		fields.passwordInput.value.trim().length >= 6 &&
-		fields.passwordInput.value === fields.confirmInput.value &&
+		fields.nameInput.value.trim().length > 0 &amp;&amp;
+		isEmailValid(fields.emailInput.value) &amp;&amp;
+		fields.passwordInput.value.trim().length >= 6 &amp;&amp;
+		fields.passwordInput.value === fields.confirmInput.value &amp;&amp;
 		fields.privacyInput.checked
 	);
 }
@@ -266,7 +294,7 @@ function validateSignupFields(fields) {
 		setFieldError(fields.emailInput, fields.emailMessage, 'Bitte eine gültige E-Mail-Adresse eingeben.');
 		isValid = false;
 	}
-	if (fields.passwordInput.value.trim().length < 6) {
+	if (fields.passwordInput.value.trim().length &lt; 6) {
 		setFieldError(fields.passwordInput, fields.passwordMessage, 'Passwort muss mindestens 6 Zeichen haben.');
 		isValid = false;
 	}
@@ -309,3 +337,26 @@ document.addEventListener('DOMContentLoaded', () => {
 	initSignupForm();
 	initPasswordToggles();
 });
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#animateSplashLogo">animateSplashLogo</a></li><li><a href="global.html#bindLoginFieldEvents">bindLoginFieldEvents</a></li><li><a href="global.html#bindSignupFieldEvents">bindSignupFieldEvents</a></li><li><a href="global.html#clearFieldError">clearFieldError</a></li><li><a href="global.html#clearSkipSplash">clearSkipSplash</a></li><li><a href="global.html#ensureFieldMessage">ensureFieldMessage</a></li><li><a href="global.html#ensureFormMessage">ensureFormMessage</a></li><li><a href="global.html#fadeOutOverlay">fadeOutOverlay</a></li><li><a href="global.html#finishSplashAnimation">finishSplashAnimation</a></li><li><a href="global.html#getAuthErrorMessage">getAuthErrorMessage</a></li><li><a href="global.html#getCenterDelta">getCenterDelta</a></li><li><a href="global.html#getLoginFields">getLoginFields</a></li><li><a href="global.html#getSignupFields">getSignupFields</a></li><li><a href="global.html#getSplashElements">getSplashElements</a></li><li><a href="global.html#getSplashStartScale">getSplashStartScale</a></li><li><a href="global.html#getTasks">getTasks</a></li><li><a href="global.html#getUserName">getUserName</a></li><li><a href="global.html#handleGuestLogin">handleGuestLogin</a></li><li><a href="global.html#handleLoginSubmit">handleLoginSubmit</a></li><li><a href="global.html#handleSignupSubmit">handleSignupSubmit</a></li><li><a href="global.html#hideElement">hideElement</a></li><li><a href="global.html#initGuestLogin">initGuestLogin</a></li><li><a href="global.html#initLoginForm">initLoginForm</a></li><li><a href="global.html#initPasswordToggles">initPasswordToggles</a></li><li><a href="global.html#initSignupBackButton">initSignupBackButton</a></li><li><a href="global.html#initSignupForm">initSignupForm</a></li><li><a href="global.html#isEmailValid">isEmailValid</a></li><li><a href="global.html#isLoginInputValid">isLoginInputValid</a></li><li><a href="global.html#isSignupInputValid">isSignupInputValid</a></li><li><a href="global.html#loadSummary">loadSummary</a></li><li><a href="global.html#prepareSplashLogo">prepareSplashLogo</a></li><li><a href="global.html#renderSummary">renderSummary</a></li><li><a href="global.html#renderUserName">renderUserName</a></li><li><a href="global.html#resolveActiveUserId">resolveActiveUserId</a></li><li><a href="global.html#runSplashAnimation">runSplashAnimation</a></li><li><a href="global.html#setFieldError">setFieldError</a></li><li><a href="global.html#setFormMessage">setFormMessage</a></li><li><a href="global.html#setGreeting">setGreeting</a></li><li><a href="global.html#setHeaderLogoVisibility">setHeaderLogoVisibility</a></li><li><a href="global.html#setLoadingState">setLoadingState</a></li><li><a href="global.html#setupPasswordToggle">setupPasswordToggle</a></li><li><a href="global.html#shouldSkipSplash">shouldSkipSplash</a></li><li><a href="global.html#showFinalSplashState">showFinalSplashState</a></li><li><a href="global.html#syncAnimationEnd">syncAnimationEnd</a></li><li><a href="global.html#updateLoginButtonState">updateLoginButtonState</a></li><li><a href="global.html#updateSignupButtonState">updateSignupButtonState</a></li><li><a href="global.html#validateSignupFields">validateSignupFields</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Tue Jan 27 2026 20:41:09 GMT+0100 (Mitteleuropäische Normalzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
