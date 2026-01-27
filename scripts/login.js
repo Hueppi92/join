@@ -271,10 +271,18 @@ function ensureFormMessage(form) {
 	message = document.createElement('p');
 	message.className = 'form-message';
 	message.setAttribute('role', 'alert');
-	message.style.marginTop = '12px';
+	message.style.marginTop = '-12px';
 	message.style.fontSize = '14px';
 	message.style.color = '#FF3D00';
-	form.appendChild(message);
+	message.style.textAlign = 'left';
+
+	const passwordField = form.querySelector('input[name="password"]');
+	const passwordWrapper = passwordField ? passwordField.closest('.input-field') : null;
+	if (passwordWrapper) {
+		passwordWrapper.insertAdjacentElement('afterend', message);
+	} else {
+		form.appendChild(message);
+	}
 	return message;
 }
 
@@ -284,8 +292,16 @@ function ensureFormMessage(form) {
  */
 function bindLoginFieldEvents(fields) {
 	const updateState = () => updateLoginButtonState(fields);
-	fields.emailInput.addEventListener('input', updateState);
-	fields.passwordInput.addEventListener('input', updateState);
+	fields.emailInput.addEventListener('input', () => {
+		setLoginFieldErrorState(fields, false);
+		setFormMessage(fields.message, '');
+		updateState();
+	});
+	fields.passwordInput.addEventListener('input', () => {
+		setLoginFieldErrorState(fields, false);
+		setFormMessage(fields.message, '');
+		updateState();
+	});
 	updateLoginButtonState(fields);
 }
 
@@ -327,7 +343,8 @@ async function handleLoginSubmit(event, fields) {
 	setFormMessage(fields.message, '');
 
 	if (!isLoginInputValid(fields)) {
-		setFormMessage(fields.message, 'Bitte gültige Zugangsdaten eingeben.');
+		setFormMessage(fields.message, 'Please enter valid credentials.');
+		setLoginFieldErrorState(fields, true);
 		return;
 	}
 
@@ -343,10 +360,21 @@ async function handleLoginSubmit(event, fields) {
 		window.location.href = './sites/summary.html';
 	} catch (error) {
 		setFormMessage(fields.message, getAuthErrorMessage(error));
+		setLoginFieldErrorState(fields, true);
 		console.error('Firebase login error:', error);
 	} finally {
 		setLoadingState(fields, false);
 	}
+}
+
+/**
+ * Sets error state on login inputs.
+ * @param {Object} fields
+ * @param {boolean} hasError
+ */
+function setLoginFieldErrorState(fields, hasError) {
+	fields.emailInput.classList.toggle('input-error', hasError);
+	fields.passwordInput.classList.toggle('input-error', hasError);
 }
 
 /**
@@ -374,22 +402,22 @@ function setFormMessage(message, text) {
  * @returns {string}
  */
 function getAuthErrorMessage(error) {
-	const fallback = 'Login fehlgeschlagen. Bitte versuche es erneut.';
+	const fallback = 'Login failed. Please try again.';
 	if (!error || typeof error !== 'object' || !('code' in error)) return fallback;
 
 	switch (error.code) {
 		case 'auth/invalid-credential':
 		case 'auth/invalid-login-credentials':
-			return 'E-Mail oder Passwort ist falsch.';
+			return 'Check your email and password. Please try again.';
 		case 'auth/invalid-email':
-			return 'Bitte eine gültige E-Mail-Adresse eingeben.';
+			return 'Please enter a valid email address.';
 		case 'auth/user-not-found':
 		case 'auth/wrong-password':
-			return 'E-Mail oder Passwort ist falsch.';
+			return 'Check your email and password. Please try again.';
 		case 'auth/user-disabled':
-			return 'Dieser Nutzer ist deaktiviert.';
+			return 'This user is disabled.';
 		case 'auth/too-many-requests':
-			return 'Zu viele Versuche. Bitte später erneut versuchen.';
+			return 'Too many attempts. Please try again later.';
 		default:
 			return fallback;
 	}

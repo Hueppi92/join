@@ -90,6 +90,7 @@ function getSignupFields(form) {
 		emailMessage: ensureFieldMessage(emailInput),
 		passwordMessage: ensureFieldMessage(passwordInput),
 		confirmMessage: ensureFieldMessage(confirmInput),
+		privacyMessage: ensurePrivacyMessage(form),
 	};
 }
 
@@ -103,13 +104,43 @@ function ensureFieldMessage(input) {
 	if (!wrapper) return document.createElement('p');
 
 	let message = wrapper.querySelector('.field-message');
-	if (message) return message;
+	if (message) {
+		message.style.display = 'block';
+		message.style.visibility = 'hidden';
+		return message;
+	}
 
 	message = document.createElement('p');
 	message.className = 'field-message';
 	message.setAttribute('role', 'alert');
-	message.style.display = 'none';
+	message.style.display = 'block';
+	message.style.visibility = 'hidden';
 	wrapper.appendChild(message);
+	return message;
+}
+
+/**
+ * Ensures the privacy checkbox has a message element.
+ * @param {HTMLFormElement} form
+ * @returns {HTMLElement}
+ */
+function ensurePrivacyMessage(form) {
+	const row = form.querySelector('.checkbox-row');
+	if (!row) return document.createElement('p');
+
+	let message = form.querySelector('.privacy-message');
+	if (message) {
+		message.style.display = 'block';
+		message.style.visibility = 'hidden';
+		return message;
+	}
+
+	message = document.createElement('p');
+	message.className = 'field-message privacy-message';
+	message.setAttribute('role', 'alert');
+	message.style.display = 'block';
+	message.style.visibility = 'hidden';
+	row.insertAdjacentElement('afterend', message);
 	return message;
 }
 
@@ -135,12 +166,30 @@ function bindSignupFieldEvents(fields) {
 		clearFieldError(fields.confirmInput, fields.confirmMessage);
 		updateState();
 	});
-	fields.nameInput.addEventListener('blur', () => validateSignupFields(fields));
-	fields.emailInput.addEventListener('blur', () => validateSignupFields(fields));
-	fields.passwordInput.addEventListener('blur', () => validateSignupFields(fields));
-	fields.confirmInput.addEventListener('blur', () => validateSignupFields(fields));
+	fields.nameInput.addEventListener('blur', () => {
+		if (fields.nameInput.value.trim().length > 0) {
+			validateNameField(fields);
+		}
+	});
+	fields.emailInput.addEventListener('blur', () => {
+		if (fields.emailInput.value.trim().length > 0) {
+			validateEmailField(fields);
+		}
+	});
+	fields.passwordInput.addEventListener('blur', () => {
+		if (fields.passwordInput.value.trim().length > 0) {
+			validatePasswordField(fields);
+		}
+	});
+	fields.confirmInput.addEventListener('blur', () => {
+		if (fields.confirmInput.value.trim().length > 0) {
+			validateConfirmField(fields);
+		}
+	});
 	fields.privacyInput.addEventListener('change', () => {
-		validateSignupFields(fields);
+		if (fields.privacyInput.checked) {
+			clearFieldError(fields.privacyInput, fields.privacyMessage);
+		}
 		updateState();
 	});
 	updateSignupButtonState(fields);
@@ -151,23 +200,22 @@ function bindSignupFieldEvents(fields) {
  * @param {Object} fields
  */
 function updateSignupButtonState(fields) {
-	const isValid = isSignupInputValid(fields);
+	const isValid = isSignupInputReady(fields);
 	const isLoading = fields.submitButton.dataset.loading === '1';
 	fields.submitButton.disabled = isLoading || !isValid;
 }
 
 /**
- * Validates sign-up inputs.
+ * Checks if required inputs (except privacy) are filled and valid.
  * @param {Object} fields
  * @returns {boolean}
  */
-function isSignupInputValid(fields) {
+function isSignupInputReady(fields) {
 	return (
 		fields.nameInput.value.trim().length > 0 &&
 		isEmailValid(fields.emailInput.value) &&
 		fields.passwordInput.value.trim().length >= 6 &&
-		fields.passwordInput.value === fields.confirmInput.value &&
-		fields.privacyInput.checked
+		fields.passwordInput.value === fields.confirmInput.value
 	);
 }
 
@@ -191,6 +239,7 @@ async function handleSignupSubmit(event, fields) {
 	clearFieldError(fields.emailInput, fields.emailMessage);
 	clearFieldError(fields.passwordInput, fields.passwordMessage);
 	clearFieldError(fields.confirmInput, fields.confirmMessage);
+	clearFieldError(fields.privacyInput, fields.privacyMessage);
 	if (!validateSignupFields(fields)) return;
 
 	setLoadingState(fields, true);
@@ -232,20 +281,20 @@ function setLoadingState(fields, isLoading) {
  * @returns {string}
  */
 function getAuthErrorMessage(error) {
-	const fallback = 'Registrierung fehlgeschlagen. Bitte versuche es erneut.';
+	const fallback = 'Registration failed. Please try again.';
 	if (!error || typeof error !== 'object' || !('code' in error)) return fallback;
 
 	switch (error.code) {
 		case 'auth/operation-not-allowed':
-			return 'E-Mail/Passwort-Login ist in Firebase noch nicht aktiviert.';
+			return 'Email/password sign-in is not enabled in Firebase yet.';
 		case 'auth/network-request-failed':
-			return 'Netzwerkfehler. Bitte Verbindung prüfen.';
+			return 'Network error. Please check your connection.';
 		case 'auth/email-already-in-use':
-			return 'Diese E-Mail-Adresse ist bereits registriert.';
+			return 'This email address is already registered.';
 		case 'auth/invalid-email':
-			return 'Bitte eine gültige E-Mail-Adresse eingeben.';
+			return 'Please enter a valid email address.';
 		case 'auth/weak-password':
-			return 'Das Passwort ist zu schwach. Bitte mindestens 6 Zeichen verwenden.';
+			return 'Password is too weak. Please use at least 6 characters.';
 		default:
 			return fallback;
 	}
@@ -258,27 +307,77 @@ function getAuthErrorMessage(error) {
  */
 function validateSignupFields(fields) {
 	let isValid = true;
-	if (!fields.nameInput.value.trim()) {
-		setFieldError(fields.nameInput, fields.nameMessage, 'Bitte einen Namen eingeben.');
-		isValid = false;
-	}
-	if (!isEmailValid(fields.emailInput.value)) {
-		setFieldError(fields.emailInput, fields.emailMessage, 'Bitte eine gültige E-Mail-Adresse eingeben.');
-		isValid = false;
-	}
-	if (fields.passwordInput.value.trim().length < 6) {
-		setFieldError(fields.passwordInput, fields.passwordMessage, 'Passwort muss mindestens 6 Zeichen haben.');
-		isValid = false;
-	}
-	if (fields.passwordInput.value !== fields.confirmInput.value) {
-		setFieldError(fields.confirmInput, fields.confirmMessage, 'Die Passwörter stimmen nicht überein.');
-		isValid = false;
-	}
-	if (!fields.privacyInput.checked) {
-		setFieldError(fields.confirmInput, fields.confirmMessage, 'Bitte die Datenschutzerklärung akzeptieren.');
-		isValid = false;
-	}
+	if (!validateNameField(fields)) isValid = false;
+	if (!validateEmailField(fields)) isValid = false;
+	if (!validatePasswordField(fields)) isValid = false;
+	if (!validateConfirmField(fields)) isValid = false;
+	if (!validatePrivacyField(fields)) isValid = false;
 	return isValid;
+}
+
+/**
+ * Validates the name field.
+ * @param {Object} fields
+ * @returns {boolean}
+ */
+function validateNameField(fields) {
+	if (!fields.nameInput.value.trim()) {
+		setFieldError(fields.nameInput, fields.nameMessage, 'Please enter a name.');
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Validates the email field.
+ * @param {Object} fields
+ * @returns {boolean}
+ */
+function validateEmailField(fields) {
+	if (!isEmailValid(fields.emailInput.value)) {
+		setFieldError(fields.emailInput, fields.emailMessage, 'Please enter a valid email address.');
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Validates the password field.
+ * @param {Object} fields
+ * @returns {boolean}
+ */
+function validatePasswordField(fields) {
+	if (fields.passwordInput.value.trim().length < 6) {
+		setFieldError(fields.passwordInput, fields.passwordMessage, 'Password must be at least 6 characters long.');
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Validates the confirm password field.
+ * @param {Object} fields
+ * @returns {boolean}
+ */
+function validateConfirmField(fields) {
+	if (fields.passwordInput.value !== fields.confirmInput.value) {
+		setFieldError(fields.confirmInput, fields.confirmMessage, 'Passwords do not match.');
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Validates the privacy checkbox.
+ * @param {Object} fields
+ * @returns {boolean}
+ */
+function validatePrivacyField(fields) {
+	if (!fields.privacyInput.checked) {
+		setFieldError(fields.privacyInput, fields.privacyMessage, 'Please accept the privacy policy.');
+		return false;
+	}
+	return true;
 }
 
 /**
@@ -290,7 +389,7 @@ function validateSignupFields(fields) {
 function setFieldError(input, message, text) {
 	input.classList.add('input-error');
 	message.textContent = text;
-	message.style.display = 'block';
+	message.style.visibility = 'visible';
 }
 
 /**
@@ -301,7 +400,7 @@ function setFieldError(input, message, text) {
 function clearFieldError(input, message) {
 	input.classList.remove('input-error');
 	message.textContent = '';
-	message.style.display = 'none';
+	message.style.visibility = 'hidden';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
