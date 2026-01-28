@@ -1,7 +1,4 @@
 body {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
     font-family: 'Inter', sans-serif;
     min-height: 100vh;
 }
@@ -12,7 +9,7 @@ header {
     left: 0;
     right: 0;
     height: 96px;
-    background-color: #FFFFFF;
+    background-color: var(--white);
     border-bottom: 1px solid #d1d1d1;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
     z-index: 1;
@@ -137,4 +134,8 @@ aside > img {
     text-decoration: none;
     font-size: 16px;
     margin-bottom: 8px;
+}
+
+.sidebar-legal-links a:hover {
+    color: var(--light-blue);
 }
