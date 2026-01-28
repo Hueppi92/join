@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: summary.js</title>
+    <title>JSDoc: Source: taskboard.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: summary.js</h1>
+    <h1 class="page-title">Source: taskboard.js</h1>
 
     
 
@@ -26,109 +26,109 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>
-/**
- * Main initialization function for the summary page.
- * Fetches user data and tasks to trigger the rendering of the dashboard.
+            <pre class="prettyprint source linenums"><code>/**
+ * Öffnet das Task-Detail-Overlay und lädt die Task-Daten aus Firebase.
+ * 
  * @async
+ * @param {string} taskId - Die eindeutige ID der Task, die angezeigt werden soll.
+ * @returns {Promise&lt;void>}
  */
-async function loadSummary() {
-    try {
-        const userId = await resolveActiveUserId();
-        const userName = await getUserName(userId);
-        const tasks = await getTasks();
+async function openTaskDetail(taskId) {
+  const snapshot = await firebase.database().ref('tasks/' + taskId).get();
+  const task = snapshot.val(); 
 
-        renderUserName(userName);
-        setGreeting();
-        renderSummary(tasks);
+  const overlay = document.getElementById('task-overlay');
+  overlay.querySelector('.overlay-card').innerHTML =
+    getTaskDetailTemplate(task, taskId);
 
-        console.log("Init (loadSummary) erfolgreich");
-    } catch (error) {
-        console.error("Fehler in loadSummary:", error);
+  overlay.classList.remove('hidden');
+}
+
+/**
+ * Schließt das Task-Detail-Overlay.
+ * 
+ * @returns {void}
+ */
+function closeTaskDetail() {
+  document.getElementById('task-overlay').classList.add('hidden');
+}
+
+/**
+ * Handler für Klicks auf das Overlay. Schließt das Overlay,
+ * wenn außerhalb der Card geklickt wird.
+ * 
+ * @param {MouseEvent} event - Das Klick-Ereignis.
+ * @returns {void}
+ */
+function handleOverlayClick(event) {
+  if (event.target.id === 'task-overlay') {
+    closeTaskDetail();
+  }
+}
+
+/**
+ * Aktualisiert den Status einer Task in Firebase, wenn diese in eine andere Spalte gezogen wird.
+ * 
+ * @param {string} taskId - Die ID der Task, die verschoben wurde.
+ * @param {string} newStatus - Der neue Status der Task ("todo", "in-progress", "await-feedback", "done").
+ * @returns {void}
+ */
+function onDrop(taskId, newStatus) {
+  if (!taskId) return;
+
+  firebase.database().ref('tasks/' + taskId).update({ status: newStatus });
+  renderBoard();
+}
+
+/**
+ * Rendert das gesamte Board. Lädt alle Tasks aus Firebase, sortiert sie nach Status
+ * und fügt sie in die entsprechenden Spalten ein.
+ * 
+ * @async
+ * @returns {Promise&lt;void>}
+ */
+async function renderBoard() {
+  const snapshot = await firebase.database().ref('tasks').get();
+  const data = snapshot.val();
+
+  // Initial leere Spalten
+  const columns = {
+    'todo': '',
+    'in-progress': '',
+    'await-feedback': '',
+    'done': ''
+  };
+
+  if (data) {
+    Object.entries(data).forEach(([key, task]) => {
+      if (columns[task.status] !== undefined) {
+        columns[task.status] += getCardTemplate(task, key);
+      }
+    });
+  }
+
+  // Platzhalter, wenn keine Tasks vorhanden sind
+  Object.keys(columns).forEach(status => {
+    if (!columns[status]) {
+      columns[status] =
+        `&lt;div class="empty-msg">No tasks ${status.replace('-', ' ')}&lt;/div>`;
     }
+  });
+
+  // Spalten ins DOM rendern
+  ['todo', 'in-progress', 'await-feedback', 'done'].forEach(status => {
+    const col = document.querySelector(`#${status} .task-list`);
+    col.innerHTML = columns[status];
+    col.setAttribute('ondragover', 'event.preventDefault()');
+    col.setAttribute(
+      'ondrop',
+      `onDrop(event.dataTransfer.getData('text/plain'),'${status}')`
+    );
+  });
 }
 
-/**
- * Resolves the currently active user ID from a global context or session storage.
- * @async
- * @returns {Promise&lt;string|null>} The active user ID or null if not found.
- */
-async function resolveActiveUserId() {
-    if (window.userContext?.resolveUserId) {
-        return window.userContext.resolveUserId();
-    }
-    return sessionStorage.getItem('userId');
-}
-
-/**
- * Fetches all task data from the Firebase "tasks" reference.
- * @async
- * @returns {Promise&lt;Object>} An object containing all tasks from the database.
- */
-async function getTasks() {
-    const tasksRef = db.ref("tasks");
-    const snapshot = await tasksRef.get();
-    return snapshot.val() || {};
-}
-
-/**
- * Retrieves the name of a specific user from Firebase by their ID.
- * @async
- * @param {string} userId - The unique ID of the user to fetch.
- * @returns {Promise&lt;string>} The user's name or "Guest" as a fallback.
- */
-async function getUserName(userId) {
-    if (!userId) return "Guest";
-    const userRef = db.ref("users/" + userId);
-    const snapshot = await userRef.get();
-    return snapshot.val()?.name || "Guest";
-}
-
-/**
- * Displays the user's name in the designated HTML element.
- * @param {string} name - The name to be rendered.
- */
-function renderUserName(name) {
-    document.getElementById("user-name").innerText = name;
-}
-
-/**
- * Calculates and renders task statistics (total, status, and urgency) to the UI.
- * @param {Object} tasks - The task object where keys are IDs and values are task details.
- */
-function renderSummary(tasks) {
-    const totalTasks = Object.keys(tasks).length;
-    const todoCount = Object.values(tasks).filter(t => t.status === "todo").length;
-    const inProgressCount = Object.values(tasks).filter(t => t.status === "in-progress").length;
-    const doneCount = Object.values(tasks).filter(t => t.status === "done").length;
-    const urgentCount = Object.values(tasks).filter(t => t.priority === "urgent").length;
-
-    document.getElementById("total-tasks").innerText = totalTasks;
-    document.getElementById("todo-tasks").innerText = todoCount;
-    document.getElementById("inprogress-tasks").innerText = inProgressCount;
-    document.getElementById("done-tasks").innerText = doneCount;
-    document.getElementById("urgent-tasks").innerText = urgentCount;
-}
-
-/**
- * Determines the current time of day and displays an appropriate greeting message.
- */
-function setGreeting() {
-     var today = new Date()
-    var curHr = today.getHours()
-
-    if (curHr >= 0 &amp;&amp; curHr &lt; 6) {
-        document.getElementById("greet").innerHTML = 'What are you doing that early?';
-    } else if (curHr >= 6 &amp;&amp; curHr &lt;= 12) {
-        document.getElementById("greet").innerHTML = 'Good Morning,';
-    } else if (curHr >= 12 &amp;&amp; curHr &lt; 17) {
-        document.getElementById("greet").innerHTML = 'Good Afternoon,';
-    } else {
-        document.getElementById("greet").innerHTML = 'Good Evening,';
-    }
-}
-
-loadSummary();
+// Initiales Board-Rendering
+renderBoard();
 </code></pre>
         </article>
     </section>

@@ -118,6 +118,7 @@ function getSignupFields(form) {
 		emailMessage: ensureFieldMessage(emailInput),
 		passwordMessage: ensureFieldMessage(passwordInput),
 		confirmMessage: ensureFieldMessage(confirmInput),
+		privacyMessage: ensurePrivacyMessage(form),
 	};
 }
 
@@ -131,13 +132,43 @@ function ensureFieldMessage(input) {
 	if (!wrapper) return document.createElement('p');
 
 	let message = wrapper.querySelector('.field-message');
-	if (message) return message;
+	if (message) {
+		message.style.display = 'block';
+		message.style.visibility = 'hidden';
+		return message;
+	}
 
 	message = document.createElement('p');
 	message.className = 'field-message';
 	message.setAttribute('role', 'alert');
-	message.style.display = 'none';
+	message.style.display = 'block';
+	message.style.visibility = 'hidden';
 	wrapper.appendChild(message);
+	return message;
+}
+
+/**
+ * Ensures the privacy checkbox has a message element.
+ * @param {HTMLFormElement} form
+ * @returns {HTMLElement}
+ */
+function ensurePrivacyMessage(form) {
+	const row = form.querySelector('.checkbox-row');
+	if (!row) return document.createElement('p');
+
+	let message = form.querySelector('.privacy-message');
+	if (message) {
+		message.style.display = 'block';
+		message.style.visibility = 'hidden';
+		return message;
+	}
+
+	message = document.createElement('p');
+	message.className = 'field-message privacy-message';
+	message.setAttribute('role', 'alert');
+	message.style.display = 'block';
+	message.style.visibility = 'hidden';
+	row.insertAdjacentElement('afterend', message);
 	return message;
 }
 
@@ -163,12 +194,30 @@ function bindSignupFieldEvents(fields) {
 		clearFieldError(fields.confirmInput, fields.confirmMessage);
 		updateState();
 	});
-	fields.nameInput.addEventListener('blur', () => validateSignupFields(fields));
-	fields.emailInput.addEventListener('blur', () => validateSignupFields(fields));
-	fields.passwordInput.addEventListener('blur', () => validateSignupFields(fields));
-	fields.confirmInput.addEventListener('blur', () => validateSignupFields(fields));
+	fields.nameInput.addEventListener('blur', () => {
+		if (fields.nameInput.value.trim().length > 0) {
+			validateNameField(fields);
+		}
+	});
+	fields.emailInput.addEventListener('blur', () => {
+		if (fields.emailInput.value.trim().length > 0) {
+			validateEmailField(fields);
+		}
+	});
+	fields.passwordInput.addEventListener('blur', () => {
+		if (fields.passwordInput.value.trim().length > 0) {
+			validatePasswordField(fields);
+		}
+	});
+	fields.confirmInput.addEventListener('blur', () => {
+		if (fields.confirmInput.value.trim().length > 0) {
+			validateConfirmField(fields);
+		}
+	});
 	fields.privacyInput.addEventListener('change', () => {
-		validateSignupFields(fields);
+		if (fields.privacyInput.checked) {
+			clearFieldError(fields.privacyInput, fields.privacyMessage);
+		}
 		updateState();
 	});
 	updateSignupButtonState(fields);
@@ -179,23 +228,22 @@ function bindSignupFieldEvents(fields) {
  * @param {Object} fields
  */
 function updateSignupButtonState(fields) {
-	const isValid = isSignupInputValid(fields);
+	const isValid = isSignupInputReady(fields);
 	const isLoading = fields.submitButton.dataset.loading === '1';
 	fields.submitButton.disabled = isLoading || !isValid;
 }
 
 /**
- * Validates sign-up inputs.
+ * Checks if required inputs (except privacy) are filled and valid.
  * @param {Object} fields
  * @returns {boolean}
  */
-function isSignupInputValid(fields) {
+function isSignupInputReady(fields) {
 	return (
 		fields.nameInput.value.trim().length > 0 &amp;&amp;
 		isEmailValid(fields.emailInput.value) &amp;&amp;
 		fields.passwordInput.value.trim().length >= 6 &amp;&amp;
-		fields.passwordInput.value === fields.confirmInput.value &amp;&amp;
-		fields.privacyInput.checked
+		fields.passwordInput.value === fields.confirmInput.value
 	);
 }
 
@@ -219,6 +267,7 @@ async function handleSignupSubmit(event, fields) {
 	clearFieldError(fields.emailInput, fields.emailMessage);
 	clearFieldError(fields.passwordInput, fields.passwordMessage);
 	clearFieldError(fields.confirmInput, fields.confirmMessage);
+	clearFieldError(fields.privacyInput, fields.privacyMessage);
 	if (!validateSignupFields(fields)) return;
 
 	setLoadingState(fields, true);
@@ -260,20 +309,20 @@ function setLoadingState(fields, isLoading) {
  * @returns {string}
  */
 function getAuthErrorMessage(error) {
-	const fallback = 'Registrierung fehlgeschlagen. Bitte versuche es erneut.';
+	const fallback = 'Registration failed. Please try again.';
 	if (!error || typeof error !== 'object' || !('code' in error)) return fallback;
 
 	switch (error.code) {
 		case 'auth/operation-not-allowed':
-			return 'E-Mail/Passwort-Login ist in Firebase noch nicht aktiviert.';
+			return 'Email/password sign-in is not enabled in Firebase yet.';
 		case 'auth/network-request-failed':
-			return 'Netzwerkfehler. Bitte Verbindung prüfen.';
+			return 'Network error. Please check your connection.';
 		case 'auth/email-already-in-use':
-			return 'Diese E-Mail-Adresse ist bereits registriert.';
+			return 'This email address is already registered.';
 		case 'auth/invalid-email':
-			return 'Bitte eine gültige E-Mail-Adresse eingeben.';
+			return 'Please enter a valid email address.';
 		case 'auth/weak-password':
-			return 'Das Passwort ist zu schwach. Bitte mindestens 6 Zeichen verwenden.';
+			return 'Password is too weak. Please use at least 6 characters.';
 		default:
 			return fallback;
 	}
@@ -286,27 +335,77 @@ function getAuthErrorMessage(error) {
  */
 function validateSignupFields(fields) {
 	let isValid = true;
-	if (!fields.nameInput.value.trim()) {
-		setFieldError(fields.nameInput, fields.nameMessage, 'Bitte einen Namen eingeben.');
-		isValid = false;
-	}
-	if (!isEmailValid(fields.emailInput.value)) {
-		setFieldError(fields.emailInput, fields.emailMessage, 'Bitte eine gültige E-Mail-Adresse eingeben.');
-		isValid = false;
-	}
-	if (fields.passwordInput.value.trim().length &lt; 6) {
-		setFieldError(fields.passwordInput, fields.passwordMessage, 'Passwort muss mindestens 6 Zeichen haben.');
-		isValid = false;
-	}
-	if (fields.passwordInput.value !== fields.confirmInput.value) {
-		setFieldError(fields.confirmInput, fields.confirmMessage, 'Die Passwörter stimmen nicht überein.');
-		isValid = false;
-	}
-	if (!fields.privacyInput.checked) {
-		setFieldError(fields.confirmInput, fields.confirmMessage, 'Bitte die Datenschutzerklärung akzeptieren.');
-		isValid = false;
-	}
+	if (!validateNameField(fields)) isValid = false;
+	if (!validateEmailField(fields)) isValid = false;
+	if (!validatePasswordField(fields)) isValid = false;
+	if (!validateConfirmField(fields)) isValid = false;
+	if (!validatePrivacyField(fields)) isValid = false;
 	return isValid;
+}
+
+/**
+ * Validates the name field.
+ * @param {Object} fields
+ * @returns {boolean}
+ */
+function validateNameField(fields) {
+	if (!fields.nameInput.value.trim()) {
+		setFieldError(fields.nameInput, fields.nameMessage, 'Please enter a name.');
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Validates the email field.
+ * @param {Object} fields
+ * @returns {boolean}
+ */
+function validateEmailField(fields) {
+	if (!isEmailValid(fields.emailInput.value)) {
+		setFieldError(fields.emailInput, fields.emailMessage, 'Please enter a valid email address.');
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Validates the password field.
+ * @param {Object} fields
+ * @returns {boolean}
+ */
+function validatePasswordField(fields) {
+	if (fields.passwordInput.value.trim().length &lt; 6) {
+		setFieldError(fields.passwordInput, fields.passwordMessage, 'Password must be at least 6 characters long.');
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Validates the confirm password field.
+ * @param {Object} fields
+ * @returns {boolean}
+ */
+function validateConfirmField(fields) {
+	if (fields.passwordInput.value !== fields.confirmInput.value) {
+		setFieldError(fields.confirmInput, fields.confirmMessage, 'Passwords do not match.');
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Validates the privacy checkbox.
+ * @param {Object} fields
+ * @returns {boolean}
+ */
+function validatePrivacyField(fields) {
+	if (!fields.privacyInput.checked) {
+		setFieldError(fields.privacyInput, fields.privacyMessage, 'Please accept the privacy policy.');
+		return false;
+	}
+	return true;
 }
 
 /**
@@ -318,7 +417,7 @@ function validateSignupFields(fields) {
 function setFieldError(input, message, text) {
 	input.classList.add('input-error');
 	message.textContent = text;
-	message.style.display = 'block';
+	message.style.visibility = 'visible';
 }
 
 /**
@@ -329,7 +428,7 @@ function setFieldError(input, message, text) {
 function clearFieldError(input, message) {
 	input.classList.remove('input-error');
 	message.textContent = '';
-	message.style.display = 'none';
+	message.style.visibility = 'hidden';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -347,13 +446,13 @@ document.addEventListener('DOMContentLoaded', () => {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#animateSplashLogo">animateSplashLogo</a></li><li><a href="global.html#bindLoginFieldEvents">bindLoginFieldEvents</a></li><li><a href="global.html#bindSignupFieldEvents">bindSignupFieldEvents</a></li><li><a href="global.html#clearFieldError">clearFieldError</a></li><li><a href="global.html#clearSkipSplash">clearSkipSplash</a></li><li><a href="global.html#ensureFieldMessage">ensureFieldMessage</a></li><li><a href="global.html#ensureFormMessage">ensureFormMessage</a></li><li><a href="global.html#fadeOutOverlay">fadeOutOverlay</a></li><li><a href="global.html#finishSplashAnimation">finishSplashAnimation</a></li><li><a href="global.html#getAuthErrorMessage">getAuthErrorMessage</a></li><li><a href="global.html#getCenterDelta">getCenterDelta</a></li><li><a href="global.html#getLoginFields">getLoginFields</a></li><li><a href="global.html#getSignupFields">getSignupFields</a></li><li><a href="global.html#getSplashElements">getSplashElements</a></li><li><a href="global.html#getSplashStartScale">getSplashStartScale</a></li><li><a href="global.html#getTasks">getTasks</a></li><li><a href="global.html#getUserName">getUserName</a></li><li><a href="global.html#handleGuestLogin">handleGuestLogin</a></li><li><a href="global.html#handleLoginSubmit">handleLoginSubmit</a></li><li><a href="global.html#handleSignupSubmit">handleSignupSubmit</a></li><li><a href="global.html#hideElement">hideElement</a></li><li><a href="global.html#initGuestLogin">initGuestLogin</a></li><li><a href="global.html#initLoginForm">initLoginForm</a></li><li><a href="global.html#initPasswordToggles">initPasswordToggles</a></li><li><a href="global.html#initSignupBackButton">initSignupBackButton</a></li><li><a href="global.html#initSignupForm">initSignupForm</a></li><li><a href="global.html#isEmailValid">isEmailValid</a></li><li><a href="global.html#isLoginInputValid">isLoginInputValid</a></li><li><a href="global.html#isSignupInputValid">isSignupInputValid</a></li><li><a href="global.html#loadSummary">loadSummary</a></li><li><a href="global.html#prepareSplashLogo">prepareSplashLogo</a></li><li><a href="global.html#renderSummary">renderSummary</a></li><li><a href="global.html#renderUserName">renderUserName</a></li><li><a href="global.html#resolveActiveUserId">resolveActiveUserId</a></li><li><a href="global.html#runSplashAnimation">runSplashAnimation</a></li><li><a href="global.html#setFieldError">setFieldError</a></li><li><a href="global.html#setFormMessage">setFormMessage</a></li><li><a href="global.html#setGreeting">setGreeting</a></li><li><a href="global.html#setHeaderLogoVisibility">setHeaderLogoVisibility</a></li><li><a href="global.html#setLoadingState">setLoadingState</a></li><li><a href="global.html#setupPasswordToggle">setupPasswordToggle</a></li><li><a href="global.html#shouldSkipSplash">shouldSkipSplash</a></li><li><a href="global.html#showFinalSplashState">showFinalSplashState</a></li><li><a href="global.html#syncAnimationEnd">syncAnimationEnd</a></li><li><a href="global.html#updateLoginButtonState">updateLoginButtonState</a></li><li><a href="global.html#updateSignupButtonState">updateSignupButtonState</a></li><li><a href="global.html#validateSignupFields">validateSignupFields</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#animateSplashLogo">animateSplashLogo</a></li><li><a href="global.html#bindLoginFieldEvents">bindLoginFieldEvents</a></li><li><a href="global.html#bindSignupFieldEvents">bindSignupFieldEvents</a></li><li><a href="global.html#clearFieldError">clearFieldError</a></li><li><a href="global.html#clearSkipSplash">clearSkipSplash</a></li><li><a href="global.html#closeTaskDetail">closeTaskDetail</a></li><li><a href="global.html#ensureFieldMessage">ensureFieldMessage</a></li><li><a href="global.html#ensureFormMessage">ensureFormMessage</a></li><li><a href="global.html#ensurePrivacyMessage">ensurePrivacyMessage</a></li><li><a href="global.html#fadeOutOverlay">fadeOutOverlay</a></li><li><a href="global.html#finishSplashAnimation">finishSplashAnimation</a></li><li><a href="global.html#getAuthErrorMessage">getAuthErrorMessage</a></li><li><a href="global.html#getCenterDelta">getCenterDelta</a></li><li><a href="global.html#getLoginFields">getLoginFields</a></li><li><a href="global.html#getSignupFields">getSignupFields</a></li><li><a href="global.html#getSplashElements">getSplashElements</a></li><li><a href="global.html#getSplashStartScale">getSplashStartScale</a></li><li><a href="global.html#getTasks">getTasks</a></li><li><a href="global.html#getUserName">getUserName</a></li><li><a href="global.html#handleGuestLogin">handleGuestLogin</a></li><li><a href="global.html#handleLoginSubmit">handleLoginSubmit</a></li><li><a href="global.html#handleOverlayClick">handleOverlayClick</a></li><li><a href="global.html#handleSignupSubmit">handleSignupSubmit</a></li><li><a href="global.html#hideElement">hideElement</a></li><li><a href="global.html#initGuestLogin">initGuestLogin</a></li><li><a href="global.html#initLoginForm">initLoginForm</a></li><li><a href="global.html#initPasswordToggles">initPasswordToggles</a></li><li><a href="global.html#initSignupBackButton">initSignupBackButton</a></li><li><a href="global.html#initSignupForm">initSignupForm</a></li><li><a href="global.html#isEmailValid">isEmailValid</a></li><li><a href="global.html#isLoginInputValid">isLoginInputValid</a></li><li><a href="global.html#isSignupInputReady">isSignupInputReady</a></li><li><a href="global.html#loadSummary">loadSummary</a></li><li><a href="global.html#onDrop">onDrop</a></li><li><a href="global.html#openTaskDetail">openTaskDetail</a></li><li><a href="global.html#prepareSplashLogo">prepareSplashLogo</a></li><li><a href="global.html#renderBoard">renderBoard</a></li><li><a href="global.html#renderSummary">renderSummary</a></li><li><a href="global.html#renderUserName">renderUserName</a></li><li><a href="global.html#resolveActiveUserId">resolveActiveUserId</a></li><li><a href="global.html#runSplashAnimation">runSplashAnimation</a></li><li><a href="global.html#setFieldError">setFieldError</a></li><li><a href="global.html#setFormMessage">setFormMessage</a></li><li><a href="global.html#setGreeting">setGreeting</a></li><li><a href="global.html#setHeaderLogoVisibility">setHeaderLogoVisibility</a></li><li><a href="global.html#setLoadingState">setLoadingState</a></li><li><a href="global.html#setLoginFieldErrorState">setLoginFieldErrorState</a></li><li><a href="global.html#setupPasswordToggle">setupPasswordToggle</a></li><li><a href="global.html#shouldSkipSplash">shouldSkipSplash</a></li><li><a href="global.html#showFinalSplashState">showFinalSplashState</a></li><li><a href="global.html#syncAnimationEnd">syncAnimationEnd</a></li><li><a href="global.html#updateLoginButtonState">updateLoginButtonState</a></li><li><a href="global.html#updateSignupButtonState">updateSignupButtonState</a></li><li><a href="global.html#validateConfirmField">validateConfirmField</a></li><li><a href="global.html#validateEmailField">validateEmailField</a></li><li><a href="global.html#validateNameField">validateNameField</a></li><li><a href="global.html#validatePasswordField">validatePasswordField</a></li><li><a href="global.html#validatePrivacyField">validatePrivacyField</a></li><li><a href="global.html#validateSignupFields">validateSignupFields</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Tue Jan 27 2026 20:41:09 GMT+0100 (Mitteleuropäische Normalzeit)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Jan 28 2026 12:03:47 GMT+0100 (Mitteleuropäische Normalzeit)
 </footer>
 
 <script> prettyPrint(); </script>
