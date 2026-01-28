@@ -139,3 +139,7 @@ aside > img {
 .sidebar-legal-links a:hover {
     color: var(--light-blue);
 }
+
+.help-btn:hover {
+    transform: scale(1.15);
+}
