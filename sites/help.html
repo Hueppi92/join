@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
@@ -13,32 +13,54 @@
     <header>
       <h2>Kanban Project Management Tool</h2>
       <div class="header-btn">
-        <a href="./help.html" class="help-btn"><img src="../assets/icons/help_icon.svg" alt="Help Icon"></a>
+        <a href="./help.html" class="help-btn"
+          ><img src="../assets/icons/help_icon.svg" alt="Help Icon"
+        /></a>
         <button class="profile-btn">DF</button>
       </div>
     </header>
     <main>
       <aside>
-      <img src="../assets/img/join_logo.svg" alt="Join Logo" />
+        <img src="../assets/img/join_logo.svg" alt="Join Logo" />
         <nav class="sidebar-navigation">
           <div class="sidebar-navigation-item">
-            <a href="./summary.html"><img src="../assets/icons/summary_icon.svg" alt="Summary Icon">Summary</a>
+            <a href="./summary.html"
+              ><img
+                src="../assets/icons/summary_icon.svg"
+                alt="Summary Icon"
+              />Summary</a
+            >
           </div>
           <div class="sidebar-navigation-item">
-            <a href="./task-editor.html"><img src="../assets/icons/addTask_icon.svg" alt="Add Task Icon">Add Task</a>
+            <a href="./task-editor.html"
+              ><img
+                src="../assets/icons/addTask_icon.svg"
+                alt="Add Task Icon"
+              />Add Task</a
+            >
           </div>
           <div class="sidebar-navigation-item">
-            <a href="./taskboard.html"><img src="../assets/icons/board_icon.svg" alt="Board Icon">Board</a>
+            <a href="./taskboard.html"
+              ><img
+                src="../assets/icons/board_icon.svg"
+                alt="Board Icon"
+              />Board</a
+            >
           </div>
           <div class="sidebar-navigation-item">
-            <a href="./contacts.html"><img src="../assets/icons/contacts_icon.svg" alt="Contacts Icon">Contacts</a>
+            <a href="./contacts.html"
+              ><img
+                src="../assets/icons/contacts_icon.svg"
+                alt="Contacts Icon"
+              />Contacts</a
+            >
           </div>
         </nav>
-      <div class="sidebar-legal-links">
-        <a href="./privacy-policy.html">Privacy Policy</a>
-        <a href="./legal-notice.html">Legal notice</a>
-      </div>
-    </aside>
+        <div class="sidebar-legal-links">
+          <a href="./privacy-policy.html">Privacy Policy</a>
+          <a href="./legal-notice.html">Legal notice</a>
+        </div>
+      </aside>
     </main>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -46,5 +68,36 @@
     <script src="../scripts/firebaseConfig.js"></script>
     <script src="../scripts/db.js"></script>
     <script src="../scripts/user-context.js"></script>
+    <div class="help-content">
+      <div><h2>Help</h2></div>
+      <div>
+        <svg
+          width="37"
+          height="37"
+          viewBox="0 0 37 37"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M12.9373 17.6667H27.8333C28.5696 17.6667 29.1666 18.2637 29.1666 19.0001C29.1666 19.7364 28.5696 20.3334 27.8333 20.3334H12.9373L19.1466 26.5427C19.6672 27.0634 19.6672 27.9074 19.1466 28.4281C18.626 28.9487 17.7819 28.9487 17.2613 28.4281L9.24746 20.4143C8.46642 19.6332 8.46642 18.3669 9.24747 17.5858L17.2613 9.57206C17.7819 9.05144 18.626 9.05144 19.1466 9.57206C19.6672 10.0927 19.6672 10.9368 19.1466 11.4574L12.9373 17.6667Z"
+            fill="#29ABE2"
+          />
+        </svg>
+      </div>
+    </div>
+<div style="margin: 300px; margin-top: 100px;">
+  <h2>Help</h2>
+  <p>Welcome to the Help section. Here you can find information and assistance on how to use the Kanban Project Management Tool effectively.</p>
+  <h3>Getting Started</h3>
+  <p>To get started, log in to your account or sign up if you are a new user. Once logged in, you can create tasks, manage your project board, and collaborate with team members.</p>
+  <h3>Using the Task Board</h3>
+  <p>The task board is divided into several columns representing different stages of task completion. You can add new tasks, move them between columns, and update their status as needed.</p>
+  <h3>Managing Tasks</h3>
+  <p>To create a new task, navigate to the task editor and fill in the required details such as task name, description, due date, and assignees. You can also add subtasks to break down larger tasks into manageable parts.</p>
+  <h3>Collaboration</h3>
+  <p>Invite team members to your project to collaborate on tasks. You can assign tasks to specific members and track their progress on the task board.</p>
+  <h3>Support</h3>
+  <p>If you need further assistance, please contact our support team at support@kanbanprojecttool.com or visit our FAQ page.</p>
+</div>
   </body>
 </html>
