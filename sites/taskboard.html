@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="../styles/task-board.css" />
     <link rel="stylesheet" href="../styles/sidebar.css" />
-    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="../style.css">
     <link rel="icon" href="../assets/img/join_logo_dark.svg" />
     <title>Join - Task Board</title>
   </head>
@@ -62,6 +62,11 @@
         </div>
       </aside>
     </main>
+<div id="task-overlay" class="overlay hidden" onclick="handleOverlayClick(event)">
+  <div class="overlay-card">
+    <!-- Inhalt kommt dynamisch -->
+  </div>
+</div>
 
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -73,6 +78,8 @@
     <script src="../scripts/db.js"></script>
     <script src="../scripts/auth-guard.js"></script>
     <script src="../scripts/user-context.js"></script>
+    <script src="../scripts/taskboardTemplate.js"></script>
     <script src="../scripts/taskboard.js"></script>
+
   </body>
 </html>
