@@ -99,7 +99,7 @@ aside > img {
 }
 
 .sidebar-navigation-item:hover {
-    background-color: #38485e;
+    background-color: var(--bg-color-secondary);
 }
 
 .sidebar-navigation-item.active {
