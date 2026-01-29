@@ -13,13 +13,13 @@
 </head>
 
 <body>
-    <header>
-      <h2>Kanban Project Management Tool</h2>
-      <div class="header-btn">
-        <a href="./help.html" class="help-btn"><img src="../assets/icons/help_icon.svg" alt="Help Icon"></a>
-        <button class="profile-btn">SM</button>
-      </div>
-    </header>
+  <header>
+    <h2>Kanban Project Management Tool</h2>
+    <div class="header-btn">
+      <a href="./help.html" class="help-btn"><img src="../assets/icons/help_icon.svg" alt="Help Icon"></a>
+      <button class="profile-btn">SM</button>
+    </div>
+  </header>
 
   <main class="content-container">
     <section class="task_header">
@@ -105,11 +105,8 @@
         <div class="settings_block">
           <label>Assigned to</label>
           <div class="select_native">
-            <select>
+            <select id="assignedSelect">
               <option selected disabled>Select contacts to assign</option>
-              <option>Alex</option>
-              <option>Maria</option>
-              <option>John</option>
             </select>
           </div>
         </div>
@@ -117,11 +114,8 @@
         <div class="settings_block">
           <label>Category <span class="error">*</span></label>
           <div class="select_native">
-            <select>
+            <select id="categorySelect">
               <option selected disabled>Select task category</option>
-              <option>Design</option>
-              <option>Backend</option>
-              <option>Bug</option>
             </select>
           </div>
         </div>
@@ -177,14 +171,14 @@
     </aside>
 
   </main>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script src="../scripts/firebaseConfig.js"></script>
-    <script src="../scripts/db.js"></script>
-    <script src="../scripts/auth-guard.js"></script>
-    <script src="../scripts/user-context.js"></script>
-  </body>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="../scripts/firebaseConfig.js"></script>
+  <script src="../scripts/db.js"></script>
+  <script src="../scripts/auth-guard.js"></script>
+  <script src="../scripts/user-context.js"></script>
+</body>
 
 <script src="../scripts/taskeditor.js"></script>
 

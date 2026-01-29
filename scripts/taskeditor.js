@@ -23,7 +23,7 @@ function setupRequiredField(inputId, wrapperClass) {
     });
 }
 
-// Priority-Buttons
+// PRIORITY-BUTTONS
 function prioBtnActiveToggle() {
     let prioButtons = document.querySelectorAll(".prio");
     prioButtons.forEach(btn => {
@@ -34,7 +34,42 @@ function prioBtnActiveToggle() {
     });
 }
 
-// Subtask-List
+// CONTACTS
+function loadContacts() {
+    const select = document.getElementById("assignedSelect");
+    if (!select) return;
+
+    firebase.database().ref("users").once("value", snapshot => {
+        snapshot.forEach(child => {
+            const user = child.val();
+            const option = document.createElement("option");
+            option.value = child.key;
+            option.textContent = user.name;
+            select.appendChild(option);
+        });
+    });
+}
+
+// CATEGORIES
+function loadCategories() {
+    const select = document.getElementById("categorySelect");
+    if (!select) return;
+
+    const categories = [
+        { id: "design", label: "Design" },
+        { id: "backend", label: "Backend" },
+        { id: "bug", label: "Bug" },
+    ];
+
+    categories.forEach(cat => {
+        const option = document.createElement("option");
+        option.value = cat.id;
+        option.textContent = cat.label;
+        select.appendChild(option);
+    });
+}
+
+// SUBTASK-LIST
 function setupSubtasks() {
     let input = document.getElementById("subtaskInput");
     let list = document.getElementById("subtaskList");
@@ -81,12 +116,116 @@ function setupSubtasks() {
     });
 }
 
-// Initialization
+// CLEAR
+function setupClearButton() {
+    let btn = document.querySelector(".clear_btn");
+
+    btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        resetTaskForm();
+    });
+}
+
+// DATABASE
+function getActivePriority() {
+    let activeBtn = document.querySelector(".prio.active");
+    return activeBtn ? activeBtn.dataset.prio : "medium";
+}
+
+function getSubtasks() {
+    let items = document.querySelectorAll("#subtaskList li span");
+    return Array.from(items).map(span => span.textContent);
+}
+
+function saveTaskToFirebase(task) {
+    let taskRef = firebase.database().ref("tasks").push();
+    return taskRef.set(task);
+}
+
+function setupCreateTaskButton() {
+    let btn = document.querySelector(".create_btn");
+
+    btn.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        let title = document.getElementById("titleInput").value.trim();
+        let date = document.getElementById("dateInput").value.trim();
+
+        if (!title || !date) {
+            alert("Please fill required fields");
+            return;
+        }
+
+        let task = {
+            title: title,
+            description: document.querySelector("textarea").value.trim(),
+            dueDate: date,
+            priority: getActivePriority(),
+            category: document.querySelector("select:nth-of-type(2)")?.value || "",
+            assignedTo: document.querySelector("select:nth-of-type(1)")?.value || "",
+            subtasks: getSubtasks(),
+            status: "todo",
+            createdAt: Date.now()
+        };
+
+        saveTaskToFirebase(task)
+            .then(() => {
+                resetTaskForm();
+                closeAddTaskModal();
+                alert("Task created successfully");
+            })
+            .catch(err => {
+                console.error("Firebase error:", err);
+            });
+    });
+}
+
+// RESET
+function resetTaskForm() {
+    document.getElementById("titleInput").value = "";
+    document.getElementById("dateInput").value = "";
+    document.querySelector("textarea").value = "";
+
+    document.querySelectorAll("select").forEach(sel => {
+        sel.selectedIndex = 0;
+    });
+
+    document.querySelectorAll(".prio").forEach(b => b.classList.remove("active"));
+    document.querySelector('.prio[data-prio="medium"]')?.classList.add("active");
+
+    document.getElementById("subtaskList").innerHTML = "";
+
+    document.querySelectorAll(".left_row").forEach(r => r.classList.remove("error"));
+}
+
+// MODAL
+function openAddTaskModal() {
+    document.getElementById("addTaskModal").classList.remove("hidden");
+}
+
+function closeAddTaskModal() {
+    document.getElementById("addTaskModal").classList.add("hidden");
+}
+
+function setupModalControls() {
+    document.querySelector(".modal_close")?.addEventListener("click", closeAddTaskModal);
+    document.querySelector(".modal_backdrop")?.addEventListener("click", closeAddTaskModal);
+}
+
+// INIT
 function loadTaskEditorPage() {
     setupRequiredField("titleInput", ".title_field");
     setupRequiredField("dateInput", ".date_field");
     prioBtnActiveToggle();
     setupSubtasks();
+    setupCreateTaskButton();
+    setupClearButton();
+    setupModalControls();
+
+    loadContacts();
+    loadCategories();
 }
 
-loadTaskEditorPage();
+document.addEventListener("DOMContentLoaded", () => {
+    loadTaskEditorPage();
+});

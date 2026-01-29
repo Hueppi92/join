@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../styles/task-editor.css" />
     <link rel="stylesheet" href="../styles/task-board.css" />
     <link rel="stylesheet" href="../styles/sidebar.css" />
     <link rel="stylesheet" href="../style.css">
@@ -24,7 +25,7 @@
           <h1>Board</h1>
           <div class="search-add">
             <input type="text" placeholder="Find Task" id="task-search" />
-            <button class="add-task">Add task +</button>
+            <button type="button" onclick="openAddTaskModal()" class="add-task">Add task +</button>
           </div>
         </div>
 
@@ -61,7 +62,143 @@
           <a href="./legal-notice.html">Legal notice</a>
         </div>
       </aside>
-    </main>
+      </main>
+
+      <!-- ADD-TASKS-MODAL -->
+    <div id="addTaskModal" class="modal hidden">
+      <div class="modal_backdrop"></div>
+
+      <div class="modal_content">
+        <button class="modal_close">✕</button>
+
+        <section class="task_header">
+          <h1>Add Task</h1>
+        </section>
+
+        <div class="editor_wrapper">
+
+          <!-- LEFT -->
+          <form class="new_task">
+            <div class="left_row title_field">
+              <label>Title
+                <span class="error">*</span>
+              </label>
+
+              <div class="left_single_row">
+                <input id="titleInput" class="first_input" type="text" placeholder="Enter a title">
+              </div>
+
+              <small class="error_text">This field is required</small>
+
+            </div>
+
+            <div class="left_row description_field">
+              <label>Description</label>
+
+              <div class="left_single_row description_box">
+                <textarea placeholder="Enter a Description"></textarea>
+              </div>
+
+            </div>
+
+            <div class="left_row date_field">
+              <label>Due date
+                <span class="error">*</span>
+              </label>
+
+              <div class="left_single_row">
+                <input id="dateInput" type="text" placeholder="dd/mm/yyyy">
+                <img class="calendar_icon" src="../assets/icons/calendar.svg">
+              </div>
+
+              <small class="error_text">This field is required</small>
+            </div>
+          </form>
+
+          <!-- DIVIDER -->
+          <div class="editor_divider"></div>
+
+          <!-- RIGHT -->
+          <div class="task_settings">
+
+            <div class="settings_block">
+              <label>Priority</label>
+
+              <div class="priority_row" id="priorityRow">
+                <button type="button" class="prio urgent_btn" data-prio="urgent">
+                  Urgent
+                  <div>
+                    <img src="../assets/icons/arrowUp.svg" class="urgent">
+                    <img src="../assets/icons/arrowUp.svg" class="urgent">
+                  </div>
+                </button>
+
+                <button type="button" class="prio medium_btn active" data-prio="medium">
+                  Medium
+                  <div>
+                    <img src="../assets/icons/sameIcon.svg" class="medium">
+                    <img src="../assets/icons/sameIcon.svg" class="medium">
+                  </div>
+                </button>
+
+                <button type="button" class="prio low_btn" data-prio="low">
+                  Low
+                  <div>
+                    <img src="../assets/icons/arrowDown.svg" class="low">
+                    <img src="../assets/icons/arrowDown.svg" class="low">
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <div class="settings_block">
+              <label>Assigned to</label>
+              <div class="select_native">
+                <select id="assignedSelect">
+                  <option selected disabled>Select contacts to assign</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="settings_block">
+              <label>Category <span class="error">*</span></label>
+              <div class="select_native">
+                <select id="categorySelect">
+                  <option selected disabled>Select task category</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="settings_block subtasks_block">
+              <label>Subtasks</label>
+
+              <div class="subtask_input">
+                <input id="subtaskInput" type="text" placeholder="Add new subtask">
+                <button type="button" class="subtask_add_btn">
+                  <p>+</p>
+                </button>
+              </div>
+
+              <ul id="subtaskList" class="subtask_list"></ul>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="task_footer">
+          <p>
+            <span class="error">*</span>
+            This field is required
+          </p>
+
+          <div class="footer_actions">
+            <button class="clear_btn">Clear ✕</button>
+            <button class="create_btn">Create Task ✓</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
 <div id="task-overlay" class="overlay hidden" onclick="handleOverlayClick(event)">
   <div class="overlay-card">
     <!-- Inhalt kommt dynamisch -->
@@ -80,6 +217,7 @@
     <script src="../scripts/user-context.js"></script>
     <script src="../scripts/taskboardTemplate.js"></script>
     <script src="../scripts/taskboard.js"></script>
+    <script src="../scripts/taskeditor.js"></script>
 
   </body>
 </html>
