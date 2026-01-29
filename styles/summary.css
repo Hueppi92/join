@@ -29,7 +29,7 @@ body {
     align-items: center;
     gap: 30px;
     margin-bottom: 50px;
-    margin-top: 206px;
+    padding-top: 110px;
 }
 
 .summary-header h1 {
@@ -55,7 +55,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    gap: 60px;
 }
 
 .metrics-section {
@@ -64,6 +63,7 @@ body {
     gap: 25px;
     flex: 1;
     max-width: 560px;
+    padding-right: 80px;
 }
 
 /* Cards */
