@@ -254,36 +254,10 @@ function getLoginFields(form) {
 	const emailInput = form.querySelector('input[name="email"]');
 	const passwordInput = form.querySelector('input[name="password"]');
 	const submitButton = form.querySelector('button[type="submit"]');
-	if (!emailInput || !passwordInput || !submitButton) return null;
+	const message = document.getElementById('login-error-message');
+	if (!emailInput || !passwordInput || !submitButton || !message) return null;
 
-	return { form, emailInput, passwordInput, submitButton, message: ensureFormMessage(form) };
-}
-
-/**
- * Ensures the form has a message element for feedback.
- * @param {HTMLFormElement} form
- * @returns {HTMLElement}
- */
-function ensureFormMessage(form) {
-	let message = form.querySelector('.form-message');
-	if (message) return message;
-
-	message = document.createElement('p');
-	message.className = 'form-message';
-	message.setAttribute('role', 'alert');
-	message.style.marginTop = '-12px';
-	message.style.fontSize = '14px';
-	message.style.color = '#FF3D00';
-	message.style.textAlign = 'left';
-
-	const passwordField = form.querySelector('input[name="password"]');
-	const passwordWrapper = passwordField ? passwordField.closest('.input-field') : null;
-	if (passwordWrapper) {
-		passwordWrapper.insertAdjacentElement('afterend', message);
-	} else {
-		form.appendChild(message);
-	}
-	return message;
+	return { form, emailInput, passwordInput, submitButton, message };
 }
 
 /**
@@ -394,6 +368,7 @@ function setLoadingState(fields, isLoading) {
  */
 function setFormMessage(message, text) {
 	message.textContent = text;
+	message.classList.toggle('is-hidden', !text);
 }
 
 /**

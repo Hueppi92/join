@@ -76,7 +76,25 @@ function getSignupFields(form) {
 	const confirmInput = form.querySelector('input[name="confirmPassword"]');
 	const privacyInput = form.querySelector('input[name="privacy"]');
 	const submitButton = form.querySelector('button[type="submit"]');
-	if (!nameInput || !emailInput || !passwordInput || !confirmInput || !privacyInput || !submitButton) return null;
+	const nameMessage = form.querySelector('#msg-name');
+	const emailMessage = form.querySelector('#msg-email');
+	const passwordMessage = form.querySelector('#msg-password');
+	const confirmMessage = form.querySelector('#msg-confirmPassword');
+	const privacyMessage = form.querySelector('#msg-privacy');
+	if (
+		!nameInput ||
+		!emailInput ||
+		!passwordInput ||
+		!confirmInput ||
+		!privacyInput ||
+		!submitButton ||
+		!nameMessage ||
+		!emailMessage ||
+		!passwordMessage ||
+		!confirmMessage ||
+		!privacyMessage
+	)
+		return null;
 
 	return {
 		form,
@@ -86,62 +104,24 @@ function getSignupFields(form) {
 		confirmInput,
 		privacyInput,
 		submitButton,
-		nameMessage: ensureFieldMessage(nameInput),
-		emailMessage: ensureFieldMessage(emailInput),
-		passwordMessage: ensureFieldMessage(passwordInput),
-		confirmMessage: ensureFieldMessage(confirmInput),
-		privacyMessage: ensurePrivacyMessage(form),
+		nameMessage,
+		emailMessage,
+		passwordMessage,
+		confirmMessage,
+		privacyMessage,
 	};
 }
 
-/**
- * Ensures an input has a field message element.
- * @param {HTMLInputElement} input
- * @returns {HTMLElement}
- */
-function ensureFieldMessage(input) {
-	const wrapper = input.closest('.input-field');
-	if (!wrapper) return document.createElement('p');
-
-	let message = wrapper.querySelector('.field-message');
-	if (message) {
-		message.style.display = 'block';
+function initMessageVisibility(fields) {
+	[
+		fields.nameMessage,
+		fields.emailMessage,
+		fields.passwordMessage,
+		fields.confirmMessage,
+		fields.privacyMessage,
+	].forEach((message) => {
 		message.style.visibility = 'hidden';
-		return message;
-	}
-
-	message = document.createElement('p');
-	message.className = 'field-message';
-	message.setAttribute('role', 'alert');
-	message.style.display = 'block';
-	message.style.visibility = 'hidden';
-	wrapper.appendChild(message);
-	return message;
-}
-
-/**
- * Ensures the privacy checkbox has a message element.
- * @param {HTMLFormElement} form
- * @returns {HTMLElement}
- */
-function ensurePrivacyMessage(form) {
-	const row = form.querySelector('.checkbox-row');
-	if (!row) return document.createElement('p');
-
-	let message = form.querySelector('.privacy-message');
-	if (message) {
-		message.style.display = 'block';
-		message.style.visibility = 'hidden';
-		return message;
-	}
-
-	message = document.createElement('p');
-	message.className = 'field-message privacy-message';
-	message.setAttribute('role', 'alert');
-	message.style.display = 'block';
-	message.style.visibility = 'hidden';
-	row.insertAdjacentElement('afterend', message);
-	return message;
+	});
 }
 
 /**
@@ -150,6 +130,7 @@ function ensurePrivacyMessage(form) {
  */
 function bindSignupFieldEvents(fields) {
 	const updateState = () => updateSignupButtonState(fields);
+	initMessageVisibility(fields);
 	fields.nameInput.addEventListener('input', () => {
 		clearFieldError(fields.nameInput, fields.nameMessage);
 		updateState();

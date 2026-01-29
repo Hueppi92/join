@@ -81,6 +81,14 @@
 		nameEl.textContent = profile?.name || 'Guest';
 	};
 
+	const escapeHtml = (text = '') =>
+		String(text)
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#39;');
+
 	const populateAssignedToSelect = async () => {
 		const select = document.querySelector('select[data-role="assigned-to"]');
 		if (!select || !hasDb()) return;
@@ -88,25 +96,13 @@
 		const snapshot = await db.ref('users').get();
 		const users = snapshot.val() || {};
 
-		const placeholder = select.querySelector('option[data-placeholder]');
-		select.innerHTML = '';
-		if (placeholder) {
-			select.appendChild(placeholder);
-		} else {
-			const option = document.createElement('option');
-			option.textContent = 'Select contacts to assign';
-			option.disabled = true;
-			option.selected = true;
-			option.setAttribute('data-placeholder', '1');
-			select.appendChild(option);
-		}
-
+		let optionsHtml = '<option disabled selected data-placeholder="1">Select contacts to assign</option>';
 		Object.entries(users).forEach(([id, user]) => {
-			const option = document.createElement('option');
-			option.value = id;
-			option.textContent = user?.name || user?.email || 'User';
-			select.appendChild(option);
+			const safeId = escapeHtml(id);
+			const name = escapeHtml(user?.name || user?.email || 'User');
+			optionsHtml += `<option value="${safeId}">${name}</option>`;
 		});
+		select.innerHTML = optionsHtml;
 	};
 
 	const renderContactsList = async () => {
@@ -115,25 +111,19 @@
 
 		const snapshot = await db.ref('users').get();
 		const users = snapshot.val() || {};
-		list.innerHTML = '';
-
+		let listHtml = '';
 		Object.entries(users).forEach(([id, user]) => {
-			const li = document.createElement('li');
-			li.className = 'contact-item';
-
-			const name = document.createElement('span');
-			name.className = 'contact-name';
-			name.textContent = user?.name || 'Unnamed';
-
-			const email = document.createElement('span');
-			email.className = 'contact-email';
-			email.textContent = user?.email || '';
-
-			li.appendChild(name);
-			li.appendChild(email);
-			li.dataset.userId = id;
-			list.appendChild(li);
+			const safeId = escapeHtml(id);
+			const name = escapeHtml(user?.name || 'Unnamed');
+			const email = escapeHtml(user?.email || '');
+			listHtml += `
+				<li class="contact-item" data-user-id="${safeId}">
+					<span class="contact-name">${name}</span>
+					<span class="contact-email">${email}</span>
+				</li>
+			`;
 		});
+		list.innerHTML = listHtml;
 	};
 
 	const hydrateUserContext = async () => {
