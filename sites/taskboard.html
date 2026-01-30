@@ -29,24 +29,39 @@
           </div>
         </div>
 
-        <div class="board">
-          <div class="column" id="todo">
-            <h2>To do</h2>
-            <div class="task-list"></div>
-          </div>
-          <div class="column" id="in-progress">
-            <h2>In progress</h2>
-            <div class="task-list"></div>
-          </div>
-          <div class="column" id="await-feedback">
-            <h2>Await feedback</h2>
-            <div class="task-list"></div>
-          </div>
-          <div class="column" id="done">
-            <h2>Done</h2>
-            <div class="task-list"></div>
-          </div>
-        </div>
+      <div class="board">
+  <div class="column" id="todo">
+    <div class="column-header">
+      <h2>To do</h2>
+      <button class="add-column-btn" onclick="openAddTaskModal('todo')">+</button>
+    </div>
+    <div class="task-list"></div>
+  </div>
+
+  <div class="column" id="in-progress">
+    <div class="column-header">
+      <h2>In progress</h2>
+      <button class="add-column-btn" onclick="openAddTaskModal('in-progress')">+</button>
+    </div>
+    <div class="task-list"></div>
+  </div>
+
+  <div class="column" id="await-feedback">
+    <div class="column-header">
+      <h2>Await feedback</h2>
+      <button class="add-column-btn" onclick="openAddTaskModal('await-feedback')">+</button>
+    </div>
+    <div class="task-list"></div>
+  </div>
+
+  <div class="column" id="done">
+    <div class="column-header">
+      <h2>Done</h2>
+      <button class="add-column-btn" onclick="openAddTaskModal('done')">+</button>
+    </div>
+    <div class="task-list"></div>
+  </div>
+</div>
       </div>
 
       <aside>
@@ -62,162 +77,25 @@
           <a href="./legal-notice.html">Legal notice</a>
         </div>
       </aside>
-      </main>
+    </main>
 
-      <!-- ADD-TASKS-MODAL -->
-    <div id="addTaskModal" class="modal hidden">
-      <div class="modal_backdrop"></div>
-
-      <div class="modal_content">
-        <button class="modal_close">✕</button>
-
-        <section class="task_header">
-          <h1>Add Task</h1>
-        </section>
-
-        <div class="editor_wrapper">
-
-          <!-- LEFT -->
-          <form class="new_task">
-            <div class="left_row title_field">
-              <label>Title
-                <span class="error">*</span>
-              </label>
-
-              <div class="left_single_row">
-                <input id="titleInput" class="first_input" type="text" placeholder="Enter a title">
-              </div>
-
-              <small class="error_text">This field is required</small>
-
-            </div>
-
-            <div class="left_row description_field">
-              <label>Description</label>
-
-              <div class="left_single_row description_box">
-                <textarea placeholder="Enter a Description"></textarea>
-              </div>
-
-            </div>
-
-            <div class="left_row date_field">
-              <label>Due date
-                <span class="error">*</span>
-              </label>
-
-              <div class="left_single_row">
-                <input id="dateInput" type="text" placeholder="dd/mm/yyyy">
-                <img class="calendar_icon" src="../assets/icons/calendar.svg">
-              </div>
-
-              <small class="error_text">This field is required</small>
-            </div>
-          </form>
-
-          <!-- DIVIDER -->
-          <div class="editor_divider"></div>
-
-          <!-- RIGHT -->
-          <div class="task_settings">
-
-            <div class="settings_block">
-              <label>Priority</label>
-
-              <div class="priority_row" id="priorityRow">
-                <button type="button" class="prio urgent_btn" data-prio="urgent">
-                  Urgent
-                  <div>
-                    <img src="../assets/icons/arrowUp.svg" class="urgent">
-                    <img src="../assets/icons/arrowUp.svg" class="urgent">
-                  </div>
-                </button>
-
-                <button type="button" class="prio medium_btn active" data-prio="medium">
-                  Medium
-                  <div>
-                    <img src="../assets/icons/sameIcon.svg" class="medium">
-                    <img src="../assets/icons/sameIcon.svg" class="medium">
-                  </div>
-                </button>
-
-                <button type="button" class="prio low_btn" data-prio="low">
-                  Low
-                  <div>
-                    <img src="../assets/icons/arrowDown.svg" class="low">
-                    <img src="../assets/icons/arrowDown.svg" class="low">
-                  </div>
-                </button>
-              </div>
-            </div>
-
-            <div class="settings_block">
-              <label>Assigned to</label>
-              <div class="select_native">
-                <select id="assignedSelect">
-                  <option selected disabled>Select contacts to assign</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="settings_block">
-              <label>Category <span class="error">*</span></label>
-              <div class="select_native">
-                <select id="categorySelect">
-                  <option selected disabled>Select task category</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="settings_block subtasks_block">
-              <label>Subtasks</label>
-
-              <div class="subtask_input">
-                <input id="subtaskInput" type="text" placeholder="Add new subtask">
-                <button type="button" class="subtask_add_btn">
-                  <p>+</p>
-                </button>
-              </div>
-
-              <ul id="subtaskList" class="subtask_list"></ul>
-            </div>
-          </div>
-
+    <div id="task-overlay" class="overlay hidden" onclick="handleOverlayClick(event)">
+      <div class="overlay-card" onclick="event.stopPropagation()">
         </div>
-
-        <div class="task_footer">
-          <p>
-            <span class="error">*</span>
-            This field is required
-          </p>
-
-          <div class="footer_actions">
-            <button class="clear_btn">Clear ✕</button>
-            <button class="create_btn">Create Task ✓</button>
-          </div>
-        </div>
-      </div>
     </div>
-    
-<div id="task-overlay" class="overlay hidden" onclick="handleOverlayClick(event)">
-  <div class="overlay-card">
-    <!-- Inhalt kommt dynamisch -->
-  </div>
-</div>
 
-    <!-- Firebase -->
+
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    
     <script src="../scripts/firebaseConfig.js"></script>
-
-    <!-- Project Scripts -->
     <script src="../scripts/db.js"></script>
     <script src="../scripts/auth-guard.js"></script>
     <script src="../scripts/user-context.js"></script>
+    
     <script src="../scripts/taskboardTemplate.js"></script>
     <script src="../scripts/taskboard.js"></script>
-    <script src="../scripts/taskeditor.js"></script>
 
   </body>
 </html>
