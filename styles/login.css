@@ -284,7 +284,11 @@ button {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	transition: background var(--transition), color var(--transition), border-color var(--transition);
+	transition: background var(--transition), color var(--transition), border-color var(--transition), box-shadow var(--transition);
+}
+
+.btn:hover {
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 .btn-dark {
