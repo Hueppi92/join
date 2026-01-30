@@ -1,12 +1,30 @@
 {
     "source": {
-        "include": ["."], 
+        "include": ["."],
         "exclude": ["node_modules", "out"],
         "includePattern": ".+\\.js(doc|x)?$",
         "excludePattern": "(^|\\/|\\\\)_"
     },
+    "plugins": ["node_modules/better-docs/category"],
     "opts": {
         "destination": "./out/",
-        "recurse": true
+        "recurse": true,
+        "template": "node_modules/better-docs"
+    },
+    "templates": {
+        "better-docs": {
+            "name": "Join Project",
+            "hideGenerator": true,
+            "navigation": [
+                {
+                    "label": "Board",
+                    "href": "category-Board.html"
+                },
+                {
+                    "label": "Summary",
+                    "href": "category-Summary.html"
+                }
+            ]
+        }
     }
 }

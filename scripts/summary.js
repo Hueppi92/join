@@ -1,8 +1,8 @@
-
 /**
  * Main initialization function for the summary page.
- * Fetches user data and tasks to trigger the rendering of the dashboard.
- * @async
+ * * @async
+ * @category Summary
+ * @subcategory Lifecycle
  */
 async function loadSummary() {
     try {
@@ -13,8 +13,6 @@ async function loadSummary() {
         renderUserName(userName);
         setGreeting();
         renderSummary(tasks);
-
-        console.log("Init (loadSummary) erfolgreich");
     } catch (error) {
         console.error("Fehler in loadSummary:", error);
     }
@@ -22,7 +20,9 @@ async function loadSummary() {
 
 /**
  * Resolves the currently active user ID from a global context or session storage.
- * @async
+ * * @async
+ * @category Summary
+ * @subcategory Data Handling
  * @returns {Promise<string|null>} The active user ID or null if not found.
  */
 async function resolveActiveUserId() {
@@ -34,7 +34,9 @@ async function resolveActiveUserId() {
 
 /**
  * Fetches all task data from the Firebase "tasks" reference.
- * @async
+ * * @async
+ * @category Summary
+ * @subcategory Data Handling
  * @returns {Promise<Object>} An object containing all tasks from the database.
  */
 async function getTasks() {
@@ -45,7 +47,9 @@ async function getTasks() {
 
 /**
  * Retrieves the name of a specific user from Firebase by their ID.
- * @async
+ * * @async
+ * @category Summary
+ * @subcategory Data Handling
  * @param {string} userId - The unique ID of the user to fetch.
  * @returns {Promise<string>} The user's name or "Guest" as a fallback.
  */
@@ -58,6 +62,8 @@ async function getUserName(userId) {
 
 /**
  * Displays the user's name in the designated HTML element.
+ * * @category Summary
+ * @subcategory UI Rendering
  * @param {string} name - The name to be rendered.
  */
 function renderUserName(name) {
@@ -65,8 +71,10 @@ function renderUserName(name) {
 }
 
 /**
- * Calculates and renders task statistics (total, status, and urgency) to the UI.
- * @param {Object} tasks - The task object where keys are IDs and values are task details.
+ * Calculates and renders task statistics to the UI.
+ * * @category Summary
+ * @subcategory UI Rendering
+ * @param {Object} tasks - The task object.
  */
 function renderSummary(tasks) {
     const totalTasks = Object.keys(tasks).length;
@@ -83,21 +91,15 @@ function renderSummary(tasks) {
 }
 
 /**
- * Determines the current time of day and displays an appropriate greeting message.
+ * Determines the current time of day and displays a greeting.
+ * * @category Summary
+ * @subcategory UI Rendering
  */
 function setGreeting() {
-     var today = new Date()
-    var curHr = today.getHours()
-
-    if (curHr >= 0 && curHr < 6) {
-        document.getElementById("greet").innerHTML = 'What are you doing that early?';
-    } else if (curHr >= 6 && curHr <= 12) {
-        document.getElementById("greet").innerHTML = 'Good Morning,';
-    } else if (curHr >= 12 && curHr < 17) {
-        document.getElementById("greet").innerHTML = 'Good Afternoon,';
-    } else {
-        document.getElementById("greet").innerHTML = 'Good Evening,';
-    }
+    var today = new Date();
+    var curHr = today.getHours();
+    let msg = (curHr < 12) ? 'Good Morning,' : (curHr < 17) ? 'Good Afternoon,' : 'Good Evening,';
+    document.getElementById("greet").innerHTML = msg;
 }
 
 loadSummary();

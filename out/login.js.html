@@ -1,25 +1,88 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>JSDoc: Source: login.js</title>
 
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> login.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
 </head>
 
-<body>
 
-<div id="main">
 
-    <h1 class="page-title">Source: login.js</h1>
-
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
     
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">Join Project</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Global</h3><ul><li><a href="global.html#animateSplashLogo">animateSplashLogo</a></li><li><a href="global.html#bindLoginFieldEvents">bindLoginFieldEvents</a></li><li><a href="global.html#bindSignupFieldEvents">bindSignupFieldEvents</a></li><li><a href="global.html#clearFieldError">clearFieldError</a></li><li><a href="global.html#clearSkipSplash">clearSkipSplash</a></li><li><a href="global.html#closeTaskDetail">closeTaskDetail</a></li><li><a href="global.html#fadeOutOverlay">fadeOutOverlay</a></li><li><a href="global.html#finishSplashAnimation">finishSplashAnimation</a></li><li><a href="global.html#getAuthErrorMessage">getAuthErrorMessage</a></li><li><a href="global.html#getCenterDelta">getCenterDelta</a></li><li><a href="global.html#getLoginFields">getLoginFields</a></li><li><a href="global.html#getSignupFields">getSignupFields</a></li><li><a href="global.html#getSplashElements">getSplashElements</a></li><li><a href="global.html#getSplashStartScale">getSplashStartScale</a></li><li><a href="global.html#handleGuestLogin">handleGuestLogin</a></li><li><a href="global.html#handleLoginSubmit">handleLoginSubmit</a></li><li><a href="global.html#handleOverlayClick">handleOverlayClick</a></li><li><a href="global.html#handleSignupSubmit">handleSignupSubmit</a></li><li><a href="global.html#hideElement">hideElement</a></li><li><a href="global.html#initGuestLogin">initGuestLogin</a></li><li><a href="global.html#initLoginForm">initLoginForm</a></li><li><a href="global.html#initPasswordToggles">initPasswordToggles</a></li><li><a href="global.html#initSignupBackButton">initSignupBackButton</a></li><li><a href="global.html#initSignupForm">initSignupForm</a></li><li><a href="global.html#isEmailValid">isEmailValid</a></li><li><a href="global.html#isLoginInputValid">isLoginInputValid</a></li><li><a href="global.html#isSignupInputReady">isSignupInputReady</a></li><li><a href="global.html#onDrop">onDrop</a></li><li><a href="global.html#prepareSplashLogo">prepareSplashLogo</a></li><li><a href="global.html#renderSummary">renderSummary</a></li><li><a href="global.html#renderUserName">renderUserName</a></li><li><a href="global.html#runSplashAnimation">runSplashAnimation</a></li><li><a href="global.html#setFieldError">setFieldError</a></li><li><a href="global.html#setFormMessage">setFormMessage</a></li><li><a href="global.html#setGreeting">setGreeting</a></li><li><a href="global.html#setHeaderLogoVisibility">setHeaderLogoVisibility</a></li><li><a href="global.html#setLoadingState">setLoadingState</a></li><li><a href="global.html#setLoginFieldErrorState">setLoginFieldErrorState</a></li><li><a href="global.html#setupPasswordToggle">setupPasswordToggle</a></li><li><a href="global.html#shouldSkipSplash">shouldSkipSplash</a></li><li><a href="global.html#showFinalSplashState">showFinalSplashState</a></li><li><a href="global.html#syncAnimationEnd">syncAnimationEnd</a></li><li><a href="global.html#updateLoginButtonState">updateLoginButtonState</a></li><li><a href="global.html#updateSignupButtonState">updateSignupButtonState</a></li><li><a href="global.html#validateConfirmField">validateConfirmField</a></li><li><a href="global.html#validateEmailField">validateEmailField</a></li><li><a href="global.html#validateNameField">validateNameField</a></li><li><a href="global.html#validatePasswordField">validatePasswordField</a></li><li><a href="global.html#validatePrivacyField">validatePrivacyField</a></li><li><a href="global.html#validateSignupFields">validateSignupFields</a></li></ul></div><div class="category"><h2>Board</h2><h3>Global</h3><ul><li><a href="global.html#openTaskDetail">openTaskDetail</a></li><li><a href="global.html#renderBoard">renderBoard</a></li></ul></div><div class="category"><h2>Summary</h2><h3>Global</h3><ul><li><a href="global.html#getTasks">getTasks</a></li><li><a href="global.html#getUserName">getUserName</a></li><li><a href="global.html#loadSummary">loadSummary</a></li><li><a href="global.html#resolveActiveUserId">resolveActiveUserId</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>login.js</h1>
+                </header>
+                
 
 
 
@@ -282,36 +345,10 @@ function getLoginFields(form) {
 	const emailInput = form.querySelector('input[name="email"]');
 	const passwordInput = form.querySelector('input[name="password"]');
 	const submitButton = form.querySelector('button[type="submit"]');
-	if (!emailInput || !passwordInput || !submitButton) return null;
+	const message = document.getElementById('login-error-message');
+	if (!emailInput || !passwordInput || !submitButton || !message) return null;
 
-	return { form, emailInput, passwordInput, submitButton, message: ensureFormMessage(form) };
-}
-
-/**
- * Ensures the form has a message element for feedback.
- * @param {HTMLFormElement} form
- * @returns {HTMLElement}
- */
-function ensureFormMessage(form) {
-	let message = form.querySelector('.form-message');
-	if (message) return message;
-
-	message = document.createElement('p');
-	message.className = 'form-message';
-	message.setAttribute('role', 'alert');
-	message.style.marginTop = '-12px';
-	message.style.fontSize = '14px';
-	message.style.color = '#FF3D00';
-	message.style.textAlign = 'left';
-
-	const passwordField = form.querySelector('input[name="password"]');
-	const passwordWrapper = passwordField ? passwordField.closest('.input-field') : null;
-	if (passwordWrapper) {
-		passwordWrapper.insertAdjacentElement('afterend', message);
-	} else {
-		form.appendChild(message);
-	}
-	return message;
+	return { form, emailInput, passwordInput, submitButton, message };
 }
 
 /**
@@ -422,6 +459,7 @@ function setLoadingState(fields, isLoading) {
  */
 function setFormMessage(message, text) {
 	message.textContent = text;
+	message.classList.toggle('is-hidden', !text);
 }
 
 /**
@@ -482,19 +520,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-</div>
-
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#animateSplashLogo">animateSplashLogo</a></li><li><a href="global.html#bindLoginFieldEvents">bindLoginFieldEvents</a></li><li><a href="global.html#bindSignupFieldEvents">bindSignupFieldEvents</a></li><li><a href="global.html#clearFieldError">clearFieldError</a></li><li><a href="global.html#clearSkipSplash">clearSkipSplash</a></li><li><a href="global.html#closeTaskDetail">closeTaskDetail</a></li><li><a href="global.html#ensureFieldMessage">ensureFieldMessage</a></li><li><a href="global.html#ensureFormMessage">ensureFormMessage</a></li><li><a href="global.html#ensurePrivacyMessage">ensurePrivacyMessage</a></li><li><a href="global.html#fadeOutOverlay">fadeOutOverlay</a></li><li><a href="global.html#finishSplashAnimation">finishSplashAnimation</a></li><li><a href="global.html#getAuthErrorMessage">getAuthErrorMessage</a></li><li><a href="global.html#getCenterDelta">getCenterDelta</a></li><li><a href="global.html#getLoginFields">getLoginFields</a></li><li><a href="global.html#getSignupFields">getSignupFields</a></li><li><a href="global.html#getSplashElements">getSplashElements</a></li><li><a href="global.html#getSplashStartScale">getSplashStartScale</a></li><li><a href="global.html#getTasks">getTasks</a></li><li><a href="global.html#getUserName">getUserName</a></li><li><a href="global.html#handleGuestLogin">handleGuestLogin</a></li><li><a href="global.html#handleLoginSubmit">handleLoginSubmit</a></li><li><a href="global.html#handleOverlayClick">handleOverlayClick</a></li><li><a href="global.html#handleSignupSubmit">handleSignupSubmit</a></li><li><a href="global.html#hideElement">hideElement</a></li><li><a href="global.html#initGuestLogin">initGuestLogin</a></li><li><a href="global.html#initLoginForm">initLoginForm</a></li><li><a href="global.html#initPasswordToggles">initPasswordToggles</a></li><li><a href="global.html#initSignupBackButton">initSignupBackButton</a></li><li><a href="global.html#initSignupForm">initSignupForm</a></li><li><a href="global.html#isEmailValid">isEmailValid</a></li><li><a href="global.html#isLoginInputValid">isLoginInputValid</a></li><li><a href="global.html#isSignupInputReady">isSignupInputReady</a></li><li><a href="global.html#loadSummary">loadSummary</a></li><li><a href="global.html#onDrop">onDrop</a></li><li><a href="global.html#openTaskDetail">openTaskDetail</a></li><li><a href="global.html#prepareSplashLogo">prepareSplashLogo</a></li><li><a href="global.html#renderBoard">renderBoard</a></li><li><a href="global.html#renderSummary">renderSummary</a></li><li><a href="global.html#renderUserName">renderUserName</a></li><li><a href="global.html#resolveActiveUserId">resolveActiveUserId</a></li><li><a href="global.html#runSplashAnimation">runSplashAnimation</a></li><li><a href="global.html#setFieldError">setFieldError</a></li><li><a href="global.html#setFormMessage">setFormMessage</a></li><li><a href="global.html#setGreeting">setGreeting</a></li><li><a href="global.html#setHeaderLogoVisibility">setHeaderLogoVisibility</a></li><li><a href="global.html#setLoadingState">setLoadingState</a></li><li><a href="global.html#setLoginFieldErrorState">setLoginFieldErrorState</a></li><li><a href="global.html#setupPasswordToggle">setupPasswordToggle</a></li><li><a href="global.html#shouldSkipSplash">shouldSkipSplash</a></li><li><a href="global.html#showFinalSplashState">showFinalSplashState</a></li><li><a href="global.html#syncAnimationEnd">syncAnimationEnd</a></li><li><a href="global.html#updateLoginButtonState">updateLoginButtonState</a></li><li><a href="global.html#updateSignupButtonState">updateSignupButtonState</a></li><li><a href="global.html#validateConfirmField">validateConfirmField</a></li><li><a href="global.html#validateEmailField">validateEmailField</a></li><li><a href="global.html#validateNameField">validateNameField</a></li><li><a href="global.html#validatePasswordField">validatePasswordField</a></li><li><a href="global.html#validatePrivacyField">validatePrivacyField</a></li><li><a href="global.html#validateSignupFields">validateSignupFields</a></li></ul>
-</nav>
-
-<br class="clear">
-
-<footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Jan 28 2026 12:03:47 GMT+0100 (Mitteleuropäische Normalzeit)
-</footer>
-
-<script> prettyPrint(); </script>
+            </div>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
 <script src="scripts/linenumber.js"> </script>
+
+
 </body>
 </html>

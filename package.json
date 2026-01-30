@@ -18,5 +18,9 @@
   "bugs": {
     "url": "https://github.com/Hueppi92/join/issues"
   },
-  "homepage": "https://github.com/Hueppi92/join#readme"
+  "homepage": "https://github.com/Hueppi92/join#readme",
+  "devDependencies": {
+    "better-docs": "^2.7.3",
+    "jsdoc": "^4.0.5"
+  }
 }

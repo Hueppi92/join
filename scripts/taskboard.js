@@ -1,7 +1,8 @@
 /**
  * Öffnet das Task-Detail-Overlay und lädt die Task-Daten aus Firebase.
- * 
- * @async
+ * * @async
+ * @category Board
+ * @subcategory UI & Rendering
  * @param {string} taskId - Die eindeutige ID der Task, die angezeigt werden soll.
  * @returns {Promise<void>}
  */
@@ -18,7 +19,8 @@ async function openTaskDetail(taskId) {
 
 /**
  * Schließt das Task-Detail-Overlay.
- * 
+ * * @category Board
+ * @subcategory UI & Rendering
  * @returns {void}
  */
 function closeTaskDetail() {
@@ -28,7 +30,8 @@ function closeTaskDetail() {
 /**
  * Handler für Klicks auf das Overlay. Schließt das Overlay,
  * wenn außerhalb der Card geklickt wird.
- * 
+ * * @category Board
+ * @subcategory UI & Rendering
  * @param {MouseEvent} event - Das Klick-Ereignis.
  * @returns {void}
  */
@@ -40,7 +43,8 @@ function handleOverlayClick(event) {
 
 /**
  * Aktualisiert den Status einer Task in Firebase, wenn diese in eine andere Spalte gezogen wird.
- * 
+ * * @category Board
+ * @subcategory Data Handling
  * @param {string} taskId - Die ID der Task, die verschoben wurde.
  * @param {string} newStatus - Der neue Status der Task ("todo", "in-progress", "await-feedback", "done").
  * @returns {void}
@@ -55,21 +59,16 @@ function onDrop(taskId, newStatus) {
 /**
  * Rendert das gesamte Board. Lädt alle Tasks aus Firebase, sortiert sie nach Status
  * und fügt sie in die entsprechenden Spalten ein.
- * 
- * @async
+ * * @async
+ * @category Board
+ * @subcategory UI & Rendering
  * @returns {Promise<void>}
  */
 async function renderBoard() {
   const snapshot = await firebase.database().ref('tasks').get();
   const data = snapshot.val();
 
-  // Initial leere Spalten
-  const columns = {
-    'todo': '',
-    'in-progress': '',
-    'await-feedback': '',
-    'done': ''
-  };
+  const columns = { 'todo': '', 'in-progress': '', 'await-feedback': '', 'done': '' };
 
   if (data) {
     Object.entries(data).forEach(([key, task]) => {
@@ -79,25 +78,18 @@ async function renderBoard() {
     });
   }
 
-  // Platzhalter, wenn keine Tasks vorhanden sind
   Object.keys(columns).forEach(status => {
     if (!columns[status]) {
-      columns[status] =
-        `<div class="empty-msg">No tasks ${status.replace('-', ' ')}</div>`;
+      columns[status] = `<div class="empty-msg">No tasks ${status.replace('-', ' ')}</div>`;
     }
   });
 
-  // Spalten ins DOM rendern
   ['todo', 'in-progress', 'await-feedback', 'done'].forEach(status => {
     const col = document.querySelector(`#${status} .task-list`);
     col.innerHTML = columns[status];
     col.setAttribute('ondragover', 'event.preventDefault()');
-    col.setAttribute(
-      'ondrop',
-      `onDrop(event.dataTransfer.getData('text/plain'),'${status}')`
-    );
+    col.setAttribute('ondrop', `onDrop(event.dataTransfer.getData('text/plain'),'${status}')`);
   });
 }
 
-// Initiales Board-Rendering
 renderBoard();
