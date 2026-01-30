@@ -238,12 +238,31 @@ async function handleSignupSubmit(event, fields) {
 		});
 		sessionStorage.removeItem('guestLogin');
 		sessionStorage.setItem('skipSplash', '1');
-		window.location.href = './summary.html';
+		showSuccessAnimation();
 	} catch (error) {
 		setFieldError(fields.emailInput, fields.emailMessage, getAuthErrorMessage(error));
 	} finally {
 		setLoadingState(fields, false);
 	}
+}
+
+function showSuccessAnimation() {
+	const overlay = document.getElementById('success-overlay');
+	if (!overlay) {
+		window.location.href = '../index.html';
+		return;
+	}
+
+	overlay.classList.remove('d-none');
+	const image = overlay.querySelector('img');
+	if (image) {
+		image.classList.add('slide-in-bottom');
+	}
+
+	setTimeout(() => {
+		sessionStorage.setItem('skipSplash', '1');
+		window.location.href = '../index.html';
+	}, 1000);
 }
 
 /**

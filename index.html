@@ -10,6 +10,11 @@
   </head>
 
   <body>
+    <script>
+      if (sessionStorage.getItem('skipSplash') === '1') {
+        document.documentElement.classList.add('skip-splash');
+      }
+    </script>
     <div class="login-splash" aria-hidden="true"></div>
     <img class="login-splash-logo" src="./assets/img/join_logo_dark.svg" alt="" />
 

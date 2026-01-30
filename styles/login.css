@@ -35,6 +35,15 @@ body {
 	overflow-x: hidden;
 }
 
+.skip-splash .login-splash,
+.skip-splash .login-splash-logo {
+	display: none;
+}
+
+.skip-splash .login-logo {
+	opacity: 1;
+}
+
 .page-shell {
 	width: 100%;
 	max-width: 1440px;
@@ -207,6 +216,43 @@ button {
 
 .is-hidden {
 	visibility: hidden;
+}
+
+.d-none {
+	display: none !important;
+}
+
+#success-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 9999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+#success-overlay img {
+	max-width: 80%;
+	height: auto;
+}
+
+.slide-in-bottom {
+	animation: slide-up 0.5s ease-in-out forwards;
+}
+
+@keyframes slide-up {
+	0% {
+		transform: translateY(100vh);
+		opacity: 0;
+	}
+	100% {
+		transform: translateY(0);
+		opacity: 1;
+	}
 }
 
 .privacy-message {
