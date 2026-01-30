@@ -335,7 +335,6 @@ async function handleLoginSubmit(event, fields) {
 	} catch (error) {
 		setFormMessage(fields.message, getAuthErrorMessage(error));
 		setLoginFieldErrorState(fields, true);
-		console.error('Firebase login error:', error);
 	} finally {
 		setLoadingState(fields, false);
 	}
