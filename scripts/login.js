@@ -1,6 +1,17 @@
 /**
+ * @typedef {Object} LoginFields
+ * @property {HTMLFormElement} form - The login form element.
+ * @property {HTMLInputElement} emailInput - The email input field.
+ * @property {HTMLInputElement} passwordInput - The password input field.
+ * @property {HTMLButtonElement} submitButton - The submit button.
+ * @property {HTMLElement} message - The login error message element.
+ */
+
+/**
  * Runs the splash animation using dynamic measurements.
  * The logo starts centered and moves to the header position.
+ * @category Login
+ * @subcategory UI & Init
  */
 function runSplashAnimation() {
 	const elements = getSplashElements();
@@ -26,6 +37,8 @@ function runSplashAnimation() {
 /**
  * Gets the required splash elements.
  * @returns {{splashLogo: HTMLElement, headerLogo: HTMLElement, splashBg: HTMLElement} | null}
+ * @category Login
+ * @subcategory UI & Init
  */
 function getSplashElements() {
 	const splashLogo = document.querySelector('.login-splash-logo');
@@ -40,6 +53,8 @@ function getSplashElements() {
  * Prepares the splash logo position and scale.
  * @param {HTMLElement} splashLogo
  * @param {number} startScale
+ * @category Login
+ * @subcategory UI & Init
  */
 function prepareSplashLogo(splashLogo, startScale) {
 	splashLogo.style.left = '50%';
@@ -52,6 +67,8 @@ function prepareSplashLogo(splashLogo, startScale) {
  * @param {HTMLElement} splashLogo
  * @param {DOMRect} endRect
  * @returns {{x: number, y: number}}
+ * @category Login
+ * @subcategory UI & Init
  */
 function getCenterDelta(splashLogo, endRect) {
 	const startRect = splashLogo.getBoundingClientRect();
@@ -69,6 +86,8 @@ function getCenterDelta(splashLogo, endRect) {
  * @param {number} startScale
  * @param {{x: number, y: number}} delta
  * @returns {Animation}
+ * @category Login
+ * @subcategory UI & Init
  */
 function animateSplashLogo(splashLogo, startScale, delta) {
 	return splashLogo.animate(
@@ -91,6 +110,8 @@ function animateSplashLogo(splashLogo, startScale, delta) {
  * Calculates the start scale based on the login title and buttons height.
  * @param {number} logoHeight
  * @returns {number}
+ * @category Login
+ * @subcategory UI & Init
  */
 function getSplashStartScale(logoHeight) {
 	const title = document.querySelector('#login-title');
@@ -108,6 +129,8 @@ function getSplashStartScale(logoHeight) {
 /**
  * Returns whether the splash should be skipped (e.g. coming from sign-up).
  * @returns {boolean}
+ * @category Login
+ * @subcategory UI & Init
  */
 function shouldSkipSplash() {
 	return sessionStorage.getItem('skipSplash') === '1';
@@ -115,6 +138,8 @@ function shouldSkipSplash() {
 
 /**
  * Clears the skip flag to allow next page loads to animate normally.
+ * @category Login
+ * @subcategory UI & Init
  */
 function clearSkipSplash() {
 	sessionStorage.removeItem('skipSplash');
@@ -125,6 +150,8 @@ function clearSkipSplash() {
  * @param {HTMLElement} splashLogo
  * @param {HTMLElement} headerLogo
  * @param {HTMLElement} splashBg
+ * @category Login
+ * @subcategory UI & Init
  */
 function showFinalSplashState({ splashLogo, headerLogo, splashBg }) {
 	hideElement(splashLogo);
@@ -137,6 +164,8 @@ function showFinalSplashState({ splashLogo, headerLogo, splashBg }) {
  * @param {HTMLElement} splashLogo
  * @param {HTMLElement} headerLogo
  * @param {HTMLElement} splashBg
+ * @category Login
+ * @subcategory UI & Init
  */
 function finishSplashAnimation({ splashLogo, headerLogo, splashBg }) {
 	hideElement(splashBg);
@@ -150,6 +179,8 @@ function finishSplashAnimation({ splashLogo, headerLogo, splashBg }) {
  * @param {number} delay
  * @param {number} duration
  * @returns {Animation | null}
+ * @category Login
+ * @subcategory UI & Init
  */
 function fadeOutOverlay(splashBg, delay = 0, duration = 1000) {
 	if (!splashBg) return null;
@@ -166,6 +197,8 @@ function fadeOutOverlay(splashBg, delay = 0, duration = 1000) {
  * @param {Animation} logoAnimation
  * @param {Animation | null} overlayAnimation
  * @param {{splashLogo: HTMLElement, headerLogo: HTMLElement, splashBg: HTMLElement}} elements
+ * @category Login
+ * @subcategory UI & Init
  */
 function syncAnimationEnd(logoAnimation, overlayAnimation, elements) {
 	const overlayFinished = overlayAnimation ? overlayAnimation.finished : Promise.resolve();
@@ -175,6 +208,8 @@ function syncAnimationEnd(logoAnimation, overlayAnimation, elements) {
 /**
  * Hides an element if it exists.
  * @param {HTMLElement} element
+ * @category Login
+ * @subcategory UI & Init
  */
 function hideElement(element) {
 	if (!element) return;
@@ -185,6 +220,8 @@ function hideElement(element) {
  * Sets header logo visibility.
  * @param {HTMLElement} headerLogo
  * @param {boolean} isVisible
+ * @category Login
+ * @subcategory UI & Init
  */
 function setHeaderLogoVisibility(headerLogo, isVisible) {
 	if (!headerLogo) return;
@@ -194,6 +231,8 @@ function setHeaderLogoVisibility(headerLogo, isVisible) {
 
 /**
  * Initializes Firebase login handling for the login form.
+ * @category Login
+ * @subcategory UI & Init
  */
 function initLoginForm() {
 	const form = document.querySelector('.login-form');
@@ -209,7 +248,9 @@ function initLoginForm() {
 /**
  * Collects login form fields.
  * @param {HTMLFormElement} form
- * @returns {{form: HTMLFormElement, emailInput: HTMLInputElement, passwordInput: HTMLInputElement, submitButton: HTMLButtonElement, message: HTMLElement} | null}
+ * @returns {LoginFields | null}
+ * @category Login
+ * @subcategory UI & Init
  */
 function getLoginFields(form) {
 	const emailInput = form.querySelector('input[name="email"]');
@@ -223,7 +264,9 @@ function getLoginFields(form) {
 
 /**
  * Binds events to update login form button state.
- * @param {Object} fields
+ * @param {LoginFields} fields
+ * @category Login
+ * @subcategory UI & Init
  */
 function bindLoginFieldEvents(fields) {
 	const updateState = () => updateLoginButtonState(fields);
@@ -242,7 +285,9 @@ function bindLoginFieldEvents(fields) {
 
 /**
  * Enables/disables the login button based on form validity.
- * @param {Object} fields
+ * @param {LoginFields} fields
+ * @category Login
+ * @subcategory UI & Init
  */
 function updateLoginButtonState(fields) {
 	const isValid = isLoginInputValid(fields);
@@ -252,8 +297,10 @@ function updateLoginButtonState(fields) {
 
 /**
  * Validates login inputs.
- * @param {Object} fields
+ * @param {LoginFields} fields
  * @returns {boolean}
+ * @category Login
+ * @subcategory Validation
  */
 function isLoginInputValid(fields) {
 	return isEmailValid(fields.emailInput.value) && fields.passwordInput.value.trim().length > 0;
@@ -263,7 +310,9 @@ function isLoginInputValid(fields) {
 /**
  * Handles Firebase login submission.
  * @param {SubmitEvent} event
- * @param {Object} fields
+ * @param {LoginFields} fields
+ * @category Login
+ * @subcategory Firebase Logic
  */
 async function handleLoginSubmit(event, fields) {
 	event.preventDefault();
@@ -295,8 +344,10 @@ async function handleLoginSubmit(event, fields) {
 
 /**
  * Sets error state on login inputs.
- * @param {Object} fields
+ * @param {LoginFields} fields
  * @param {boolean} hasError
+ * @category Login
+ * @subcategory UI & Init
  */
 function setLoginFieldErrorState(fields, hasError) {
 	fields.emailInput.classList.toggle('input-error', hasError);
@@ -305,8 +356,10 @@ function setLoginFieldErrorState(fields, hasError) {
 
 /**
  * Sets the loading state for the login form.
- * @param {Object} fields
+ * @param {LoginFields} fields
  * @param {boolean} isLoading
+ * @category Login
+ * @subcategory UI & Init
  */
 function setLoadingState(fields, isLoading) {
 	fields.submitButton.dataset.loading = isLoading ? '1' : '0';
@@ -317,6 +370,8 @@ function setLoadingState(fields, isLoading) {
  * Updates the form message.
  * @param {HTMLElement} message
  * @param {string} text
+ * @category Login
+ * @subcategory UI & Init
  */
 function setFormMessage(message, text) {
 	message.textContent = text;
@@ -327,6 +382,8 @@ function setFormMessage(message, text) {
  * Maps Firebase auth errors to readable messages.
  * @param {unknown} error
  * @returns {string}
+ * @category Login
+ * @subcategory Firebase Logic
  */
 function getAuthErrorMessage(error) {
 	const fallback = 'Login failed. Please try again.';
@@ -352,6 +409,8 @@ function getAuthErrorMessage(error) {
 
 /**
  * Wires the guest login button to open the summary page.
+ * @category Login
+ * @subcategory UI & Init
  */
 function initGuestLogin() {
 	const guestButton = document.querySelector('.guest-login');
@@ -362,6 +421,8 @@ function initGuestLogin() {
 
 /**
  * Navigates to the summary page for guest access.
+ * @category Login
+ * @subcategory UI & Init
  */
 function handleGuestLogin() {
 	sessionStorage.setItem('guestLogin', '1');

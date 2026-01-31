@@ -1,5 +1,23 @@
 /**
+ * @typedef {Object} SignupFields
+ * @property {HTMLFormElement} form - The form element.
+ * @property {HTMLInputElement} nameInput - The name input field.
+ * @property {HTMLInputElement} emailInput - The email input field.
+ * @property {HTMLInputElement} passwordInput - The password input field.
+ * @property {HTMLInputElement} confirmInput - The password confirmation input field.
+ * @property {HTMLInputElement} privacyInput - The privacy checkbox.
+ * @property {HTMLButtonElement} submitButton - The submit button.
+ * @property {HTMLElement} nameMessage - Error message element for name.
+ * @property {HTMLElement} emailMessage - Error message element for email.
+ * @property {HTMLElement} passwordMessage - Error message element for password.
+ * @property {HTMLElement} confirmMessage - Error message element for confirm password.
+ * @property {HTMLElement} privacyMessage - Error message element for privacy.
+ */
+
+/**
  * Sets a flag to skip the splash animation when returning to the login page.
+ * @category Sign-Up
+ * @subcategory UI & Init
  */
 function initSignupBackButton() {
 	const backButton = document.querySelector('.signup-back');
@@ -12,6 +30,8 @@ function initSignupBackButton() {
 
 /**
  * Initializes Firebase registration handling for the sign-up form.
+ * @category Sign-Up
+ * @subcategory UI & Init
  */
 function initSignupForm() {
 	const form = document.querySelector('.login-form');
@@ -26,9 +46,11 @@ function initSignupForm() {
 
 
 /**
- * Collects sign-up form fields.
+ * Collects sign-up form fields and related message elements.
  * @param {HTMLFormElement} form
- * @returns {{form: HTMLFormElement, nameInput: HTMLInputElement, emailInput: HTMLInputElement, passwordInput: HTMLInputElement, confirmInput: HTMLInputElement, privacyInput: HTMLInputElement, submitButton: HTMLButtonElement, message: HTMLElement} | null}
+ * @returns {SignupFields | null}
+ * @category Sign-Up
+ * @subcategory UI & Init
  */
 function getSignupFields(form) {
 	const nameInput = form.querySelector('input[name="name"]');
@@ -73,6 +95,12 @@ function getSignupFields(form) {
 	};
 }
 
+/**
+ * Hides all inline validation messages on initial load.
+ * @param {SignupFields} fields
+ * @category Sign-Up
+ * @subcategory UI & Init
+ */
 function initMessageVisibility(fields) {
 	[
 		fields.nameMessage,
@@ -87,7 +115,9 @@ function initMessageVisibility(fields) {
 
 /**
  * Binds events to update sign-up form button state.
- * @param {Object} fields
+ * @param {SignupFields} fields
+ * @category Sign-Up
+ * @subcategory UI & Init
  */
 function bindSignupFieldEvents(fields) {
 	const updateState = () => updateSignupButtonState(fields);
@@ -139,7 +169,9 @@ function bindSignupFieldEvents(fields) {
 
 /**
  * Enables/disables the sign-up button based on form validity.
- * @param {Object} fields
+ * @param {SignupFields} fields
+ * @category Sign-Up
+ * @subcategory UI & Init
  */
 function updateSignupButtonState(fields) {
 	const isValid = isSignupInputReady(fields);
@@ -149,8 +181,10 @@ function updateSignupButtonState(fields) {
 
 /**
  * Checks if required inputs (except privacy) are filled and valid.
- * @param {Object} fields
+ * @param {SignupFields} fields
  * @returns {boolean}
+ * @category Sign-Up
+ * @subcategory Validation
  */
 function isSignupInputReady(fields) {
 	return (
@@ -165,7 +199,9 @@ function isSignupInputReady(fields) {
 /**
  * Handles Firebase sign-up submission.
  * @param {SubmitEvent} event
- * @param {Object} fields
+ * @param {SignupFields} fields
+ * @category Sign-Up
+ * @subcategory Firebase Logic
  */
 async function handleSignupSubmit(event, fields) {
 	event.preventDefault();
@@ -199,6 +235,11 @@ async function handleSignupSubmit(event, fields) {
 	}
 }
 
+/**
+ * Displays the success overlay and redirects back to login.
+ * @category Sign-Up
+ * @subcategory UI & Init
+ */
 function showSuccessAnimation() {
 	const overlay = document.getElementById('success-overlay');
 	if (!overlay) {
@@ -220,8 +261,10 @@ function showSuccessAnimation() {
 
 /**
  * Sets the loading state for the sign-up form.
- * @param {Object} fields
+ * @param {SignupFields} fields
  * @param {boolean} isLoading
+ * @category Sign-Up
+ * @subcategory UI & Init
  */
 function setLoadingState(fields, isLoading) {
 	fields.submitButton.dataset.loading = isLoading ? '1' : '0';
@@ -232,6 +275,8 @@ function setLoadingState(fields, isLoading) {
  * Maps Firebase auth errors to readable messages.
  * @param {unknown} error
  * @returns {string}
+ * @category Sign-Up
+ * @subcategory Firebase Logic
  */
 function getAuthErrorMessage(error) {
 	const fallback = 'Registration failed. Please try again.';
@@ -255,8 +300,10 @@ function getAuthErrorMessage(error) {
 
 /**
  * Validates sign-up inputs and shows inline errors.
- * @param {Object} fields
+ * @param {SignupFields} fields
  * @returns {boolean}
+ * @category Sign-Up
+ * @subcategory Validation
  */
 function validateSignupFields(fields) {
 	let isValid = true;
@@ -270,8 +317,10 @@ function validateSignupFields(fields) {
 
 /**
  * Validates the name field.
- * @param {Object} fields
+ * @param {SignupFields} fields
  * @returns {boolean}
+ * @category Sign-Up
+ * @subcategory Validation
  */
 function validateNameField(fields) {
 	if (!fields.nameInput.value.trim()) {
@@ -283,8 +332,10 @@ function validateNameField(fields) {
 
 /**
  * Validates the email field.
- * @param {Object} fields
+ * @param {SignupFields} fields
  * @returns {boolean}
+ * @category Sign-Up
+ * @subcategory Validation
  */
 function validateEmailField(fields) {
 	if (!isEmailValid(fields.emailInput.value)) {
@@ -296,8 +347,10 @@ function validateEmailField(fields) {
 
 /**
  * Validates the password field.
- * @param {Object} fields
+ * @param {SignupFields} fields
  * @returns {boolean}
+ * @category Sign-Up
+ * @subcategory Validation
  */
 function validatePasswordField(fields) {
 	if (fields.passwordInput.value.trim().length < 6) {
@@ -309,8 +362,10 @@ function validatePasswordField(fields) {
 
 /**
  * Validates the confirm password field.
- * @param {Object} fields
+ * @param {SignupFields} fields
  * @returns {boolean}
+ * @category Sign-Up
+ * @subcategory Validation
  */
 function validateConfirmField(fields) {
 	if (fields.passwordInput.value !== fields.confirmInput.value) {
@@ -322,8 +377,10 @@ function validateConfirmField(fields) {
 
 /**
  * Validates the privacy checkbox.
- * @param {Object} fields
+ * @param {SignupFields} fields
  * @returns {boolean}
+ * @category Sign-Up
+ * @subcategory Validation
  */
 function validatePrivacyField(fields) {
 	if (!fields.privacyInput.checked) {

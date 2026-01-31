@@ -2,6 +2,8 @@
  * Validates email address format.
  * @param {string} value
  * @returns {boolean}
+ * @category Shared
+ * @subcategory Validation
  */
 function isEmailValid(value) {
 	return /^\S+@\S+\.\S+$/.test((value || '').trim());
@@ -12,6 +14,8 @@ function isEmailValid(value) {
  * @param {HTMLInputElement} input
  * @param {HTMLElement} message
  * @param {string} text
+ * @category Shared
+ * @subcategory Validation
  */
 function setFieldError(input, message, text) {
 	if (!input || !message) return;
@@ -24,6 +28,8 @@ function setFieldError(input, message, text) {
  * Clears the error state for a field.
  * @param {HTMLInputElement} input
  * @param {HTMLElement} message
+ * @category Shared
+ * @subcategory Validation
  */
 function clearFieldError(input, message) {
 	if (!input || !message) return;
@@ -34,6 +40,8 @@ function clearFieldError(input, message) {
 
 /**
  * Enables password visibility toggles globally.
+ * @category Shared
+ * @subcategory UI & Init
  */
 function initPasswordToggles() {
 	document.querySelectorAll('input[type="password"]').forEach(setupPasswordToggle);
@@ -42,6 +50,8 @@ function initPasswordToggles() {
 /**
  * Wires a password input with toggle icons.
  * @param {HTMLInputElement} input
+ * @category Shared
+ * @subcategory UI & Init
  */
 function setupPasswordToggle(input) {
 	const wrapper = input.closest('.input-field');

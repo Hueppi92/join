@@ -1,5 +1,7 @@
 /**
  * Redirects unauthenticated users away from protected pages.
+ * @category Auth Guard
+ * @subcategory Firebase Logic
  */
 (function enforceAuthGuard() {
 	const loginPath = '../index.html';
