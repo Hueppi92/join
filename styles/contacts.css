@@ -1,0 +1,80 @@
+/* Grundlegende Einstellungen */
+body {
+  margin: 0;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* SIDEBAR: Geht über die volle Höhe */
+aside {
+  width: 231px;
+  height: 100vh; /* Volle Bildschirmhöhe */
+  background-color: #2a3647;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 20; /* Höher als der Header */
+}
+
+/* HEADER: Beginnt erst rechts neben der Sidebar */
+header h2 {
+  margin: 0;
+  padding: 36px 348px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #000000;
+  font-weight: 400;
+  vertical-align: middle;
+}
+
+/* CONTACTS SECTION: Unter dem Header, neben der Sidebar */
+.contacts-section {
+  position: fixed;
+  left: 231px;
+  top: 97px;
+  width: 370px;
+  height: calc(100vh - 97px);
+  background-color: white;
+  border-right: 1px solid #d1d1d1;
+  overflow-y: scroll !important;
+  z-index: 999;
+  pointer-events: all !important;
+}
+
+/* Kontakt-Styling */
+.contact-item {
+  padding: 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.contact-name {
+  display: block;
+  font-weight: bold;
+}
+
+.contact-email {
+  color: #007cee;
+  font-size: 0.9em;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden; /* Das verhindert, dass die ganze Seite wackelt */
+}
+main {
+  margin-left: 231px; /* Platz für die Sidebar */
+  margin-top: 96px; /* Platz für den Header */
+  height: calc(100vh - 96px); /* Volle Höhe minus Header */
+  overflow: hidden; /* Verhindert Scrollen der Hauptseite */
+  position: relative;
+}
+.contact-btn {
+  cursor: pointer;
+  width: 300px;
+  margin: 28px;
+}
