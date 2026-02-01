@@ -1,4 +1,12 @@
 /**
+ * @typedef {Object} UserProfile
+ * @property {string} id - Unique user id.
+ * @property {string} [name] - Display name.
+ * @property {string} [email] - Email address.
+ * @property {number} [createdAt] - Account creation timestamp.
+ */
+
+/**
  * Initializes user context helpers and UI hydration.
  * @category User Context
  * @subcategory UI & Init
@@ -90,7 +98,7 @@
 	/**
 	 * Fetches the user profile from the database or creates a fallback.
 	 * @param {string} userId - User id to fetch.
-	 * @returns {Promise<{id: string, name?: string, email?: string, createdAt?: number} | null>} User profile data.
+	 * @returns {Promise<UserProfile | null>} User profile data.
 	 * @category User Context
 	 * @subcategory Firebase Logic
 	 */
@@ -109,7 +117,7 @@
 
 	/**
 	 * Resolves the active user profile.
-	 * @returns {Promise<{id: string, name?: string, email?: string, createdAt?: number} | null>} Active user profile or null.
+	 * @returns {Promise<UserProfile | null>} Active user profile or null.
 	 * @category User Context
 	 * @subcategory Firebase Logic
 	 */
@@ -137,7 +145,7 @@
 
 	/**
 	 * Updates the profile button initials in the header.
-	 * @param {{name?: string, email?: string} | null} profile - User profile data.
+	 * @param {UserProfile | null} profile - User profile data.
 	 * @category User Context
 	 * @subcategory UI & Init
 	 */
@@ -151,7 +159,7 @@
 
 	/**
 	 * Updates the greeting name on summary pages.
-	 * @param {{name?: string} | null} profile - User profile data.
+	 * @param {UserProfile | null} profile - User profile data.
 	 * @category User Context
 	 * @subcategory UI & Init
 	 */
