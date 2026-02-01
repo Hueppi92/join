@@ -1,7 +1,7 @@
 /**
  * Validates email address format.
- * @param {string} value
- * @returns {boolean}
+ * @param {string} value - Email address to validate.
+ * @returns {boolean} True if the email format is valid.
  * @category Shared
  * @subcategory Validation
  */
@@ -11,9 +11,9 @@ function isEmailValid(value) {
 
 /**
  * Sets the error state for a field.
- * @param {HTMLInputElement} input
- * @param {HTMLElement} message
- * @param {string} text
+ * @param {HTMLInputElement} input - Input element to mark as invalid.
+ * @param {HTMLElement} message - Message element to show the error.
+ * @param {string} text - Error text to display.
  * @category Shared
  * @subcategory Validation
  */
@@ -26,8 +26,8 @@ function setFieldError(input, message, text) {
 
 /**
  * Clears the error state for a field.
- * @param {HTMLInputElement} input
- * @param {HTMLElement} message
+ * @param {HTMLInputElement} input - Input element to clear.
+ * @param {HTMLElement} message - Message element to reset.
  * @category Shared
  * @subcategory Validation
  */
@@ -49,7 +49,7 @@ function initPasswordToggles() {
 
 /**
  * Wires a password input with toggle icons.
- * @param {HTMLInputElement} input
+ * @param {HTMLInputElement} input - Password input to toggle.
  * @category Shared
  * @subcategory UI & Init
  */

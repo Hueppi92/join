@@ -8,7 +8,7 @@
 
 	/**
 	 * Checks whether the current session is a guest login.
-	 * @returns {boolean}
+	 * @returns {boolean} True if the current session is a guest login.
 	 * @category User Context
 	 * @subcategory Firebase Logic
 	 */
@@ -16,7 +16,7 @@
 
 	/**
 	 * Returns whether Firebase auth is available.
-	 * @returns {boolean}
+	 * @returns {boolean} True if Firebase auth is available.
 	 * @category User Context
 	 * @subcategory Firebase Logic
 	 */
@@ -24,7 +24,7 @@
 
 	/**
 	 * Returns whether the database API is available.
-	 * @returns {boolean}
+	 * @returns {boolean} True if the database API is available.
 	 * @category User Context
 	 * @subcategory Firebase Logic
 	 */
@@ -32,7 +32,7 @@
 
 	/**
 	 * Stores the user id in session storage.
-	 * @param {string | undefined | null} userId
+	 * @param {string | undefined | null} userId - User id to store.
 	 * @category User Context
 	 * @subcategory Firebase Logic
 	 */
@@ -43,7 +43,7 @@
 
 	/**
 	 * Gets the stored user id from session storage.
-	 * @returns {string | null}
+	 * @returns {string | null} Stored user id or null if missing.
 	 * @category User Context
 	 * @subcategory Firebase Logic
 	 */
@@ -51,7 +51,7 @@
 
 	/**
 	 * Resolves the active user id from storage or Firebase auth.
-	 * @returns {Promise<string | null>}
+	 * @returns {Promise<string | null>} Resolved user id or null.
 	 * @category User Context
 	 * @subcategory Firebase Logic
 	 */
@@ -77,7 +77,7 @@
 
 	/**
 	 * Derives the display name from the current Firebase auth user.
-	 * @returns {string}
+	 * @returns {string} Derived display name fallback.
 	 * @category User Context
 	 * @subcategory Firebase Logic
 	 */
@@ -89,8 +89,8 @@
 
 	/**
 	 * Fetches the user profile from the database or creates a fallback.
-	 * @param {string} userId
-	 * @returns {Promise<{id: string, name?: string, email?: string, createdAt?: number} | null>}
+	 * @param {string} userId - User id to fetch.
+	 * @returns {Promise<{id: string, name?: string, email?: string, createdAt?: number} | null>} User profile data.
 	 * @category User Context
 	 * @subcategory Firebase Logic
 	 */
@@ -109,7 +109,7 @@
 
 	/**
 	 * Resolves the active user profile.
-	 * @returns {Promise<{id: string, name?: string, email?: string, createdAt?: number} | null>}
+	 * @returns {Promise<{id: string, name?: string, email?: string, createdAt?: number} | null>} Active user profile or null.
 	 * @category User Context
 	 * @subcategory Firebase Logic
 	 */
@@ -121,9 +121,9 @@
 
 	/**
 	 * Computes initials for the profile button.
-	 * @param {string} name
-	 * @param {string} email
-	 * @returns {string}
+	 * @param {string} name - User display name.
+	 * @param {string} email - User email address.
+	 * @returns {string} Computed initials string.
 	 * @category User Context
 	 * @subcategory Validation
 	 */
@@ -137,7 +137,7 @@
 
 	/**
 	 * Updates the profile button initials in the header.
-	 * @param {{name?: string, email?: string} | null} profile
+	 * @param {{name?: string, email?: string} | null} profile - User profile data.
 	 * @category User Context
 	 * @subcategory UI & Init
 	 */
@@ -151,7 +151,7 @@
 
 	/**
 	 * Updates the greeting name on summary pages.
-	 * @param {{name?: string} | null} profile
+	 * @param {{name?: string} | null} profile - User profile data.
 	 * @category User Context
 	 * @subcategory UI & Init
 	 */
@@ -163,8 +163,8 @@
 
 	/**
 	 * Escapes text for safe HTML rendering.
-	 * @param {string} text
-	 * @returns {string}
+	 * @param {string} text - Raw text to escape.
+	 * @returns {string} Escaped HTML string.
 	 * @category User Context
 	 * @subcategory Validation
 	 */
@@ -178,7 +178,7 @@
 
 	/**
 	 * Populates the "assigned to" select with user options.
-	 * @returns {Promise<void>}
+	 * @returns {Promise<void>} Resolves after options are rendered.
 	 * @category User Context
 	 * @subcategory UI & Init
 	 */
@@ -200,7 +200,7 @@
 
 	/**
 	 * Renders the contacts list from user data.
-	 * @returns {Promise<void>}
+	 * @returns {Promise<void>} Resolves after the list is rendered.
 	 * @category User Context
 	 * @subcategory UI & Init
 	 */
@@ -227,7 +227,7 @@
 
 	/**
 	 * Hydrates user context into the UI.
-	 * @returns {Promise<void>}
+	 * @returns {Promise<void>} Resolves after UI hydration completes.
 	 * @category User Context
 	 * @subcategory UI & Init
 	 */

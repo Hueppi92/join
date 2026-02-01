@@ -36,7 +36,7 @@ function runSplashAnimation() {
 
 /**
  * Gets the required splash elements.
- * @returns {{splashLogo: HTMLElement, headerLogo: HTMLElement, splashBg: HTMLElement} | null}
+ * @returns {{splashLogo: HTMLElement, headerLogo: HTMLElement, splashBg: HTMLElement} | null} Required splash elements or null if missing.
  * @category Login
  * @subcategory UI & Init
  */
@@ -51,8 +51,8 @@ function getSplashElements() {
 
 /**
  * Prepares the splash logo position and scale.
- * @param {HTMLElement} splashLogo
- * @param {number} startScale
+ * @param {HTMLElement} splashLogo - The splash logo element.
+ * @param {number} startScale - The initial scale for the splash logo.
  * @category Login
  * @subcategory UI & Init
  */
@@ -64,9 +64,9 @@ function prepareSplashLogo(splashLogo, startScale) {
 
 /**
  * Computes the delta from splash center to header center.
- * @param {HTMLElement} splashLogo
- * @param {DOMRect} endRect
- * @returns {{x: number, y: number}}
+ * @param {HTMLElement} splashLogo - The splash logo element.
+ * @param {DOMRect} endRect - The target header logo bounds.
+ * @returns {{x: number, y: number}} Delta offsets to reach the header logo.
  * @category Login
  * @subcategory UI & Init
  */
@@ -82,10 +82,10 @@ function getCenterDelta(splashLogo, endRect) {
 
 /**
  * Animates the splash logo toward the header logo.
- * @param {HTMLElement} splashLogo
- * @param {number} startScale
- * @param {{x: number, y: number}} delta
- * @returns {Animation}
+ * @param {HTMLElement} splashLogo - The splash logo element.
+ * @param {number} startScale - The initial scale for the splash logo.
+ * @param {{x: number, y: number}} delta - Delta offsets to reach the header logo.
+ * @returns {Animation} The animation instance for the logo.
  * @category Login
  * @subcategory UI & Init
  */
@@ -108,8 +108,8 @@ function animateSplashLogo(splashLogo, startScale, delta) {
 
 /**
  * Calculates the start scale based on the login title and buttons height.
- * @param {number} logoHeight
- * @returns {number}
+ * @param {number} logoHeight - Height of the splash logo.
+ * @returns {number} Calculated start scale.
  * @category Login
  * @subcategory UI & Init
  */
@@ -128,7 +128,7 @@ function getSplashStartScale(logoHeight) {
 
 /**
  * Returns whether the splash should be skipped (e.g. coming from sign-up).
- * @returns {boolean}
+ * @returns {boolean} True if the splash should be skipped.
  * @category Login
  * @subcategory UI & Init
  */
@@ -147,9 +147,9 @@ function clearSkipSplash() {
 
 /**
  * Shows the final state immediately without animations.
- * @param {HTMLElement} splashLogo
- * @param {HTMLElement} headerLogo
- * @param {HTMLElement} splashBg
+ * @param {HTMLElement} splashLogo - The splash logo element.
+ * @param {HTMLElement} headerLogo - The header logo element.
+ * @param {HTMLElement} splashBg - The splash background element.
  * @category Login
  * @subcategory UI & Init
  */
@@ -161,9 +161,9 @@ function showFinalSplashState({ splashLogo, headerLogo, splashBg }) {
 
 /**
  * Finalizes the animation by swapping the logos after animations finish.
- * @param {HTMLElement} splashLogo
- * @param {HTMLElement} headerLogo
- * @param {HTMLElement} splashBg
+ * @param {HTMLElement} splashLogo - The splash logo element.
+ * @param {HTMLElement} headerLogo - The header logo element.
+ * @param {HTMLElement} splashBg - The splash background element.
  * @category Login
  * @subcategory UI & Init
  */
@@ -175,10 +175,10 @@ function finishSplashAnimation({ splashLogo, headerLogo, splashBg }) {
 
 /**
  * Fades out the overlay background.
- * @param {HTMLElement} splashBg
- * @param {number} delay
- * @param {number} duration
- * @returns {Animation | null}
+ * @param {HTMLElement} splashBg - The splash background element.
+ * @param {number} delay - Delay before fading starts.
+ * @param {number} duration - Fade duration in milliseconds.
+ * @returns {Animation | null} The animation instance or null if missing.
  * @category Login
  * @subcategory UI & Init
  */
@@ -194,9 +194,9 @@ function fadeOutOverlay(splashBg, delay = 0, duration = 1000) {
 
 /**
  * Waits for both animations to finish before finalizing the splash.
- * @param {Animation} logoAnimation
- * @param {Animation | null} overlayAnimation
- * @param {{splashLogo: HTMLElement, headerLogo: HTMLElement, splashBg: HTMLElement}} elements
+ * @param {Animation} logoAnimation - The splash logo animation.
+ * @param {Animation | null} overlayAnimation - The overlay fade animation.
+ * @param {{splashLogo: HTMLElement, headerLogo: HTMLElement, splashBg: HTMLElement}} elements - Required splash elements.
  * @category Login
  * @subcategory UI & Init
  */
@@ -207,7 +207,7 @@ function syncAnimationEnd(logoAnimation, overlayAnimation, elements) {
 
 /**
  * Hides an element if it exists.
- * @param {HTMLElement} element
+ * @param {HTMLElement} element - The element to hide.
  * @category Login
  * @subcategory UI & Init
  */
@@ -218,8 +218,8 @@ function hideElement(element) {
 
 /**
  * Sets header logo visibility.
- * @param {HTMLElement} headerLogo
- * @param {boolean} isVisible
+ * @param {HTMLElement} headerLogo - The header logo element.
+ * @param {boolean} isVisible - Whether the header logo should be visible.
  * @category Login
  * @subcategory UI & Init
  */
@@ -247,8 +247,8 @@ function initLoginForm() {
 
 /**
  * Collects login form fields.
- * @param {HTMLFormElement} form
- * @returns {LoginFields | null}
+ * @param {HTMLFormElement} form - The login form element.
+ * @returns {LoginFields | null} Collected form fields or null if missing.
  * @category Login
  * @subcategory UI & Init
  */
@@ -264,7 +264,7 @@ function getLoginFields(form) {
 
 /**
  * Binds events to update login form button state.
- * @param {LoginFields} fields
+ * @param {LoginFields} fields - Collected login form fields.
  * @category Login
  * @subcategory UI & Init
  */
@@ -285,7 +285,7 @@ function bindLoginFieldEvents(fields) {
 
 /**
  * Enables/disables the login button based on form validity.
- * @param {LoginFields} fields
+ * @param {LoginFields} fields - Collected login form fields.
  * @category Login
  * @subcategory UI & Init
  */
@@ -297,8 +297,8 @@ function updateLoginButtonState(fields) {
 
 /**
  * Validates login inputs.
- * @param {LoginFields} fields
- * @returns {boolean}
+ * @param {LoginFields} fields - Collected login form fields.
+ * @returns {boolean} True if the login inputs are valid.
  * @category Login
  * @subcategory Validation
  */
@@ -309,8 +309,8 @@ function isLoginInputValid(fields) {
 
 /**
  * Handles Firebase login submission.
- * @param {SubmitEvent} event
- * @param {LoginFields} fields
+ * @param {SubmitEvent} event - The form submit event.
+ * @param {LoginFields} fields - Collected login form fields.
  * @category Login
  * @subcategory Firebase Logic
  */
@@ -344,8 +344,8 @@ async function handleLoginSubmit(event, fields) {
 
 /**
  * Sets error state on login inputs.
- * @param {LoginFields} fields
- * @param {boolean} hasError
+ * @param {LoginFields} fields - Collected login form fields.
+ * @param {boolean} hasError - Whether inputs should be marked as invalid.
  * @category Login
  * @subcategory UI & Init
  */
@@ -356,8 +356,8 @@ function setLoginFieldErrorState(fields, hasError) {
 
 /**
  * Sets the loading state for the login form.
- * @param {LoginFields} fields
- * @param {boolean} isLoading
+ * @param {LoginFields} fields - Collected login form fields.
+ * @param {boolean} isLoading - Whether the submit action is in progress.
  * @category Login
  * @subcategory UI & Init
  */
@@ -368,8 +368,8 @@ function setLoadingState(fields, isLoading) {
 
 /**
  * Updates the form message.
- * @param {HTMLElement} message
- * @param {string} text
+ * @param {HTMLElement} message - Message element to update.
+ * @param {string} text - Message content to display.
  * @category Login
  * @subcategory UI & Init
  */
@@ -380,8 +380,8 @@ function setFormMessage(message, text) {
 
 /**
  * Maps Firebase auth errors to readable messages.
- * @param {unknown} error
- * @returns {string}
+ * @param {unknown} error - Firebase auth error.
+ * @returns {string} User-facing error message.
  * @category Login
  * @subcategory Firebase Logic
  */
