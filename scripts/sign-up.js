@@ -47,8 +47,8 @@ function initSignupForm() {
 
 /**
  * Collects sign-up form fields and related message elements.
- * @param {HTMLFormElement} form
- * @returns {SignupFields | null}
+ * @param {HTMLFormElement} form - The sign-up form element.
+ * @returns {SignupFields | null} Collected form fields or null if missing.
  * @category Sign-Up
  * @subcategory UI & Init
  */
@@ -97,7 +97,7 @@ function getSignupFields(form) {
 
 /**
  * Hides all inline validation messages on initial load.
- * @param {SignupFields} fields
+ * @param {SignupFields} fields - Collected sign-up form fields.
  * @category Sign-Up
  * @subcategory UI & Init
  */
@@ -115,7 +115,7 @@ function initMessageVisibility(fields) {
 
 /**
  * Binds events to update sign-up form button state.
- * @param {SignupFields} fields
+ * @param {SignupFields} fields - Collected sign-up form fields.
  * @category Sign-Up
  * @subcategory UI & Init
  */
@@ -169,7 +169,7 @@ function bindSignupFieldEvents(fields) {
 
 /**
  * Enables/disables the sign-up button based on form validity.
- * @param {SignupFields} fields
+ * @param {SignupFields} fields - Collected sign-up form fields.
  * @category Sign-Up
  * @subcategory UI & Init
  */
@@ -181,8 +181,8 @@ function updateSignupButtonState(fields) {
 
 /**
  * Checks if required inputs (except privacy) are filled and valid.
- * @param {SignupFields} fields
- * @returns {boolean}
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @returns {boolean} True if all required inputs are valid.
  * @category Sign-Up
  * @subcategory Validation
  */
@@ -198,8 +198,8 @@ function isSignupInputReady(fields) {
 
 /**
  * Handles Firebase sign-up submission.
- * @param {SubmitEvent} event
- * @param {SignupFields} fields
+ * @param {SubmitEvent} event - The form submit event.
+ * @param {SignupFields} fields - Collected sign-up form fields.
  * @category Sign-Up
  * @subcategory Firebase Logic
  */
@@ -261,8 +261,8 @@ function showSuccessAnimation() {
 
 /**
  * Sets the loading state for the sign-up form.
- * @param {SignupFields} fields
- * @param {boolean} isLoading
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @param {boolean} isLoading - Whether the submit action is in progress.
  * @category Sign-Up
  * @subcategory UI & Init
  */
@@ -273,8 +273,8 @@ function setLoadingState(fields, isLoading) {
 
 /**
  * Maps Firebase auth errors to readable messages.
- * @param {unknown} error
- * @returns {string}
+ * @param {unknown} error - Firebase auth error.
+ * @returns {string} User-facing error message.
  * @category Sign-Up
  * @subcategory Firebase Logic
  */
@@ -300,8 +300,8 @@ function getAuthErrorMessage(error) {
 
 /**
  * Validates sign-up inputs and shows inline errors.
- * @param {SignupFields} fields
- * @returns {boolean}
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @returns {boolean} True if all sign-up fields are valid.
  * @category Sign-Up
  * @subcategory Validation
  */
@@ -317,8 +317,8 @@ function validateSignupFields(fields) {
 
 /**
  * Validates the name field.
- * @param {SignupFields} fields
- * @returns {boolean}
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @returns {boolean} True if the name field is valid.
  * @category Sign-Up
  * @subcategory Validation
  */
@@ -332,8 +332,8 @@ function validateNameField(fields) {
 
 /**
  * Validates the email field.
- * @param {SignupFields} fields
- * @returns {boolean}
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @returns {boolean} True if the email field is valid.
  * @category Sign-Up
  * @subcategory Validation
  */
@@ -347,8 +347,8 @@ function validateEmailField(fields) {
 
 /**
  * Validates the password field.
- * @param {SignupFields} fields
- * @returns {boolean}
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @returns {boolean} True if the password field is valid.
  * @category Sign-Up
  * @subcategory Validation
  */
@@ -362,8 +362,8 @@ function validatePasswordField(fields) {
 
 /**
  * Validates the confirm password field.
- * @param {SignupFields} fields
- * @returns {boolean}
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @returns {boolean} True if the confirmation matches the password.
  * @category Sign-Up
  * @subcategory Validation
  */
@@ -377,8 +377,8 @@ function validateConfirmField(fields) {
 
 /**
  * Validates the privacy checkbox.
- * @param {SignupFields} fields
- * @returns {boolean}
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @returns {boolean} True if the privacy checkbox is accepted.
  * @category Sign-Up
  * @subcategory Validation
  */

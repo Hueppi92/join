@@ -30,40 +30,38 @@
         </div>
 
       <div class="board">
-  <div class="column" id="todo">
-    <div class="column-header">
-      <h2>To do</h2>
-      <button class="add-column-btn" onclick="openAddTaskModal('todo')">+</button>
-    </div>
-    <div class="task-list"></div>
-  </div>
+        <div class="column" id="todo">
+          <div class="column-header">
+            <h2>To do</h2>
+            <button class="add-column-btn" onclick="openAddTaskModal('todo')">+</button>
+          </div>
+          <div class="task-list"></div>
+        </div>
 
-  <div class="column" id="in-progress">
-    <div class="column-header">
-      <h2>In progress</h2>
-      <button class="add-column-btn" onclick="openAddTaskModal('in-progress')">+</button>
-    </div>
-    <div class="task-list"></div>
-  </div>
+        <div class="column" id="in-progress">
+          <div class="column-header">
+            <h2>In progress</h2>
+            <button class="add-column-btn" onclick="openAddTaskModal('in-progress')">+</button>
+          </div>
+          <div class="task-list"></div>
+        </div>
 
-  <div class="column" id="await-feedback">
-    <div class="column-header">
-      <h2>Await feedback</h2>
-      <button class="add-column-btn" onclick="openAddTaskModal('await-feedback')">+</button>
-    </div>
-    <div class="task-list"></div>
-  </div>
+        <div class="column" id="await-feedback">
+          <div class="column-header">
+            <h2>Await feedback</h2>
+            <button class="add-column-btn" onclick="openAddTaskModal('await-feedback')">+</button>
+          </div>
+          <div class="task-list"></div>
+        </div>
 
-  <div class="column" id="done">
-    <div class="column-header">
-      <h2>Done</h2>
-      <button class="add-column-btn" onclick="openAddTaskModal('done')">+</button>
-    </div>
-    <div class="task-list"></div>
-  </div>
-</div>
+        <div class="column" id="done">
+          <div class="column-header">
+            <h2>Done</h2>
+            <button class="add-column-btn" onclick="openAddTaskModal('done')">+</button>
+          </div>
+          <div class="task-list"></div>
+        </div>
       </div>
-
       <aside>
         <img src="../assets/img/join_logo.svg" alt="Join Logo" />
         <nav class="sidebar-navigation">
@@ -73,8 +71,18 @@
           <div class="sidebar-navigation-item"><a href="./contacts.html"><img src="../assets/icons/contacts_icon.svg" alt="Contacts Icon">Contacts</a></div>
         </nav>
         <div class="sidebar-legal-links">
-          <a href="./privacy-policy.html">Privacy Policy</a>
-          <a href="./legal-notice.html">Legal notice</a>
+          <div class="center">
+            <div class="active-links">
+              <div class="nav-links">
+                <a href="./privacy-policy.html">Privacy Policy</a>
+              </div>
+            </div>
+            <div class="active-links">
+              <div class="nav-links">
+                <a href="./legal-notice.html">Legal notice</a>
+              </div>
+            </div>
+          </div>
         </div>
       </aside>
     </main>
