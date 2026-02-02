@@ -164,6 +164,7 @@ aside > img {
 
 .active-links:not(.active) a:hover {
     color: var(--light-blue);
+    font-weight: 600;
 }
 
 .active-links .active a:hover {
@@ -187,4 +188,30 @@ aside > img {
 
 .profile-btn:hover {
     background-color: rgb(232, 232, 232);
+}
+
+.profile-overlay {
+    display: block;
+    position: fixed;
+    top: 96px;
+    right: 40px;
+    width: 150px;
+    height: 158px;
+    background-color: var(--dark-blue);
+    border: 1px solid #D1D1D1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 20px 0 20px 20px;
+    z-index: 3;
+}
+
+.profile-overlay nav ul {
+    list-style: none;
+    padding: 16px 24px;
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-overlay a {
+    color: var(--white);
+    text-decoration: none;
 }
