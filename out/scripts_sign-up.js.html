@@ -1,0 +1,509 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> scripts/sign-up.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">Join Project</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Global</h3><ul><li><a href="global.html#closeAddTaskModal">closeAddTaskModal</a></li><li><a href="global.html#closeTaskDetail">closeTaskDetail</a></li><li><a href="global.html#createTask">createTask</a></li><li><a href="global.html#currentSelectedStatus">currentSelectedStatus</a></li><li><a href="global.html#deleteTask">deleteTask</a></li><li><a href="global.html#editTask">editTask</a></li><li><a href="global.html#getCardTemplate">getCardTemplate</a></li><li><a href="global.html#getTaskDetailTemplate">getTaskDetailTemplate</a></li><li><a href="global.html#handleOverlayClick">handleOverlayClick</a></li><li><a href="global.html#onDrop">onDrop</a></li><li><a href="global.html#openAddTaskModal">openAddTaskModal</a></li><li><a href="global.html#openTaskDetail">openTaskDetail</a></li><li><a href="global.html#renderBoard">renderBoard</a></li><li><a href="global.html#renderColumnHTML">renderColumnHTML</a></li><li><a href="global.html#renderSummary">renderSummary</a></li><li><a href="global.html#renderUserName">renderUserName</a></li><li><a href="global.html#setGreeting">setGreeting</a></li><li><a href="global.html#updateSubtaskStatus">updateSubtaskStatus</a></li></ul></div><div class="category"><h2>Login</h2><h3>Global</h3><ul><li><a href="global.html#animateSplashLogo">animateSplashLogo</a></li><li><a href="global.html#bindLoginFieldEvents">bindLoginFieldEvents</a></li><li><a href="global.html#clearSkipSplash">clearSkipSplash</a></li><li><a href="global.html#fadeOutOverlay">fadeOutOverlay</a></li><li><a href="global.html#finishSplashAnimation">finishSplashAnimation</a></li><li><a href="global.html#getAuthErrorMessage">getAuthErrorMessage</a></li><li><a href="global.html#getCenterDelta">getCenterDelta</a></li><li><a href="global.html#getLoginFields">getLoginFields</a></li><li><a href="global.html#getSplashElements">getSplashElements</a></li><li><a href="global.html#getSplashStartScale">getSplashStartScale</a></li><li><a href="global.html#handleGuestLogin">handleGuestLogin</a></li><li><a href="global.html#handleLoginSubmit">handleLoginSubmit</a></li><li><a href="global.html#hideElement">hideElement</a></li><li><a href="global.html#initGuestLogin">initGuestLogin</a></li><li><a href="global.html#initLoginForm">initLoginForm</a></li><li><a href="global.html#isLoginInputValid">isLoginInputValid</a></li><li><a href="global.html#prepareSplashLogo">prepareSplashLogo</a></li><li><a href="global.html#runSplashAnimation">runSplashAnimation</a></li><li><a href="global.html#setFormMessage">setFormMessage</a></li><li><a href="global.html#setHeaderLogoVisibility">setHeaderLogoVisibility</a></li><li><a href="global.html#setLoadingState">setLoadingState</a></li><li><a href="global.html#setLoginFieldErrorState">setLoginFieldErrorState</a></li><li><a href="global.html#shouldSkipSplash">shouldSkipSplash</a></li><li><a href="global.html#showFinalSplashState">showFinalSplashState</a></li><li><a href="global.html#syncAnimationEnd">syncAnimationEnd</a></li><li><a href="global.html#updateLoginButtonState">updateLoginButtonState</a></li></ul></div><div class="category"><h2>Shared</h2><h3>Global</h3><ul><li><a href="global.html#clearFieldError">clearFieldError</a></li><li><a href="global.html#initPasswordToggles">initPasswordToggles</a></li><li><a href="global.html#isEmailValid">isEmailValid</a></li><li><a href="global.html#setFieldError">setFieldError</a></li><li><a href="global.html#setupPasswordToggle">setupPasswordToggle</a></li></ul></div><div class="category"><h2>Sign-Up</h2><h3>Global</h3><ul><li><a href="global.html#bindSignupFieldEvents">bindSignupFieldEvents</a></li><li><a href="global.html#getAuthErrorMessage">getAuthErrorMessage</a></li><li><a href="global.html#getSignupFields">getSignupFields</a></li><li><a href="global.html#handleSignupSubmit">handleSignupSubmit</a></li><li><a href="global.html#initMessageVisibility">initMessageVisibility</a></li><li><a href="global.html#initSignupBackButton">initSignupBackButton</a></li><li><a href="global.html#initSignupForm">initSignupForm</a></li><li><a href="global.html#isSignupInputReady">isSignupInputReady</a></li><li><a href="global.html#setLoadingState">setLoadingState</a></li><li><a href="global.html#showSuccessAnimation">showSuccessAnimation</a></li><li><a href="global.html#updateSignupButtonState">updateSignupButtonState</a></li><li><a href="global.html#validateConfirmField">validateConfirmField</a></li><li><a href="global.html#validateEmailField">validateEmailField</a></li><li><a href="global.html#validateNameField">validateNameField</a></li><li><a href="global.html#validatePasswordField">validatePasswordField</a></li><li><a href="global.html#validatePrivacyField">validatePrivacyField</a></li><li><a href="global.html#validateSignupFields">validateSignupFields</a></li></ul></div><div class="category"><h2>Summary</h2><h3>Global</h3><ul><li><a href="global.html#getTasks">getTasks</a></li><li><a href="global.html#getUserName">getUserName</a></li><li><a href="global.html#loadSummary">loadSummary</a></li><li><a href="global.html#resolveActiveUserId">resolveActiveUserId</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>scripts/sign-up.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @typedef {Object} SignupFields
+ * @property {HTMLFormElement} form - The form element.
+ * @property {HTMLInputElement} nameInput - The name input field.
+ * @property {HTMLInputElement} emailInput - The email input field.
+ * @property {HTMLInputElement} passwordInput - The password input field.
+ * @property {HTMLInputElement} confirmInput - The password confirmation input field.
+ * @property {HTMLInputElement} privacyInput - The privacy checkbox.
+ * @property {HTMLButtonElement} submitButton - The submit button.
+ * @property {HTMLElement} nameMessage - Error message element for name.
+ * @property {HTMLElement} emailMessage - Error message element for email.
+ * @property {HTMLElement} passwordMessage - Error message element for password.
+ * @property {HTMLElement} confirmMessage - Error message element for confirm password.
+ * @property {HTMLElement} privacyMessage - Error message element for privacy.
+ */
+
+/**
+ * Sets a flag to skip the splash animation when returning to the login page.
+ * @category Sign-Up
+ * @subcategory UI &amp; Init
+ */
+function initSignupBackButton() {
+	const backButton = document.querySelector('.signup-back');
+	if (!backButton) return;
+
+	backButton.addEventListener('click', () => {
+		sessionStorage.setItem('skipSplash', '1');
+	});
+}
+
+/**
+ * Initializes Firebase registration handling for the sign-up form.
+ * @category Sign-Up
+ * @subcategory UI &amp; Init
+ */
+function initSignupForm() {
+	const form = document.querySelector('.login-form');
+	if (!form) return;
+
+	const fields = getSignupFields(form);
+	if (!fields) return;
+
+	bindSignupFieldEvents(fields);
+	form.addEventListener('submit', (event) => handleSignupSubmit(event, fields));
+}
+
+
+/**
+ * Collects sign-up form fields and related message elements.
+ * @param {HTMLFormElement} form - The sign-up form element.
+ * @returns {SignupFields | null} Collected form fields or null if missing.
+ * @category Sign-Up
+ * @subcategory UI &amp; Init
+ */
+function getSignupFields(form) {
+	const nameInput = form.querySelector('input[name="name"]');
+	const emailInput = form.querySelector('input[name="email"]');
+	const passwordInput = form.querySelector('input[name="password"]');
+	const confirmInput = form.querySelector('input[name="confirmPassword"]');
+	const privacyInput = form.querySelector('input[name="privacy"]');
+	const submitButton = form.querySelector('button[type="submit"]');
+	const nameMessage = form.querySelector('#msg-name');
+	const emailMessage = form.querySelector('#msg-email');
+	const passwordMessage = form.querySelector('#msg-password');
+	const confirmMessage = form.querySelector('#msg-confirmPassword');
+	const privacyMessage = form.querySelector('#msg-privacy');
+	if (
+		!nameInput ||
+		!emailInput ||
+		!passwordInput ||
+		!confirmInput ||
+		!privacyInput ||
+		!submitButton ||
+		!nameMessage ||
+		!emailMessage ||
+		!passwordMessage ||
+		!confirmMessage ||
+		!privacyMessage
+	)
+		return null;
+
+	return {
+		form,
+		nameInput,
+		emailInput,
+		passwordInput,
+		confirmInput,
+		privacyInput,
+		submitButton,
+		nameMessage,
+		emailMessage,
+		passwordMessage,
+		confirmMessage,
+		privacyMessage,
+	};
+}
+
+/**
+ * Hides all inline validation messages on initial load.
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @category Sign-Up
+ * @subcategory UI &amp; Init
+ */
+function initMessageVisibility(fields) {
+	[
+		fields.nameMessage,
+		fields.emailMessage,
+		fields.passwordMessage,
+		fields.confirmMessage,
+		fields.privacyMessage,
+	].forEach((message) => {
+		message.style.visibility = 'hidden';
+	});
+}
+
+/**
+ * Binds events to update sign-up form button state.
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @category Sign-Up
+ * @subcategory UI &amp; Init
+ */
+function bindSignupFieldEvents(fields) {
+	const updateState = () => updateSignupButtonState(fields);
+	initMessageVisibility(fields);
+	fields.nameInput.addEventListener('input', () => {
+		clearFieldError(fields.nameInput, fields.nameMessage);
+		updateState();
+	});
+	fields.emailInput.addEventListener('input', () => {
+		clearFieldError(fields.emailInput, fields.emailMessage);
+		updateState();
+	});
+	fields.passwordInput.addEventListener('input', () => {
+		clearFieldError(fields.passwordInput, fields.passwordMessage);
+		updateState();
+	});
+	fields.confirmInput.addEventListener('input', () => {
+		clearFieldError(fields.confirmInput, fields.confirmMessage);
+		updateState();
+	});
+	fields.nameInput.addEventListener('blur', () => {
+		if (fields.nameInput.value.trim().length > 0) {
+			validateNameField(fields);
+		}
+	});
+	fields.emailInput.addEventListener('blur', () => {
+		if (fields.emailInput.value.trim().length > 0) {
+			validateEmailField(fields);
+		}
+	});
+	fields.passwordInput.addEventListener('blur', () => {
+		if (fields.passwordInput.value.trim().length > 0) {
+			validatePasswordField(fields);
+		}
+	});
+	fields.confirmInput.addEventListener('blur', () => {
+		if (fields.confirmInput.value.trim().length > 0) {
+			validateConfirmField(fields);
+		}
+	});
+	fields.privacyInput.addEventListener('change', () => {
+		if (fields.privacyInput.checked) {
+			clearFieldError(fields.privacyInput, fields.privacyMessage);
+		}
+		updateState();
+	});
+	updateSignupButtonState(fields);
+}
+
+/**
+ * Enables/disables the sign-up button based on form validity.
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @category Sign-Up
+ * @subcategory UI &amp; Init
+ */
+function updateSignupButtonState(fields) {
+	const isValid = isSignupInputReady(fields);
+	const isLoading = fields.submitButton.dataset.loading === '1';
+	fields.submitButton.disabled = isLoading || !isValid;
+}
+
+/**
+ * Checks if required inputs (except privacy) are filled and valid.
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @returns {boolean} True if all required inputs are valid.
+ * @category Sign-Up
+ * @subcategory Validation
+ */
+function isSignupInputReady(fields) {
+	return (
+		fields.nameInput.value.trim().length > 0 &amp;&amp;
+		isEmailValid(fields.emailInput.value) &amp;&amp;
+		fields.passwordInput.value.trim().length >= 6 &amp;&amp;
+		fields.passwordInput.value === fields.confirmInput.value
+	);
+}
+
+
+/**
+ * Handles Firebase sign-up submission.
+ * @param {SubmitEvent} event - The form submit event.
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @category Sign-Up
+ * @subcategory Firebase Logic
+ */
+async function handleSignupSubmit(event, fields) {
+	event.preventDefault();
+	clearFieldError(fields.nameInput, fields.nameMessage);
+	clearFieldError(fields.emailInput, fields.emailMessage);
+	clearFieldError(fields.passwordInput, fields.passwordMessage);
+	clearFieldError(fields.confirmInput, fields.confirmMessage);
+	clearFieldError(fields.privacyInput, fields.privacyMessage);
+	if (!validateSignupFields(fields)) return;
+
+	setLoadingState(fields, true);
+	try {
+		const credential = await firebase.auth().createUserWithEmailAndPassword(
+			fields.emailInput.value.trim(),
+			fields.passwordInput.value
+		);
+		sessionStorage.setItem('userId', credential.user.uid);
+		await credential.user.updateProfile({ displayName: fields.nameInput.value.trim() });
+		await firebase.database().ref(`users/${credential.user.uid}`).set({
+			name: fields.nameInput.value.trim(),
+			email: fields.emailInput.value.trim(),
+			createdAt: Date.now(),
+		});
+		sessionStorage.removeItem('guestLogin');
+		sessionStorage.setItem('skipSplash', '1');
+		showSuccessAnimation();
+	} catch (error) {
+		setFieldError(fields.emailInput, fields.emailMessage, getAuthErrorMessage(error));
+	} finally {
+		setLoadingState(fields, false);
+	}
+}
+
+/**
+ * Displays the success overlay and redirects back to login.
+ * @category Sign-Up
+ * @subcategory UI &amp; Init
+ */
+function showSuccessAnimation() {
+	const overlay = document.getElementById('success-overlay');
+	if (!overlay) {
+		window.location.href = '../index.html';
+		return;
+	}
+
+	overlay.classList.remove('d-none');
+	const image = overlay.querySelector('img');
+	if (image) {
+		image.classList.add('slide-in-bottom');
+	}
+
+	setTimeout(() => {
+		sessionStorage.setItem('skipSplash', '1');
+		window.location.href = '../index.html';
+	}, 1000);
+}
+
+/**
+ * Sets the loading state for the sign-up form.
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @param {boolean} isLoading - Whether the submit action is in progress.
+ * @category Sign-Up
+ * @subcategory UI &amp; Init
+ */
+function setLoadingState(fields, isLoading) {
+	fields.submitButton.dataset.loading = isLoading ? '1' : '0';
+	updateSignupButtonState(fields);
+}
+
+/**
+ * Maps Firebase auth errors to readable messages.
+ * @param {unknown} error - Firebase auth error.
+ * @returns {string} User-facing error message.
+ * @category Sign-Up
+ * @subcategory Firebase Logic
+ */
+function getAuthErrorMessage(error) {
+	const fallback = 'Registration failed. Please try again.';
+	if (!error || typeof error !== 'object' || !('code' in error)) return fallback;
+
+	switch (error.code) {
+		case 'auth/operation-not-allowed':
+			return 'Email/password sign-in is not enabled in Firebase yet.';
+		case 'auth/network-request-failed':
+			return 'Network error. Please check your connection.';
+		case 'auth/email-already-in-use':
+			return 'This email address is already registered.';
+		case 'auth/invalid-email':
+			return 'Please enter a valid email address.';
+		case 'auth/weak-password':
+			return 'Password is too weak. Please use at least 6 characters.';
+		default:
+			return fallback;
+	}
+}
+
+/**
+ * Validates sign-up inputs and shows inline errors.
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @returns {boolean} True if all sign-up fields are valid.
+ * @category Sign-Up
+ * @subcategory Validation
+ */
+function validateSignupFields(fields) {
+	let isValid = true;
+	if (!validateNameField(fields)) isValid = false;
+	if (!validateEmailField(fields)) isValid = false;
+	if (!validatePasswordField(fields)) isValid = false;
+	if (!validateConfirmField(fields)) isValid = false;
+	if (!validatePrivacyField(fields)) isValid = false;
+	return isValid;
+}
+
+/**
+ * Validates the name field.
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @returns {boolean} True if the name field is valid.
+ * @category Sign-Up
+ * @subcategory Validation
+ */
+function validateNameField(fields) {
+	if (!fields.nameInput.value.trim()) {
+		setFieldError(fields.nameInput, fields.nameMessage, 'Please enter a name.');
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Validates the email field.
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @returns {boolean} True if the email field is valid.
+ * @category Sign-Up
+ * @subcategory Validation
+ */
+function validateEmailField(fields) {
+	if (!isEmailValid(fields.emailInput.value)) {
+		setFieldError(fields.emailInput, fields.emailMessage, 'Please enter a valid email address.');
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Validates the password field.
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @returns {boolean} True if the password field is valid.
+ * @category Sign-Up
+ * @subcategory Validation
+ */
+function validatePasswordField(fields) {
+	if (fields.passwordInput.value.trim().length &lt; 6) {
+		setFieldError(fields.passwordInput, fields.passwordMessage, 'Password must be at least 6 characters long.');
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Validates the confirm password field.
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @returns {boolean} True if the confirmation matches the password.
+ * @category Sign-Up
+ * @subcategory Validation
+ */
+function validateConfirmField(fields) {
+	if (fields.passwordInput.value !== fields.confirmInput.value) {
+		setFieldError(fields.confirmInput, fields.confirmMessage, 'Passwords do not match.');
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Validates the privacy checkbox.
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @returns {boolean} True if the privacy checkbox is accepted.
+ * @category Sign-Up
+ * @subcategory Validation
+ */
+function validatePrivacyField(fields) {
+	if (!fields.privacyInput.checked) {
+		setFieldError(fields.privacyInput, fields.privacyMessage, 'Please accept the privacy policy.');
+		return false;
+	}
+	return true;
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+	initSignupBackButton();
+	initSignupForm();
+	initPasswordToggles();
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+
+</body>
+</html>

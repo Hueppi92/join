@@ -1,0 +1,367 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> scripts/user-context.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">Join Project</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Global</h3><ul><li><a href="global.html#closeAddTaskModal">closeAddTaskModal</a></li><li><a href="global.html#closeTaskDetail">closeTaskDetail</a></li><li><a href="global.html#createTask">createTask</a></li><li><a href="global.html#currentSelectedStatus">currentSelectedStatus</a></li><li><a href="global.html#deleteTask">deleteTask</a></li><li><a href="global.html#editTask">editTask</a></li><li><a href="global.html#getCardTemplate">getCardTemplate</a></li><li><a href="global.html#getTaskDetailTemplate">getTaskDetailTemplate</a></li><li><a href="global.html#handleOverlayClick">handleOverlayClick</a></li><li><a href="global.html#onDrop">onDrop</a></li><li><a href="global.html#openAddTaskModal">openAddTaskModal</a></li><li><a href="global.html#openTaskDetail">openTaskDetail</a></li><li><a href="global.html#renderBoard">renderBoard</a></li><li><a href="global.html#renderColumnHTML">renderColumnHTML</a></li><li><a href="global.html#renderSummary">renderSummary</a></li><li><a href="global.html#renderUserName">renderUserName</a></li><li><a href="global.html#setGreeting">setGreeting</a></li><li><a href="global.html#updateSubtaskStatus">updateSubtaskStatus</a></li></ul></div><div class="category"><h2>Login</h2><h3>Global</h3><ul><li><a href="global.html#animateSplashLogo">animateSplashLogo</a></li><li><a href="global.html#bindLoginFieldEvents">bindLoginFieldEvents</a></li><li><a href="global.html#clearSkipSplash">clearSkipSplash</a></li><li><a href="global.html#fadeOutOverlay">fadeOutOverlay</a></li><li><a href="global.html#finishSplashAnimation">finishSplashAnimation</a></li><li><a href="global.html#getAuthErrorMessage">getAuthErrorMessage</a></li><li><a href="global.html#getCenterDelta">getCenterDelta</a></li><li><a href="global.html#getLoginFields">getLoginFields</a></li><li><a href="global.html#getSplashElements">getSplashElements</a></li><li><a href="global.html#getSplashStartScale">getSplashStartScale</a></li><li><a href="global.html#handleGuestLogin">handleGuestLogin</a></li><li><a href="global.html#handleLoginSubmit">handleLoginSubmit</a></li><li><a href="global.html#hideElement">hideElement</a></li><li><a href="global.html#initGuestLogin">initGuestLogin</a></li><li><a href="global.html#initLoginForm">initLoginForm</a></li><li><a href="global.html#isLoginInputValid">isLoginInputValid</a></li><li><a href="global.html#prepareSplashLogo">prepareSplashLogo</a></li><li><a href="global.html#runSplashAnimation">runSplashAnimation</a></li><li><a href="global.html#setFormMessage">setFormMessage</a></li><li><a href="global.html#setHeaderLogoVisibility">setHeaderLogoVisibility</a></li><li><a href="global.html#setLoadingState">setLoadingState</a></li><li><a href="global.html#setLoginFieldErrorState">setLoginFieldErrorState</a></li><li><a href="global.html#shouldSkipSplash">shouldSkipSplash</a></li><li><a href="global.html#showFinalSplashState">showFinalSplashState</a></li><li><a href="global.html#syncAnimationEnd">syncAnimationEnd</a></li><li><a href="global.html#updateLoginButtonState">updateLoginButtonState</a></li></ul></div><div class="category"><h2>Shared</h2><h3>Global</h3><ul><li><a href="global.html#clearFieldError">clearFieldError</a></li><li><a href="global.html#initPasswordToggles">initPasswordToggles</a></li><li><a href="global.html#isEmailValid">isEmailValid</a></li><li><a href="global.html#setFieldError">setFieldError</a></li><li><a href="global.html#setupPasswordToggle">setupPasswordToggle</a></li></ul></div><div class="category"><h2>Sign-Up</h2><h3>Global</h3><ul><li><a href="global.html#bindSignupFieldEvents">bindSignupFieldEvents</a></li><li><a href="global.html#getAuthErrorMessage">getAuthErrorMessage</a></li><li><a href="global.html#getSignupFields">getSignupFields</a></li><li><a href="global.html#handleSignupSubmit">handleSignupSubmit</a></li><li><a href="global.html#initMessageVisibility">initMessageVisibility</a></li><li><a href="global.html#initSignupBackButton">initSignupBackButton</a></li><li><a href="global.html#initSignupForm">initSignupForm</a></li><li><a href="global.html#isSignupInputReady">isSignupInputReady</a></li><li><a href="global.html#setLoadingState">setLoadingState</a></li><li><a href="global.html#showSuccessAnimation">showSuccessAnimation</a></li><li><a href="global.html#updateSignupButtonState">updateSignupButtonState</a></li><li><a href="global.html#validateConfirmField">validateConfirmField</a></li><li><a href="global.html#validateEmailField">validateEmailField</a></li><li><a href="global.html#validateNameField">validateNameField</a></li><li><a href="global.html#validatePasswordField">validatePasswordField</a></li><li><a href="global.html#validatePrivacyField">validatePrivacyField</a></li><li><a href="global.html#validateSignupFields">validateSignupFields</a></li></ul></div><div class="category"><h2>Summary</h2><h3>Global</h3><ul><li><a href="global.html#getTasks">getTasks</a></li><li><a href="global.html#getUserName">getUserName</a></li><li><a href="global.html#loadSummary">loadSummary</a></li><li><a href="global.html#resolveActiveUserId">resolveActiveUserId</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>scripts/user-context.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @typedef {Object} UserProfile
+ * @property {string} id - Unique user id.
+ * @property {string} [name] - Display name.
+ * @property {string} [email] - Email address.
+ * @property {number} [createdAt] - Account creation timestamp.
+ */
+
+/**
+ * Initializes user context helpers and UI hydration.
+ * @category User Context
+ * @subcategory UI &amp; Init
+ */
+(function initUserContext() {
+	if (typeof window === 'undefined') return;
+
+	/**
+	 * Checks whether the current session is a guest login.
+	 * @returns {boolean} True if the current session is a guest login.
+	 * @category User Context
+	 * @subcategory Firebase Logic
+	 */
+	const isGuest = () => sessionStorage.getItem('guestLogin') === '1';
+
+	/**
+	 * Returns whether Firebase auth is available.
+	 * @returns {boolean} True if Firebase auth is available.
+	 * @category User Context
+	 * @subcategory Firebase Logic
+	 */
+	const hasAuth = () => typeof firebase !== 'undefined' &amp;&amp; typeof firebase.auth === 'function';
+
+	/**
+	 * Returns whether the database API is available.
+	 * @returns {boolean} True if the database API is available.
+	 * @category User Context
+	 * @subcategory Firebase Logic
+	 */
+	const hasDb = () => typeof db !== 'undefined' &amp;&amp; db &amp;&amp; typeof db.ref === 'function';
+
+	/**
+	 * Stores the user id in session storage.
+	 * @param {string | undefined | null} userId - User id to store.
+	 * @category User Context
+	 * @subcategory Firebase Logic
+	 */
+	const setStoredUserId = (userId) => {
+		if (!userId) return;
+		sessionStorage.setItem('userId', userId);
+	};
+
+	/**
+	 * Gets the stored user id from session storage.
+	 * @returns {string | null} Stored user id or null if missing.
+	 * @category User Context
+	 * @subcategory Firebase Logic
+	 */
+	const getStoredUserId = () => sessionStorage.getItem('userId');
+
+	/**
+	 * Resolves the active user id from storage or Firebase auth.
+	 * @returns {Promise&lt;string | null>} Resolved user id or null.
+	 * @category User Context
+	 * @subcategory Firebase Logic
+	 */
+	const resolveUserId = async () => {
+		if (isGuest()) return null;
+		const storedId = getStoredUserId();
+		if (storedId) return storedId;
+		if (!hasAuth()) return null;
+
+		const currentUser = firebase.auth().currentUser;
+		if (currentUser &amp;&amp; currentUser.uid) {
+			setStoredUserId(currentUser.uid);
+			return currentUser.uid;
+		}
+
+		return new Promise((resolve) => {
+			firebase.auth().onAuthStateChanged((user) => {
+				setStoredUserId(user?.uid);
+				resolve(user?.uid || null);
+			});
+		});
+	};
+
+	/**
+	 * Derives the display name from the current Firebase auth user.
+	 * @returns {string} Derived display name fallback.
+	 * @category User Context
+	 * @subcategory Firebase Logic
+	 */
+	const deriveNameFromAuth = () => {
+		if (!hasAuth()) return '';
+		const user = firebase.auth().currentUser;
+		return user?.displayName || user?.email?.split('@')[0] || '';
+	};
+
+	/**
+	 * Fetches the user profile from the database or creates a fallback.
+	 * @param {string} userId - User id to fetch.
+	 * @returns {Promise&lt;UserProfile | null>} User profile data.
+	 * @category User Context
+	 * @subcategory Firebase Logic
+	 */
+	const fetchUserProfile = async (userId) => {
+		if (!userId || !hasDb()) return null;
+		const snapshot = await db.ref(`users/${userId}`).get();
+		const data = snapshot.val();
+		if (data) return { id: userId, ...data };
+
+		const name = deriveNameFromAuth() || 'User';
+		const email = hasAuth() ? firebase.auth().currentUser?.email || '' : '';
+		const fallbackProfile = { name, email, createdAt: Date.now() };
+		await db.ref(`users/${userId}`).update(fallbackProfile);
+		return { id: userId, ...fallbackProfile };
+	};
+
+	/**
+	 * Resolves the active user profile.
+	 * @returns {Promise&lt;UserProfile | null>} Active user profile or null.
+	 * @category User Context
+	 * @subcategory Firebase Logic
+	 */
+	const getActiveUserProfile = async () => {
+		const userId = await resolveUserId();
+		if (!userId) return null;
+		return fetchUserProfile(userId);
+	};
+
+	/**
+	 * Computes initials for the profile button.
+	 * @param {string} name - User display name.
+	 * @param {string} email - User email address.
+	 * @returns {string} Computed initials string.
+	 * @category User Context
+	 * @subcategory Validation
+	 */
+	const computeInitials = (name, email) => {
+		const source = (name || '').trim() || (email || '').trim();
+		if (!source) return 'G';
+		const parts = source.split(/\s+/).filter(Boolean);
+		if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+		return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+	};
+
+	/**
+	 * Updates the profile button initials in the header.
+	 * @param {UserProfile | null} profile - User profile data.
+	 * @category User Context
+	 * @subcategory UI &amp; Init
+	 */
+	const updateHeaderProfile = (profile) => {
+		const btn = document.querySelector('.profile-btn');
+		if (!btn) return;
+		const initials = computeInitials(profile?.name, profile?.email);
+		btn.textContent = initials;
+		btn.setAttribute('aria-label', profile?.name || 'Guest');
+	};
+
+	/**
+	 * Updates the greeting name on summary pages.
+	 * @param {UserProfile | null} profile - User profile data.
+	 * @category User Context
+	 * @subcategory UI &amp; Init
+	 */
+	const updateGreetingName = (profile) => {
+		const nameEl = document.getElementById('user-name');
+		if (!nameEl) return;
+		nameEl.textContent = profile?.name || 'Guest';
+	};
+
+	/**
+	 * Escapes text for safe HTML rendering.
+	 * @param {string} text - Raw text to escape.
+	 * @returns {string} Escaped HTML string.
+	 * @category User Context
+	 * @subcategory Validation
+	 */
+	const escapeHtml = (text = '') =>
+		String(text)
+			.replace(/&amp;/g, '&amp;amp;')
+			.replace(/&lt;/g, '&amp;lt;')
+			.replace(/>/g, '&amp;gt;')
+			.replace(/"/g, '&amp;quot;')
+			.replace(/'/g, '&amp;#39;');
+
+	/**
+	 * Populates the "assigned to" select with user options.
+	 * @returns {Promise&lt;void>} Resolves after options are rendered.
+	 * @category User Context
+	 * @subcategory UI &amp; Init
+	 */
+	const populateAssignedToSelect = async () => {
+		const select = document.querySelector('select[data-role="assigned-to"]');
+		if (!select || !hasDb()) return;
+
+		const snapshot = await db.ref('users').get();
+		const users = snapshot.val() || {};
+
+		let optionsHtml = '&lt;option disabled selected data-placeholder="1">Select contacts to assign&lt;/option>';
+		Object.entries(users).forEach(([id, user]) => {
+			const safeId = escapeHtml(id);
+			const name = escapeHtml(user?.name || user?.email || 'User');
+			optionsHtml += `&lt;option value="${safeId}">${name}&lt;/option>`;
+		});
+		select.innerHTML = optionsHtml;
+	};
+
+	/**
+	 * Renders the contacts list from user data.
+	 * @returns {Promise&lt;void>} Resolves after the list is rendered.
+	 * @category User Context
+	 * @subcategory UI &amp; Init
+	 */
+	const renderContactsList = async () => {
+		const list = document.getElementById('contacts-list');
+		if (!list || !hasDb()) return;
+
+		const snapshot = await db.ref('users').get();
+		const users = snapshot.val() || {};
+		let listHtml = '';
+		Object.entries(users).forEach(([id, user]) => {
+			const safeId = escapeHtml(id);
+			const name = escapeHtml(user?.name || 'Unnamed');
+			const email = escapeHtml(user?.email || '');
+			listHtml += `
+				&lt;li class="contact-item" data-user-id="${safeId}">
+					&lt;span class="contact-name">${name}&lt;/span>
+					&lt;span class="contact-email">${email}&lt;/span>
+				&lt;/li>
+			`;
+		});
+		list.innerHTML = listHtml;
+	};
+
+	/**
+	 * Hydrates user context into the UI.
+	 * @returns {Promise&lt;void>} Resolves after UI hydration completes.
+	 * @category User Context
+	 * @subcategory UI &amp; Init
+	 */
+	const hydrateUserContext = async () => {
+		const profile = await getActiveUserProfile();
+		updateHeaderProfile(profile);
+		updateGreetingName(profile);
+		populateAssignedToSelect();
+		renderContactsList();
+	};
+
+	window.userContext = {
+		resolveUserId,
+		getActiveUserProfile,
+	};
+
+	document.addEventListener('DOMContentLoaded', hydrateUserContext);
+})();
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+
+</body>
+</html>

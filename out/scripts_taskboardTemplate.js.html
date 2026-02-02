@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> Home</title>
+  <title> scripts/taskboardTemplate.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -77,127 +79,151 @@
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p></p>
-                    <h1>Home</h1>
+                    <p>Source</p>
+                    <h1>scripts/taskboardTemplate.js</h1>
                 </header>
                 
 
 
 
     
-
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Erzeugt das HTML für eine Task-Card auf dem Board.
+ * @param {Object} task - Das Task-Objekt aus Firebase.
+ * @param {string} id - Die Firebase-ID der Task.
+ * @returns {string} HTML-Template
+ */
+function getCardTemplate(task, id) {
+    // 1. Daten-Normalisierung (Firebase Fix)
+    const assignedToRaw = task.assignedTo || [];
+    const assignedTo = Array.isArray(assignedToRaw) ? assignedToRaw : Object.values(assignedToRaw);
     
+    const subtasksRaw = task.subtasks || [];
+    const subtasks = Array.isArray(subtasksRaw) ? subtasksRaw : Object.values(subtasksRaw);
 
+    // 2. Subtask Progress berechnen
+    const doneTasks = subtasks.filter(st => st.completed || st.done).length; // Checkt beide Varianten
+    const progress = subtasks.length > 0 ? (doneTasks / subtasks.length) * 100 : 0;
 
-
-
-
-
-
-
-
-
-
-
-<section>
-
-<header>
+    // 3. User-Badges generieren (Max 4 anzeigen, Rest als +X)
+    let assignedHtml = '';
+    const maxVisible = 4;
     
-        <h2>scripts/taskboard.js</h2>
+    assignedTo.forEach((u, index) => {
+        if (index &lt; maxVisible &amp;&amp; u &amp;&amp; u.initials) {
+            assignedHtml += `
+                &lt;div class="user-badge" 
+                     style="background: ${u.color || '#2A3647'}; 
+                            margin-left: ${index === 0 ? '0' : '-8px'}; 
+                            z-index: ${10 - index}">
+                    ${u.initials}
+                &lt;/div>`;
+        }
+    });
+
+    if (assignedTo.length > maxVisible) {
+        assignedHtml += `
+            &lt;div class="user-badge" style="background: #2A3647; margin-left: -8px; z-index: 1">
+                +${assignedTo.length - maxVisible}
+            &lt;/div>`;
+    }
+
+    // 4. Priorität Icon Pfad
+    const prio = (task.priority || 'low').toLowerCase();
+
+    return `
+        &lt;div class="card" draggable="true" 
+             onclick="openTaskDetail('${id}')" 
+             ondragstart="event.dataTransfer.setData('text/plain', '${id}')">
+            
+            &lt;div class="badge user-story">${task.category || 'User Story'}&lt;/div>
+            
+            &lt;div class="card-content">
+                &lt;h2 class="card-title">${task.title || 'No Title'}&lt;/h2>
+                &lt;p class="card-description">${task.description || ''}&lt;/p>
+            &lt;/div>
+
+            ${subtasks.length > 0 ? `
+            &lt;div class="progress-container">
+                &lt;div class="progress-bar">
+                    &lt;div class="progress-fill" style="width: ${progress}%">&lt;/div>
+                &lt;/div>
+                &lt;span>${doneTasks}/${subtasks.length} Subtasks&lt;/span>
+            &lt;/div>` : ''}
+
+            &lt;div class="card-footer">
+                &lt;div class="assigned-to-container">
+                    ${assignedHtml}
+                &lt;/div>
+                &lt;div class="prio-icon">
+                    &lt;img src="../assets/icons/prio-${prio}.svg" alt="${prio}" onerror="this.style.display='none'">
+                &lt;/div>
+            &lt;/div>
+        &lt;/div>
+    `;
+}
+
+/**
+ * Erzeugt das HTML für das Detail-Overlay einer Task.
+ * @param {Object} task - Das Task-Objekt.
+ * @param {string} id - Die ID der Task.
+ */
+function getTaskDetailTemplate(task, id) {
+    const assignedToRaw = task.assignedTo || [];
+    const assignedTo = Array.isArray(assignedToRaw) ? assignedToRaw : Object.values(assignedToRaw);
+    
+    const subtasksRaw = task.subtasks || [];
+    const subtasks = Array.isArray(subtasksRaw) ? subtasksRaw : Object.values(subtasksRaw);
+
+    return `
+        &lt;button class="close-btn" onclick="closeTaskDetail()">×&lt;/button>
         
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
+        &lt;div class="badge user-story">${task.category || 'User Story'}&lt;/div>
         
-            <div class="description">Steuert die Logik des Kanban-Boards, inklusive Laden der Daten aus Firebase, Drag-and-Drop Funktionalität und Steuerung der Modals.</div>
+        &lt;h1 class="detail-title">${task.title || 'No Title'}&lt;/h1>
+        &lt;p class="detail-description">${task.description || ''}&lt;/p>
         
+        &lt;div class="detail-info">
+            &lt;p>&lt;strong>Due date:&lt;/strong> ${task.dueDate || 'No date'}&lt;/p>
+            &lt;p>&lt;strong>Priority:&lt;/strong> ${task.priority || 'Medium'}&lt;/p>
+        &lt;/div>
 
-        
+        &lt;div class="detail-section">
+            &lt;h3>Assigned To:&lt;/h3>
+            &lt;div class="assigned-list">
+                ${assignedTo.map(u => u ? `
+                    &lt;div class="assigned-row">
+                        &lt;div class="user-badge" style="background:${u.color || '#2A3647'}">${u.initials || '?'}&lt;/div>
+                        &lt;span>${u.name || u.initials || 'Unknown'}&lt;/span>
+                    &lt;/div>
+                ` : '').join('')}
+            &lt;/div>
+        &lt;/div>
 
+        &lt;div class="detail-section">
+            &lt;h3>Subtasks&lt;/h3>
+            &lt;div class="subtask-list">
+                ${subtasks.map((st, index) => `
+                    &lt;label class="subtask-row">
+                        &lt;input type="checkbox" ${st.completed ? 'checked' : ''} 
+                               onchange="updateSubtaskStatus('${id}', ${index}, this.checked)">
+                        &lt;span>${st.title}&lt;/span>
+                    &lt;/label>
+                `).join('')}
+            &lt;/div>
+        &lt;/div>
 
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="scripts_taskboard.js.html" class="button">View Source</a>
-            <span>
-                <a href="scripts_taskboard.js.html">scripts/taskboard.js</a>, <a href="scripts_taskboard.js.html#line1">line 1</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-        
-    
-    </div>
-    
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+        &lt;div class="detail-actions">
+            &lt;button class="action-btn" onclick="deleteTask('${id}')">🗑 Delete&lt;/button>
+            &lt;div class="divider">&lt;/div>
+            &lt;button class="action-btn" onclick="editTask('${id}')">✏️ Edit&lt;/button>
+        &lt;/div>
+    `;
+}</code></pre>
+        </article>
+    </section>
 
 
 
