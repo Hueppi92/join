@@ -147,16 +147,6 @@ aside > img {
     font-size: 16px;
 }
 
-.sidebar-legal-links .nav-links .active-links:not(.active)a:hover {
-    color: var(--light-blue);
-    font-weight: 600;
-}
-
-.sidebar-legal-links .nav-links .active-links.active a {
-    color: var(--light-blue);
-    font-weight: 600;
-}
-
 .nav-links {
     display: flex;
     align-items: center;
@@ -170,6 +160,14 @@ aside > img {
 
 .active-links.active {
     background-color: #091931;
+}
+
+.active-links:not(.active) a:hover {
+    color: var(--light-blue);
+}
+
+.active-links .active a:hover {
+    color: inherit;
 }
 
 .center {
