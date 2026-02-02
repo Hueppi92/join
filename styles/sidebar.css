@@ -142,7 +142,7 @@ aside > img {
 .sidebar-legal-links .nav-links a {
     display: flex;
     align-items: center;
-    color: #A8A8A8;
+    color: #CDCDCD;
     text-decoration: none;
     font-size: 16px;
 }
@@ -194,7 +194,7 @@ aside > img {
     display: block;
     position: fixed;
     top: 96px;
-    right: 40px;
+    right: 20px;
     width: 150px;
     height: 158px;
     background-color: var(--dark-blue);
@@ -204,14 +204,25 @@ aside > img {
     z-index: 3;
 }
 
-.profile-overlay nav ul {
-    list-style: none;
-    padding: 16px 24px;
+.profile-menu {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    height: 100%;
 }
 
-.profile-overlay a {
+.profile-menu ul {
+    display: flex;
+    flex-direction: column;
+    padding: 0;   
+}
+
+.profile-menu li {
+    list-style: none;
+}
+
+.profile-menu a {
     color: var(--white);
     text-decoration: none;
+    font-size: 16px;
 }
