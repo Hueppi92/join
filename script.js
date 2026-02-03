@@ -83,21 +83,98 @@ function setupPasswordToggle(input) {
 }
 
 /**
+ * Returns whether Firebase auth is available.
+ * @returns {boolean} True if Firebase auth is available.
+ * @category Shared
+ * @subcategory Firebase Logic
+ */
+function hasFirebaseAuth() {
+	return typeof firebase !== 'undefined' && typeof firebase.auth === 'function';
+}
+
+/**
+ * Clears session markers for the current user.
+ * @category Shared
+ * @subcategory Firebase Logic
+ */
+function clearUserSession() {
+	sessionStorage.removeItem('userId');
+	sessionStorage.removeItem('guestLogin');
+	sessionStorage.removeItem('skipSplash');
+}
+
+/**
+ * Resolves the login path based on current page location.
+ * @returns {string} Login page path.
+ * @category Shared
+ * @subcategory UI & Init
+ */
+function getLoginPath() {
+	return window.location.pathname.includes('/sites/') ? '../index.html' : './index.html';
+}
+
+/**
+ * Signs the current user out if Firebase auth is available.
+ * @returns {Promise<void>} Resolves after sign-out attempt.
+ * @category Shared
+ * @subcategory Firebase Logic
+ */
+async function signOutIfPossible() {
+	if (!hasFirebaseAuth()) return;
+	try {
+		await firebase.auth().signOut();
+	} catch (error) {
+		return;
+	}
+}
+
+/**
+ * Handles logging out and redirects to login.
+ * @returns {Promise<void>} Resolves after redirect is triggered.
+ * @category Shared
+ * @subcategory Firebase Logic
+ */
+async function handleLogout() {
+	await signOutIfPossible();
+	clearUserSession();
+	window.location.href = getLoginPath();
+}
+
+/**
+ * Wires logout links to clear auth state safely.
+ * @category Shared
+ * @subcategory UI & Init
+ */
+function initLogoutLinks() {
+	const links = document.querySelectorAll('[data-logout="1"]');
+	if (!links.length) return;
+	links.forEach((link) =>
+		link.addEventListener('click', (event) => {
+			event.preventDefault();
+			handleLogout();
+		})
+	);
+}
+
+/**
  * Initializes the profile menu toggle functionality.
  * @category Shared
  * @subcategory UI & Init
  */
 document.addEventListener('DOMContentLoaded', () => {
-    const profileBtn = document.querySelector('#profile-btn');
-    const profileMenu = document.querySelector('#profile-menu');
-    if (!profileBtn || !profileMenu) return;
+	const profileBtn = document.querySelector('#profile-btn');
+	const profileMenu = document.querySelector('#profile-menu');
 
-    profileBtn.addEventListener('click', (event) => {
-        event.stopPropagation();
-        profileMenu.classList.toggle('is-open');
-    });
+	if (profileBtn && profileMenu) {
+		profileBtn.addEventListener('click', (event) => {
+			event.stopPropagation();
+			profileMenu.classList.toggle('is-open');
+		});
 
-    document.addEventListener('click', () => {
-        profileMenu.classList.remove('is-open');
-    });
+		document.addEventListener('click', () => {
+			profileMenu.classList.remove('is-open');
+		});
+	}
+
+	initLogoutLinks();
 });
