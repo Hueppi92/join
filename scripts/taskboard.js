@@ -123,6 +123,8 @@ async function createTask() {
         priority: document.querySelector('.prio.active')?.dataset.prio || 'medium',
         category: document.getElementById('categorySelect').value || 'User Story',
         status: currentSelectedStatus,
+        subtasks: [],
+        assignedTo: [getassignedUser()], // Funktion getassignedUser() muss definiert sein
         createdAt: new Date().getTime()
     };
 
@@ -134,7 +136,19 @@ async function createTask() {
         console.error("Fehler beim Erstellen der Task:", error);
     }
 }
-
+function getassignedUser() {
+    // Beispielimplementierung, die den aktuell angemeldeten Benutzer zurückgibt
+    const user = firebase.auth().currentUser;
+    const assignedref = document.getElementById('assigned-list');
+     assignedref.innerHTML = '';
+    if (user) {
+        return {
+            name: user.displayName || 'Unbekannt',
+            color: '#2A3647',
+            initials: user.displayName ? user.displayName.split(' ').map(n => n[0]).join('').toUpperCase() : '?'
+        };
+    }
+}
 /**
  * Öffnet das Detail-Overlay für eine spezifische Task.
  * @async
@@ -151,6 +165,9 @@ async function openTaskDetail(taskId) {
   const task = taskSnap.val();
   if (!task) return;
 
+  // WICHTIG: Sicherstellen, dass priority existiert, sonst 'low' als Fallback
+  const taskPrio = task.priority || 'low';
+
   const allUsers = usersSnap.val() || {};
   const userIds = taskUsersSnap.val() ? Object.keys(taskUsersSnap.val()) : [];
   const assignedUsers = userIds.map(uid => {
@@ -162,13 +179,17 @@ async function openTaskDetail(taskId) {
     } : null;
   }).filter(u => u !== null);
 
-  const taskWithUsers = { ...task, assignedTo: assignedUsers };
+  // Hier wird die Prio explizit mitgegeben
+  const taskWithUsers = { ...task, assignedTo: assignedUsers, priority: taskPrio };
+  
   const overlay = document.getElementById('task-overlay');
+  
+  // Wir nutzen hier das Template und übergeben das angereicherte Objekt
   overlay.querySelector('.overlay-card').innerHTML = getTaskDetailTemplate(taskWithUsers, taskId);
+  
   overlay.classList.remove('hidden');
   document.body.style.overflow = 'hidden';
 }
-
 /**
  * Schließt das Task-Detail-Overlay.
  * @function closeTaskDetail
