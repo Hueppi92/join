@@ -190,7 +190,7 @@ aside > img {
     background-color: rgb(232, 232, 232);
 }
 
-.profile-overlay.visible {
+.profile-overlay {
     display: block;
     position: fixed;
     top: 96px;
@@ -242,4 +242,12 @@ aside > img {
 
 .hover-container:hover {
     background-color: var(--bg-color-secondary);
+}
+
+#profile-menu {
+    display: none;
+}
+
+#profile-menu.is-open {
+    display: block;
 }

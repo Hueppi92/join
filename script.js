@@ -82,14 +82,17 @@ function setupPasswordToggle(input) {
 	updateIcon();
 }
 
-document.addEventListener('click', (event) => {
-	const profileBtn = document.getElementById('profile-btn');
-	const profileMenu = document.getElementById('profile-menu');
-	if (profileBtn && profileMenu) {
-		if (profileBtn.contains(event.target)) {
-			profileMenu.classList.toggle('visible');
-		} else if (!profileMenu.contains(event.target)) {
-			profileMenu.classList.remove('visible');
-		}
-	}
+document.addEventListener('DOMContentLoaded', () => {
+    const profileBtn = document.querySelector('#profile-btn');
+    const profileMenu = document.querySelector('#profile-menu');
+    if (!profileBtn || !profileMenu) return;
+
+    profileBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        profileMenu.classList.toggle('is-open');
+    });
+
+    document.addEventListener('click', () => {
+        profileMenu.classList.remove('is-open');
+    });
 });
