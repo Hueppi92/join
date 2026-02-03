@@ -82,12 +82,17 @@ function renderSummary(tasks) {
     const inProgressCount = Object.values(tasks).filter(t => t.status === "in-progress").length;
     const doneCount = Object.values(tasks).filter(t => t.status === "done").length;
     const urgentCount = Object.values(tasks).filter(t => t.priority === "urgent").length;
+    const feedbackCount = Object.values(tasks).filter(t => t.status === "awaiting-feedback").length;
+ getNextDeadline();
 
     document.getElementById("total-tasks").innerText = totalTasks;
     document.getElementById("todo-tasks").innerText = todoCount;
     document.getElementById("inprogress-tasks").innerText = inProgressCount;
     document.getElementById("done-tasks").innerText = doneCount;
     document.getElementById("urgent-tasks").innerText = urgentCount;
+    document.getElementById("awaitFeedback-tasks").innerText = feedbackCount;
+
+   
 }
 
 /**
@@ -100,6 +105,40 @@ function setGreeting() {
     var curHr = today.getHours();
     let msg = (curHr < 12) ? 'Good Morning,' : (curHr < 17) ? 'Good Afternoon,' : 'Good Evening,';
     document.getElementById("greet").innerHTML = msg;
+}
+
+function getNextDeadline() {
+    const tasksRef = db.ref("tasks");
+    tasksRef.get().then((snapshot) => {
+        if (snapshot.exists()) {
+            const tasks = snapshot.val();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            let closestDeadline = null;
+            let closestTask = null;
+            
+            Object.values(tasks).forEach(task => {
+                if (task.dueDate) {
+                    const taskDate = new Date(task.dueDate);
+                    taskDate.setHours(0, 0, 0, 0);
+                    
+                    if (taskDate >= today) {
+                        if (!closestDeadline || taskDate < closestDeadline) {
+                            closestDeadline = taskDate;
+                            closestTask = task;
+                        }
+                    }
+                }
+            });
+            
+            document.getElementById("next-deadline").innerText = closestTask 
+                ? closestTask.dueDate 
+                : "No upcoming deadlines";
+        } else {
+            document.getElementById("next-deadline").innerText = "No upcoming deadlines";
+        }
+    });
 }
 
 loadSummary();

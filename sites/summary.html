@@ -30,7 +30,7 @@
       <div class="dashboard-wrapper">
         <div class="metrics-section">
           <div class="row-top">
-            <div class="card small-card">
+            <div class="card small-card" onclick="window.location.href='./taskboard.html'">
               <div class="icon-container">
                 <svg
                   class="icon-standard"
@@ -98,12 +98,12 @@
                 </svg>
               </div>
               <div class="card-text">
-                <span class="number" id="todo-tasks">1</span>
+                <span class="number" id="todo-tasks"></span>
                 <span class="label">To-do</span>
               </div>
             </div>
 
-            <div class="card small-card">
+            <div class="card small-card" onclick="window.location.href='./taskboard.html'">
               <div class="icon-container">
                 <svg
                   class="icon-standard"
@@ -146,7 +146,7 @@
               </div>
             </div>
           </div>
-          <div class="card urgent-card">
+          <div class="card urgent-card" onclick="window.location.href='./taskboard.html'">
             <div class="urgent-left">
               <div class="icon-container">
                 <svg
@@ -188,22 +188,22 @@
             <div class="v-divider"></div>
 
             <div class="urgent-right">
-              <span class="date">October 16, 2022</span>
+              <span class="date" id="next-deadline"></span>
               <span class="label">Upcoming Deadline</span>
             </div>
           </div>
 
           <div class="row-bottom">
-            <div class="card mini-card">
+            <div class="card mini-card" onclick="window.location.href='./taskboard.html'">
               <span class="number" id="total-tasks"></span>
               <span class="label">Tasks in Board</span>
             </div>
-            <div class="card mini-card">
+            <div class="card mini-card" onclick="window.location.href='./taskboard.html'">
               <span class="number" id="inprogress-tasks"></span>
               <span class="label">Tasks In Progress</span>
             </div>
-            <div class="card mini-card">
-              <span class="number">2</span>
+            <div class="card mini-card" onclick="window.location.href='./taskboard.html'">
+              <span class="number" id="awaitFeedback-tasks"></span>
               <span class="label">Awaiting Feedback</span>
             </div>
           </div>
