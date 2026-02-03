@@ -82,6 +82,11 @@ function setupPasswordToggle(input) {
 	updateIcon();
 }
 
+/**
+ * Initializes the profile menu toggle functionality.
+ * @category Shared
+ * @subcategory UI & Init
+ */
 document.addEventListener('DOMContentLoaded', () => {
     const profileBtn = document.querySelector('#profile-btn');
     const profileMenu = document.querySelector('#profile-menu');
