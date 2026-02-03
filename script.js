@@ -81,3 +81,15 @@ function setupPasswordToggle(input) {
 	input.addEventListener('input', updateIcon);
 	updateIcon();
 }
+
+document.addEventListener('click', (event) => {
+	const profileBtn = document.getElementById('profile-btn');
+	const profileMenu = document.getElementById('profile-menu');
+	if (profileBtn && profileMenu) {
+		if (profileBtn.contains(event.target)) {
+			profileMenu.classList.toggle('visible');
+		} else if (!profileMenu.contains(event.target)) {
+			profileMenu.classList.remove('visible');
+		}
+	}
+});

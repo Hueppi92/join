@@ -190,8 +190,8 @@ aside > img {
     background-color: rgb(232, 232, 232);
 }
 
-.profile-overlay {
-    display: none;
+.profile-overlay.visible {
+    display: block;
     position: fixed;
     top: 96px;
     right: 20px;
