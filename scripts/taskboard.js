@@ -204,7 +204,32 @@ function editTask(taskId) {
  * @param {boolean} completed - Neuer Status des Subtasks.
  */
 async function updateSubtaskStatus(taskId, index, completed) {
-    await firebase.database().ref(`tasks/${taskId}/subtasks/${index}`).update({ completed });
+    const subtaskRef = firebase
+        .database()
+        .ref(`tasks/${taskId}/subtasks/${index}`);
+
+    // aktuellen Subtask holen
+    const snapshot = await subtaskRef.once('value');
+    const oldSubtask = snapshot.val();
+
+    let updatedSubtask;
+
+    // 🔒 Absicherung für alte String-Subtasks
+    if (typeof oldSubtask === 'string') {
+        updatedSubtask = {
+            title: oldSubtask,
+            completed: completed
+        };
+    } else {
+        updatedSubtask = {
+            ...oldSubtask,
+            completed: completed
+        };
+    }
+
+    // 🔥 kompletten Subtask sauber zurückschreiben
+    await subtaskRef.set(updatedSubtask);
+
     renderBoard();
     openTaskDetail(taskId);
 }
