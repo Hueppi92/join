@@ -27,19 +27,27 @@ header h2 {
   font-weight: 400;
   vertical-align: middle;
 }
+h3 {
+  margin-left: 50px;
+  border-bottom: 1px solid #d1d1d1;
+}
+.contact-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
 
 /* CONTACTS SECTION: Unter dem Header, neben der Sidebar */
 .contacts-section {
-  position: fixed;
   left: 231px;
   top: 97px;
   width: 370px;
-  height: calc(100vh - 97px);
+  height: calc(100vh - 97px); /* Volle Höhe minus Header */
+  position: fixed;
   background-color: white;
   border-right: 1px solid #d1d1d1;
-  overflow-y: scroll !important;
-  z-index: 999;
-  pointer-events: all !important;
+  overflow-y: scroll; 
+  overflow-x: hidden;
 }
 
 /* Kontakt-Styling */
@@ -56,6 +64,14 @@ header h2 {
 .contact-email {
   color: #007cee;
   font-size: 0.9em;
+}
+.contact-box {
+  padding: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 30px;
 }
 
 html,
