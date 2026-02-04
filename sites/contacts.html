@@ -75,7 +75,7 @@
       <section class="contacts-section">
         <div class="contacts-container">
           <div class="contacts-header">
-            <svg class="contact-btn"
+            <svg class="contact-btn" id="add-contact-btn" role="button" aria-label="Add new contact" tabindex="0"
               width="352"
               height="56"
               viewBox="0 0 352 56"
@@ -133,6 +133,52 @@
           </div>
         </div>
       </section>
+      <div id="contact-overlay" class="contact-overlay" aria-hidden="true">
+        <div class="contact-overlay__backdrop" data-contact-overlay-close></div>
+        <div class="contact-overlay__panel" role="dialog" aria-modal="true" aria-labelledby="contact-overlay-title">
+          <button class="contact-overlay__close" type="button" aria-label="Close" data-contact-overlay-close>
+            <img src="../assets/icons/close.svg" alt="" aria-hidden="true" />
+          </button>
+          <div class="contact-overlay__panel-left">
+            <img src="../assets/img/join_logo.svg" alt="Join" />
+            <h2 id="contact-overlay-title">Add contact</h2>
+            <p>Tasks are better with a team!</p>
+            <div class="contact-overlay__underline"></div>
+          </div>
+          <div class="contact-overlay__panel-right">
+            <div class="contact-overlay__form-layout">
+              <div class="contact-overlay__avatar">
+                <img src="../assets/icons/person.svg" alt="" aria-hidden="true" />
+              </div>
+              <form class="contact-overlay__form" novalidate>
+                <label class="contact-overlay__field">
+                  <input type="text" name="name" placeholder="Name" />
+                  <img src="../assets/icons/person.svg" alt="" aria-hidden="true" />
+                </label>
+                <label class="contact-overlay__field">
+                  <input type="email" name="email" placeholder="Email" />
+                  <img src="../assets/icons/mail.svg" alt="" aria-hidden="true" />
+                </label>
+                <label class="contact-overlay__field">
+                  <input type="tel" name="phone" placeholder="Phone" />
+                  <img src="../assets/icons/call.svg" alt="" aria-hidden="true" />
+                </label>
+                <div class="contact-overlay__actions">
+                  <button type="button" class="contact-overlay__btn contact-overlay__btn--ghost" data-contact-overlay-close>
+                    Cancel
+                    <img class="icon-default" src="../assets/icons/cancel.svg" alt="" aria-hidden="true" />
+                    <img class="icon-hover" src="../assets/icons/cancel_hover.svg" alt="" aria-hidden="true" />
+                  </button>
+                  <button type="submit" class="contact-overlay__btn contact-overlay__btn--primary">
+                    Create contact
+                    <img src="../assets/icons/check.svg" alt="" aria-hidden="true" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
       <div id="profile-menu" class="profile-overlay">
         <nav class="profile-menu">
           <ul class="flex-container">
