@@ -80,24 +80,51 @@ function getCardTemplate(task, id) {
  * @param {string} id - Die ID der Task.
  */
 function getTaskDetailTemplate(task, id) {
-    const assignedTo = Array.isArray(task.assignedTo) ? task.assignedTo : [];
-    const subtasks = Array.isArray(task.subtasks) ? task.subtasks : [];
+    // Assigned Users normalisieren
+    const assignedToRaw = task.assignedTo || [];
+    const assignedTo = Array.isArray(assignedToRaw)
+        ? assignedToRaw
+        : Object.values(assignedToRaw);
+
+    // Subtasks normalisieren (Array ODER Objekt)
+    const subtasksRaw = task.subtasks || [];
+    const subtasks = Array.isArray(subtasksRaw)
+        ? subtasksRaw
+        : Object.values(subtasksRaw);
+
     const prio = (task.priority || 'low').toLowerCase();
     const prioLabel = prio.charAt(0).toUpperCase() + prio.slice(1);
 
+    // Assigned-To Render
     const assignedHtml = assignedTo.map(user => `
         <div class="assigned-user-row">
-            <div class="user-badge-large" style="background: ${user.color}">${user.initials}</div>
-            <span class="user-name">${user.name}</span>
+            <div class="user-badge-large" style="background: ${user.color || '#2A3647'}">
+                ${user.initials || '?'}
+            </div>
+            <span class="user-name">${user.name || 'Unknown'}</span>
         </div>
     `).join('');
 
-    const subtasksHtml = subtasks.map((st, index) => `
-        <div class="subtask-row" onclick="updateSubtaskStatus('${id}', ${index}, ${!(st.completed || st.done)})">
-            <img src="../assets/icons/checkbox_${(st.completed || st.done) ? 'checked' : 'empty'}.svg" alt="checkbox">
-            <span>${st.title || 'Subtask'}</span>
-        </div>
-    `).join('');
+    // 🔥 Subtasks Render (HIER ist der wichtige Fix)
+    const subtasksHtml = subtasks.length > 0
+        ? subtasks.map((st, index) => {
+            const isObject = typeof st === 'object' && st !== null;
+
+            const title = isObject
+                ? st.title || `Subtask ${index + 1}`
+                : st; // falls String
+
+            const completed = isObject && (st.completed || st.done);
+
+            return `
+                <div class="subtask-row"
+                     onclick="updateSubtaskStatus('${id}', ${index}, ${!completed})">
+                    <img src="../assets/icons/checkbox_${completed ? 'checked' : 'empty'}.svg">
+                    <span>${title}</span>
+                </div>
+            `;
+        }).join('')
+        : 'No subtasks';
 
     return `
         <div class="task-detail-card">
@@ -107,10 +134,10 @@ function getTaskDetailTemplate(task, id) {
                     <img src="../assets/icons/close.svg" alt="Close">
                 </button>
             </div>
-            
-            <h1 class="detail-title">${task.title}</h1>
+
+            <h1 class="detail-title">${task.title || 'No Title'}</h1>
             <p class="detail-description">${task.description || ''}</p>
-            
+
             <div class="detail-info-row">
                 <span class="info-label">Due date:</span>
                 <span class="info-value">${task.dueDate || '--/--/----'}</span>
@@ -134,17 +161,17 @@ function getTaskDetailTemplate(task, id) {
             <div class="detail-section">
                 <h3 class="section-title">Subtasks</h3>
                 <div class="subtask-list">
-                    ${subtasksHtml || 'No subtasks'}
+                    ${subtasksHtml}
                 </div>
             </div>
 
             <div class="detail-actions">
                 <button class="action-btn" onclick="deleteTask('${id}')">
-                    <img src="../assets/icons/delete.svg" alt=""> Delete
+                    <img src="../assets/icons/delete.svg"> Delete
                 </button>
                 <div class="action-divider"></div>
                 <button class="action-btn" onclick="editTask('${id}')">
-                    <img src="../assets/icons/edit.svg" alt=""> Edit
+                    <img src="../assets/icons/edit.svg"> Edit
                 </button>
             </div>
         </div>

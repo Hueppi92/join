@@ -46,7 +46,11 @@ async function renderBoard() {
     };
   }).filter(u => u !== null);
 
-      const taskWithUsers = { ...task, assignedTo: assignedUsers };
+  const subtasks = task.subtasks || [];
+  const subtasksArray = Array.isArray(subtasks) ? subtasks : Object.values(subtasks);
+  const doneCount = subtasksArray.filter(st => st.completed || st.done).length;
+  const progressPercent = subtasksArray.length > 0 ? (doneCount / subtasksArray.length) * 100 : 0; 
+        const taskWithUsers = { ...task, assignedTo: assignedUsers, subtasks: subtasksArray, progress: progressPercent };
       if (columns[task.status] !== undefined) {
         columns[task.status] += getCardTemplate(taskWithUsers, taskId);
       }
@@ -202,6 +206,7 @@ function editTask(taskId) {
 async function updateSubtaskStatus(taskId, index, completed) {
     await firebase.database().ref(`tasks/${taskId}/subtasks/${index}`).update({ completed });
     renderBoard();
+    openTaskDetail(taskId);
 }
 
 /**

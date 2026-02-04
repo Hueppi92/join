@@ -139,7 +139,13 @@ body {
 
 .badge.user-story { background-color: var(--blue-badge); }
 
+
+
 .card-title { font-weight: 700; color: var(--text-main); }
+.card-footer { display:flex;
+flex-direction: row;
+justify-content: space-between;
+align-items: center;}
 
 .progress-container {
   display: flex;
