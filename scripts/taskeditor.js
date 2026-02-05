@@ -37,16 +37,20 @@ function prioBtnActiveToggle() {
 // CONTACTS
 function loadContacts() {
     const dropdown = document.getElementById("assignedDropdown");
-    const input = document.getElementById("assignedInput");
+    const searchInput = document.getElementById("assignedSearch");
 
-    if (!dropdown || !input) return;
+    if (!dropdown || !searchInput) return;
 
     firebase.database().ref("users").once("value", snapshot => {
+        dropdown.innerHTML = "";
+
         snapshot.forEach(child => {
             const user = child.val();
 
             const label = document.createElement("label");
             label.className = "assigned-item";
+            label.dataset.username = user.name.toLowerCase();
+            
 
             label.innerHTML = `
               <span>${user.name}</span>
@@ -60,8 +64,8 @@ function loadContacts() {
     });
 
     // Dropdown Toggle
-    input.addEventListener("click", () => {
-        dropdown.classList.toggle("hidden");
+    searchInput.addEventListener("focus", () => {
+        dropdown.classList.remove("hidden");
     });
 
     // Anzeige aktualisieren
@@ -69,18 +73,19 @@ function loadContacts() {
 }
 
 function updateAssignedDisplay() {
-    const input = document.getElementById("assignedInput");
+    const searchInput = document.getElementById("assignedSearch");
     const checked = document.querySelectorAll(
         "#assignedDropdown input[type='checkbox']:checked"
     );
 
     if (checked.length === 0) {
-        input.innerHTML = `<span class="placeholder">Select contacts to assign</span>`;
+        searchInput.value = "";
+        searchInput.placeholder = "Select contacts to assign";
         return;
     }
 
     const names = Array.from(checked).map(cb => cb.dataset.username);
-    input.textContent = names.join(", ");
+    searchInput.value = names.join(", ");
 }
 
 // CATEGORIES
@@ -166,13 +171,38 @@ function getActivePriority() {
 
 function getAssignedUsers() {
     let checked = document.querySelectorAll(
-        "#assignedSelect input[type='checkbox']:checked"
+        "#assignedDropdown input[type='checkbox']:checked"
     );
 
     return Array.from(checked).map(cb => ({
         id: cb.dataset.userid,
         name: cb.dataset.username
     }));
+}
+
+function setupAssignedSearch() {
+    const searchInput = document.getElementById("assignedSearch");
+    const dropdown = document.getElementById("assignedDropdown");
+
+    if (!searchInput || !dropdown) return;
+
+    searchInput.addEventListener("input", () => {
+        const value = searchInput.value.trim().toLowerCase();
+
+        dropdown.querySelectorAll(".assigned-item").forEach(item => {
+            const name = item.dataset.username;
+
+            if (value === "") {
+                item.style.display = "flex";
+            } else {
+                item.style.display = name.includes(value) ? "flex" : "none";
+            }
+        });
+    });
+
+    searchInput.addEventListener("focus", () => {
+        dropdown.classList.remove("hidden");
+    });
 }
 
 function getSubtasks() {
@@ -265,6 +295,7 @@ function loadTaskEditorPage() {
     setupRequiredField("titleInput", ".title_field");
     setupRequiredField("dateInput", ".date_field");
     prioBtnActiveToggle();
+    setupAssignedSearch();
     setupSubtasks();
     setupCreateTaskButton();
     setupClearButton();

@@ -106,8 +106,8 @@
           <label>Assigned to</label>
 
           <div class="assigned-select" id="assignedSelect">
-            <div class="assigned-input" id="assignedInput">
-              <span class="placeholder">Select contacts to assign</span>
+            <div class="assigned-input">
+              <input type="text" id="assignedSearch" placeholder="Select contacts to assign" autocomplete="off" />
             </div>
 
             <div class="assigned-dropdown hidden" id="assignedDropdown">
@@ -184,20 +184,20 @@
       </div>
     </aside>
     <div id="profile-menu" class="profile-overlay">
-        <nav class="profile-menu">
-          <ul class="flex-container">
-            <div class="hover-container">
-              <li><a href="./legal-notice.html">Legal Notice</a></li>
-            </div>
-            <div class="hover-container">
-              <li><a href="./privacy-policy.html">Privacy Policy</a></li>
-            </div>
-            <div class="hover-container">
-              <li><a href="../index.html" data-logout="1">Log out</a></li>
-            </div>
-          </ul>
-        </nav>
-      </div>
+      <nav class="profile-menu">
+        <ul class="flex-container">
+          <div class="hover-container">
+            <li><a href="./legal-notice.html">Legal Notice</a></li>
+          </div>
+          <div class="hover-container">
+            <li><a href="./privacy-policy.html">Privacy Policy</a></li>
+          </div>
+          <div class="hover-container">
+            <li><a href="../index.html" data-logout="1">Log out</a></li>
+          </div>
+        </ul>
+      </nav>
+    </div>
   </main>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
