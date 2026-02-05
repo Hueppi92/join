@@ -36,18 +36,51 @@ function prioBtnActiveToggle() {
 
 // CONTACTS
 function loadContacts() {
-    const select = document.getElementById("assignedSelect");
-    if (!select) return;
+    const dropdown = document.getElementById("assignedDropdown");
+    const input = document.getElementById("assignedInput");
+
+    if (!dropdown || !input) return;
 
     firebase.database().ref("users").once("value", snapshot => {
         snapshot.forEach(child => {
             const user = child.val();
-            const option = document.createElement("option");
-            option.value = child.key;
-            option.textContent = user.name;
-            select.appendChild(option);
+
+            const label = document.createElement("label");
+            label.className = "assigned-item";
+
+            label.innerHTML = `
+              <span>${user.name}</span>
+              <input type="checkbox"
+                     data-userid="${child.key}"
+                     data-username="${user.name}">
+            `;
+
+            dropdown.appendChild(label);
         });
     });
+
+    // Dropdown Toggle
+    input.addEventListener("click", () => {
+        dropdown.classList.toggle("hidden");
+    });
+
+    // Anzeige aktualisieren
+    dropdown.addEventListener("change", updateAssignedDisplay);
+}
+
+function updateAssignedDisplay() {
+    const input = document.getElementById("assignedInput");
+    const checked = document.querySelectorAll(
+        "#assignedDropdown input[type='checkbox']:checked"
+    );
+
+    if (checked.length === 0) {
+        input.innerHTML = `<span class="placeholder">Select contacts to assign</span>`;
+        return;
+    }
+
+    const names = Array.from(checked).map(cb => cb.dataset.username);
+    input.textContent = names.join(", ");
 }
 
 // CATEGORIES
@@ -56,9 +89,8 @@ function loadCategories() {
     if (!select) return;
 
     const categories = [
-        { id: "design", label: "Design" },
-        { id: "backend", label: "Backend" },
-        { id: "bug", label: "Bug" },
+        { id: "user-story", label: "User Story" },
+        { id: "technical-task", label: "Technical Task" },
     ];
 
     categories.forEach(cat => {
@@ -132,9 +164,25 @@ function getActivePriority() {
     return activeBtn ? activeBtn.dataset.prio : "medium";
 }
 
+function getAssignedUsers() {
+    let checked = document.querySelectorAll(
+        "#assignedSelect input[type='checkbox']:checked"
+    );
+
+    return Array.from(checked).map(cb => ({
+        id: cb.dataset.userid,
+        name: cb.dataset.username
+    }));
+}
+
 function getSubtasks() {
     let items = document.querySelectorAll("#subtaskList li span");
-    return Array.from(items).map(span => span.textContent);
+
+    return Array.from(items).map(span => ({
+        id: crypto.randomUUID(),
+        title: span.textContent.trim(),
+        completed: false
+    }));
 }
 
 function saveTaskToFirebase(task) {
@@ -162,7 +210,7 @@ function setupCreateTaskButton() {
             dueDate: date,
             priority: getActivePriority(),
             category: document.querySelector("select:nth-of-type(2)")?.value || "",
-            assignedTo: document.querySelector("select:nth-of-type(1)")?.value || "",
+            assignedTo: getAssignedUsers(),
             subtasks: getSubtasks(),
             status: "todo",
             createdAt: Date.now()

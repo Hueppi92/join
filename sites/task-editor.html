@@ -104,10 +104,14 @@
 
         <div class="settings_block">
           <label>Assigned to</label>
-          <div class="select_native">
-            <select id="assignedSelect">
-              <option selected disabled>Select contacts to assign</option>
-            </select>
+
+          <div class="assigned-select" id="assignedSelect">
+            <div class="assigned-input" id="assignedInput">
+              <span class="placeholder">Select contacts to assign</span>
+            </div>
+
+            <div class="assigned-dropdown hidden" id="assignedDropdown">
+            </div>
           </div>
         </div>
 
@@ -165,19 +169,19 @@
         </div>
       </nav>
       <div class="sidebar-legal-links">
-          <div class="center">
-            <div class="active-links">
-              <div class="nav-links">
-                <a href="./privacy-policy.html">Privacy Policy</a>
-              </div>
+        <div class="center">
+          <div class="active-links">
+            <div class="nav-links">
+              <a href="./privacy-policy.html">Privacy Policy</a>
             </div>
-            <div class="active-links">
-              <div class="nav-links">
-                <a href="./legal-notice.html">Legal notice</a>
-              </div>
+          </div>
+          <div class="active-links">
+            <div class="nav-links">
+              <a href="./legal-notice.html">Legal notice</a>
             </div>
           </div>
         </div>
+      </div>
     </aside>
 
   </main>

@@ -267,6 +267,58 @@
     border-color: #2A3647;
 }
 
+.assigned-select {
+    position: relative;
+    width: 440px;
+}
+
+.assigned-input {
+    height: 48px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    background: #ffffff;
+    border: 1px solid #D1D1D1;
+    border-radius: 10px;
+    font-size: 20px;
+}
+
+.assigned-dropdown {
+    position: absolute;
+    top: 110%;
+    left: 0;
+    width: 100%;
+    max-height: 220px;
+    overflow-y: auto;
+
+    background: #ffffff;
+    border: 1px solid #D1D1D1;
+    border-radius: 10px;
+    z-index: 20;
+}
+
+.assigned-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    cursor: pointer;
+}
+
+.assigned-item:hover {
+    background: #f6f7f8;
+}
+
+.assigned-item input {
+    margin-left: auto;
+}
+
+.hidden {
+    display: none;
+}
+
 .subtasks_block {
     height: auto;
     gap: 6px;
