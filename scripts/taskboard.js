@@ -28,18 +28,29 @@ async function renderBoard() {
     const columns = { 'todo': '', 'in-progress': '', 'await-feedback': '', 'done': '' };
 
     Object.entries(tasks).forEach(([taskId, task]) => {
-      const userIdsForTask = connections[taskId] ? Object.keys(connections[taskId]) : [];
-      const assignedUsers = userIdsForTask.map(uid => {
-        const user = allUsers[uid];
-        if (!user) return null;
-        return {
-          name: user.name,
-          color: user.color || '#2A3647',
-          initials: user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : '?'
-        };
-      }).filter(u => u !== null);
+  // 1. Hole IDs aus dem Verbindungsknoten (mein Weg)
+  let userIdsForTask = connections[taskId] ? Object.keys(connections[taskId]) : [];
 
-      const taskWithUsers = { ...task, assignedTo: assignedUsers };
+  // 2. FALLBACK: Falls ID direkt gespeichert hat (yves)
+  if (userIdsForTask.length === 0 && typeof task.assignedTo === 'string') {
+    userIdsForTask.push(task.assignedTo);
+  }
+
+  const assignedUsers = userIdsForTask.map(uid => {
+    const user = allUsers[uid];
+    if (!user) return null;
+    return {
+      name: user.name,
+      color: user.color || '#2A3647',
+      initials: user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : '?'
+    };
+  }).filter(u => u !== null);
+
+  const subtasks = task.subtasks || [];
+  const subtasksArray = Array.isArray(subtasks) ? subtasks : Object.values(subtasks);
+  const doneCount = subtasksArray.filter(st => st.completed || st.done).length;
+  const progressPercent = subtasksArray.length > 0 ? (doneCount / subtasksArray.length) * 100 : 0; 
+        const taskWithUsers = { ...task, assignedTo: assignedUsers, subtasks: subtasksArray, progress: progressPercent };
       if (columns[task.status] !== undefined) {
         columns[task.status] += getCardTemplate(taskWithUsers, taskId);
       }
@@ -102,38 +113,7 @@ function closeAddTaskModal() {
     }
 }
 
-/**
- * Liest die Formulardaten aus und erstellt eine neue Task in Firebase.
- * @async
- * @function createTask
- */
-async function createTask() {
-    const titleInput = document.getElementById('titleInput');
-    const dateInput = document.getElementById('dateInput');
-    
-    if (!titleInput.value || !dateInput.value) {
-        alert("Bitte Titel und Datum angeben.");
-        return;
-    }
 
-    const newTask = {
-        title: titleInput.value,
-        description: document.querySelector('.description_box textarea').value || '',
-        dueDate: dateInput.value,
-        priority: document.querySelector('.prio.active')?.dataset.prio || 'medium',
-        category: document.getElementById('categorySelect').value || 'User Story',
-        status: currentSelectedStatus,
-        createdAt: new Date().getTime()
-    };
-
-    try {
-        await firebase.database().ref('tasks').push(newTask);
-        closeAddTaskModal();
-        renderBoard();
-    } catch (error) {
-        console.error("Fehler beim Erstellen der Task:", error);
-    }
-}
 
 /**
  * Öffnet das Detail-Overlay für eine spezifische Task.
@@ -151,8 +131,19 @@ async function openTaskDetail(taskId) {
   const task = taskSnap.val();
   if (!task) return;
 
+  const taskPrio = task.priority || 'low';
   const allUsers = usersSnap.val() || {};
-  const userIds = taskUsersSnap.val() ? Object.keys(taskUsersSnap.val()) : [];
+
+  // --- START FALLBACK LOGIK ---
+  // 1. Zuerst versuchen wir die IDs aus dem taskUsers-Knoten zu holen
+  let userIds = taskUsersSnap.val() ? Object.keys(taskUsersSnap.val()) : [];
+
+  // 2. Wenn dort nichts gefunden wurde, prüfen wir, ob im Task selbst eine ID steht (yves)
+  if (userIds.length === 0 && typeof task.assignedTo === 'string' && task.assignedTo !== "") {
+    userIds.push(task.assignedTo);
+  }
+  // --- ENDE FALLBACK LOGIK ---
+
   const assignedUsers = userIds.map(uid => {
     const u = allUsers[uid];
     return u ? { 
@@ -162,13 +153,15 @@ async function openTaskDetail(taskId) {
     } : null;
   }).filter(u => u !== null);
 
-  const taskWithUsers = { ...task, assignedTo: assignedUsers };
+  const taskWithUsers = { ...task, assignedTo: assignedUsers, priority: taskPrio };
+  
   const overlay = document.getElementById('task-overlay');
-  overlay.querySelector('.overlay-card').innerHTML = getTaskDetailTemplate(taskWithUsers, taskId);
-  overlay.classList.remove('hidden');
-  document.body.style.overflow = 'hidden';
+  if (overlay) {
+    overlay.querySelector('.overlay-card').innerHTML = getTaskDetailTemplate(taskWithUsers, taskId);
+    overlay.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
 }
-
 /**
  * Schließt das Task-Detail-Overlay.
  * @function closeTaskDetail
@@ -211,8 +204,34 @@ function editTask(taskId) {
  * @param {boolean} completed - Neuer Status des Subtasks.
  */
 async function updateSubtaskStatus(taskId, index, completed) {
-    await firebase.database().ref(`tasks/${taskId}/subtasks/${index}`).update({ completed });
+    const subtaskRef = firebase
+        .database()
+        .ref(`tasks/${taskId}/subtasks/${index}`);
+
+    // aktuellen Subtask holen
+    const snapshot = await subtaskRef.once('value');
+    const oldSubtask = snapshot.val();
+
+    let updatedSubtask;
+
+    // 🔒 Absicherung für alte String-Subtasks
+    if (typeof oldSubtask === 'string') {
+        updatedSubtask = {
+            title: oldSubtask,
+            completed: completed
+        };
+    } else {
+        updatedSubtask = {
+            ...oldSubtask,
+            completed: completed
+        };
+    }
+
+    // 🔥 kompletten Subtask sauber zurückschreiben
+    await subtaskRef.set(updatedSubtask);
+
     renderBoard();
+    openTaskDetail(taskId);
 }
 
 /**

@@ -17,7 +17,7 @@
         <a href="./help.html" class="help-btn"
           ><img src="../assets/icons/help_icon.svg" alt="Help Icon"
         /></a>
-        <button class="profile-btn">DF</button>
+        <button id="profile-btn" class="profile-btn"></button>
       </div>
     </header>
     <main>
@@ -72,6 +72,21 @@
           </div>
         </div>
       </aside>
+      <div id="profile-menu" class="profile-overlay">
+        <nav class="profile-menu">
+          <ul class="flex-container">
+            <div class="hover-container">
+              <li><a href="./legal-notice.html">Legal Notice</a></li>
+            </div>
+            <div class="hover-container">
+              <li><a href="./privacy-policy.html">Privacy Policy</a></li>
+            </div>
+            <div class="hover-container">
+              <li><a href="../index.html" data-logout="1">Log out</a></li>
+            </div>
+          </ul>
+        </nav>
+      </div>
     </main>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -79,6 +94,7 @@
     <script src="../scripts/firebaseConfig.js"></script>
     <script src="../scripts/db.js"></script>
     <script src="../scripts/user-context.js"></script>
+    <script src="../script.js"></script>
     <div class="help-content">
       <div><h2>Help</h2></div>
       <div>

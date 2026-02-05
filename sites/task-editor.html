@@ -17,7 +17,7 @@
     <h2>Kanban Project Management Tool</h2>
     <div class="header-btn">
       <a href="./help.html" class="help-btn"><img src="../assets/icons/help_icon.svg" alt="Help Icon"></a>
-      <button class="profile-btn">SM</button>
+      <button id="profile-btn" class="profile-btn"></button>
     </div>
   </header>
 
@@ -183,7 +183,21 @@
         </div>
       </div>
     </aside>
-
+    <div id="profile-menu" class="profile-overlay">
+        <nav class="profile-menu">
+          <ul class="flex-container">
+            <div class="hover-container">
+              <li><a href="./legal-notice.html">Legal Notice</a></li>
+            </div>
+            <div class="hover-container">
+              <li><a href="./privacy-policy.html">Privacy Policy</a></li>
+            </div>
+            <div class="hover-container">
+              <li><a href="../index.html" data-logout="1">Log out</a></li>
+            </div>
+          </ul>
+        </nav>
+      </div>
   </main>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -192,6 +206,7 @@
   <script src="../scripts/db.js"></script>
   <script src="../scripts/auth-guard.js"></script>
   <script src="../scripts/user-context.js"></script>
+  <script src="../script.js"></script>
 </body>
 
 <script src="../scripts/taskeditor.js"></script>

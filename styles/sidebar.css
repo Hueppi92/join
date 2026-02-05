@@ -207,22 +207,47 @@ aside > img {
 .profile-menu {
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: center;
     height: 100%;
 }
 
 .profile-menu ul {
-    display: flex;
-    flex-direction: column;
-    padding: 0;   
-}
-
-.profile-menu li {
     list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
-.profile-menu a {
-    color: var(--white);
+.profile-menu ul li a {
+    color: #CDCDCD;
     text-decoration: none;
     font-size: 16px;
+    padding-left: 20px;
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    width: 90%;
+}
+
+.hover-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 46px;
+}
+
+.hover-container:hover {
+    background-color: var(--bg-color-secondary);
+}
+
+#profile-menu {
+    display: none;
+}
+
+#profile-menu.is-open {
+    display: block;
 }

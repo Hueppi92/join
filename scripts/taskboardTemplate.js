@@ -80,54 +80,100 @@ function getCardTemplate(task, id) {
  * @param {string} id - Die ID der Task.
  */
 function getTaskDetailTemplate(task, id) {
+    // Assigned Users normalisieren
     const assignedToRaw = task.assignedTo || [];
-    const assignedTo = Array.isArray(assignedToRaw) ? assignedToRaw : Object.values(assignedToRaw);
-    
+    const assignedTo = Array.isArray(assignedToRaw)
+        ? assignedToRaw
+        : Object.values(assignedToRaw);
+
+    // Subtasks normalisieren (Array ODER Objekt)
     const subtasksRaw = task.subtasks || [];
-    const subtasks = Array.isArray(subtasksRaw) ? subtasksRaw : Object.values(subtasksRaw);
+    const subtasks = Array.isArray(subtasksRaw)
+        ? subtasksRaw
+        : Object.values(subtasksRaw);
+
+    const prio = (task.priority || 'low').toLowerCase();
+    const prioLabel = prio.charAt(0).toUpperCase() + prio.slice(1);
+
+    // Assigned-To Render
+    const assignedHtml = assignedTo.map(user => `
+        <div class="assigned-user-row">
+            <div class="user-badge-large" style="background: ${user.color || '#2A3647'}">
+                ${user.initials || '?'}
+            </div>
+            <span class="user-name">${user.name || 'Unknown'}</span>
+        </div>
+    `).join('');
+
+    // 🔥 Subtasks Render (HIER ist der wichtige Fix)
+    const subtasksHtml = subtasks.length > 0
+        ? subtasks.map((st, index) => {
+            const isObject = typeof st === 'object' && st !== null;
+
+            const title = isObject
+                ? st.title || `Subtask ${index + 1}`
+                : st; // falls String
+
+            const completed = isObject && (st.completed || st.done);
+
+            return `
+                <div class="subtask-row"
+                     onclick="updateSubtaskStatus('${id}', ${index}, ${!completed})">
+                    <img src="../assets/icons/checkbox_${completed ? 'checked' : 'empty'}.svg">
+                    <span>${title}</span>
+                </div>
+            `;
+        }).join('')
+        : 'No subtasks';
 
     return `
-        <button class="close-btn" onclick="closeTaskDetail()">×</button>
-        
-        <div class="badge user-story">${task.category || 'User Story'}</div>
-        
-        <h1 class="detail-title">${task.title || 'No Title'}</h1>
-        <p class="detail-description">${task.description || ''}</p>
-        
-        <div class="detail-info">
-            <p><strong>Due date:</strong> ${task.dueDate || 'No date'}</p>
-            <p><strong>Priority:</strong> ${task.priority || 'Medium'}</p>
-        </div>
-
-        <div class="detail-section">
-            <h3>Assigned To:</h3>
-            <div class="assigned-list">
-                ${assignedTo.map(u => u ? `
-                    <div class="assigned-row">
-                        <div class="user-badge" style="background:${u.color || '#2A3647'}">${u.initials || '?'}</div>
-                        <span>${u.name || u.initials || 'Unknown'}</span>
-                    </div>
-                ` : '').join('')}
+        <div class="task-detail-card">
+            <div class="detail-header">
+                <div class="badge user-story">${task.category || 'User Story'}</div>
+                <button class="close-btn-overlay" onclick="closeTaskDetail()">
+                    <img src="../assets/icons/close.svg" alt="Close">
+                </button>
             </div>
-        </div>
 
-        <div class="detail-section">
-            <h3>Subtasks</h3>
-            <div class="subtask-list">
-                ${subtasks.map((st, index) => `
-                    <label class="subtask-row">
-                        <input type="checkbox" ${st.completed ? 'checked' : ''} 
-                               onchange="updateSubtaskStatus('${id}', ${index}, this.checked)">
-                        <span>${st.title}</span>
-                    </label>
-                `).join('')}
+            <h1 class="detail-title">${task.title || 'No Title'}</h1>
+            <p class="detail-description">${task.description || ''}</p>
+
+            <div class="detail-info-row">
+                <span class="info-label">Due date:</span>
+                <span class="info-value">${task.dueDate || '--/--/----'}</span>
             </div>
-        </div>
 
-        <div class="detail-actions">
-            <button class="action-btn" onclick="deleteTask('${id}')">🗑 Delete</button>
-            <div class="divider"></div>
-            <button class="action-btn" onclick="editTask('${id}')">✏️ Edit</button>
+            <div class="detail-info-row">
+                <span class="info-label">Priority:</span>
+                <div class="info-value-prio">
+                    <span>${prioLabel}</span>
+                    <img src="../assets/icons/prio-${prio}.svg" alt="${prioLabel}">
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h3 class="section-title">Assigned To:</h3>
+                <div class="assigned-list">
+                    ${assignedHtml}
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h3 class="section-title">Subtasks</h3>
+                <div class="subtask-list">
+                    ${subtasksHtml}
+                </div>
+            </div>
+
+            <div class="detail-actions">
+                <button class="action-btn" onclick="deleteTask('${id}')">
+                    <img src="../assets/icons/delete.svg"> Delete
+                </button>
+                <div class="action-divider"></div>
+                <button class="action-btn" onclick="editTask('${id}')">
+                    <img src="../assets/icons/edit.svg"> Edit
+                </button>
+            </div>
         </div>
     `;
 }
