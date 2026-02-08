@@ -251,6 +251,14 @@ main {
   margin: -8px 0 2px;
 }
 
+.contact-overlay__form-message {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: #ff3d00;
+  text-align: left;
+  min-height: 16px;
+}
+
 .field-message {
   font-size: 12px;
   color: #ff3d00;

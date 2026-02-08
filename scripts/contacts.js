@@ -24,6 +24,7 @@ function getContactOverlayElements() {
 		submitLabel: overlay.querySelector('[data-role="contact-submit-label"]'),
 		deleteButton: overlay.querySelector('[data-role="contact-delete"]'),
 		cancelButton: overlay.querySelector('[data-role="contact-cancel"]'),
+		formMessage: overlay.querySelector('[data-role="contact-form-message"]'),
 		avatar: overlay.querySelector('.contact-overlay__avatar'),
 		avatarIcon: overlay.querySelector('[data-role="contact-avatar-icon"]'),
 		avatarText: overlay.querySelector('[data-role="contact-avatar-text"]'),
@@ -88,6 +89,19 @@ function clearContactErrors(fields) {
 	clearFieldError(fields.nameInput, fields.messages.name);
 	clearFieldError(fields.emailInput, fields.messages.email);
 	clearFieldError(fields.phoneInput, fields.messages.phone);
+}
+
+/**
+ * Sets the overlay form message.
+ * @param {string} text - Message text.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+function setContactFormMessage(text) {
+	const elements = getContactOverlayElements();
+	if (!elements?.formMessage) return;
+	elements.formMessage.textContent = text;
+	elements.formMessage.classList.toggle('is-hidden', !text);
 }
 
 /**
@@ -314,6 +328,7 @@ function initContactOverlay() {
 			fields.form.reset();
 			clearContactErrors(fields);
 			updateContactAvatar(getContactOverlayElements(), '', false);
+			setContactFormMessage('');
 		}
 		openContactOverlay();
 	});
@@ -328,6 +343,7 @@ function initContactOverlay() {
 				fields.form.reset();
 				clearContactErrors(fields);
 				updateContactAvatar(getContactOverlayElements(), '', false);
+				setContactFormMessage('');
 			}
 			openContactOverlay();
 		}
@@ -363,6 +379,7 @@ function initContactForm() {
 	fields.form.addEventListener('submit', async (event) => {
 		event.preventDefault();
 		clearContactErrors(fields);
+		setContactFormMessage('');
 		if (!validateContactFields(fields)) return;
 
 		fields.submitButton.disabled = true;
@@ -373,6 +390,10 @@ function initContactForm() {
 			const mode = fields.form.dataset.mode || 'add';
 			if (mode === 'edit') {
 				const contactId = fields.form.dataset.contactId;
+				if (!contactId) {
+					setContactFormMessage('Contact cannot be saved without an id.');
+					return;
+				}
 				await updateContact(contactId, { name, email, phone });
 			} else {
 				await saveContact({ name, email, phone, createdAt: Date.now() });
@@ -401,6 +422,7 @@ async function openEditContactOverlay(contactId, contact) {
 		fields.form.dataset.mode = 'edit';
 		fields.form.dataset.contactId = contactId || '';
 		clearContactErrors(fields);
+		setContactFormMessage('');
 		const data = contact || (await fetchContact(contactId));
 		applyContactToForm(fields, data);
 		updateContactAvatar(getContactOverlayElements(), data?.name || '', true);
