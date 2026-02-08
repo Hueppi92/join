@@ -207,33 +207,6 @@
 	};
 
 	/**
-	 * Renders the contacts list from user data.
-	 * @returns {Promise<void>} Resolves after the list is rendered.
-	 * @category User Context
-	 * @subcategory UI & Init
-	 */
-	const renderContactsList = async () => {
-		const list = document.getElementById('contacts-list');
-		if (!list || !hasDb()) return;
-
-		const snapshot = await db.ref('users').get();
-		const users = snapshot.val() || {};
-		let listHtml = '';
-		Object.entries(users).forEach(([id, user]) => {
-			const safeId = escapeHtml(id);
-			const name = escapeHtml(user?.name || 'Unnamed');
-			const email = escapeHtml(user?.email || '');
-			listHtml += `
-				<li class="contact-item" data-user-id="${safeId}">
-					<span class="contact-name">${name}</span>
-					<span class="contact-email">${email}</span>
-				</li>
-			`;
-		});
-		list.innerHTML = listHtml;
-	};
-
-	/**
 	 * Hydrates user context into the UI.
 	 * @returns {Promise<void>} Resolves after UI hydration completes.
 	 * @category User Context
@@ -244,7 +217,6 @@
 		updateHeaderProfile(profile);
 		updateGreetingName(profile);
 		populateAssignedToSelect();
-		renderContactsList();
 	};
 
 	window.userContext = {
