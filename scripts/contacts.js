@@ -91,6 +91,39 @@ function clearContactErrors(fields) {
 }
 
 /**
+ * Computes a stable avatar color for a contact name.
+ * @param {string} name - Contact name.
+ * @returns {string} Hex color string.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+function getContactAvatarColor(name) {
+	const palette = [
+		'#6e52ff',
+		'#1fd7c1',
+		'#fc71ff',
+		'#c3ff2b',
+		'#ffbb2b',
+		'#ff5eb3',
+		'#00bee8',
+		'#ffa35e',
+		'#0038ff',
+		'#ff4646',
+		'#ff7a00',
+		'#9327ff',
+		'#ff745e',
+		'#ffc701',
+		'#ffe62b',
+	];
+	const value = String(name || '').trim().toLowerCase();
+	let hash = 0;
+	for (let i = 0; i < value.length; i += 1) {
+		hash = (hash + value.charCodeAt(i) * (i + 1)) % 1000;
+	}
+	return palette[hash % palette.length];
+}
+
+/**
  * Updates the avatar for add/edit modes.
  * @param {{avatar: HTMLElement | null, avatarText: HTMLElement | null} | null} elements - Overlay elements.
  * @param {string} name - Contact name.
@@ -103,6 +136,7 @@ function updateContactAvatar(elements, name, useInitials) {
 	if (!useInitials) {
 		elements.avatar.classList.remove('has-initials');
 		elements.avatarText.textContent = '';
+		elements.avatar.style.backgroundColor = '#d1d1d1';
 		return;
 	}
 	const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -112,6 +146,7 @@ function updateContactAvatar(elements, name, useInitials) {
 	initials = initials.toUpperCase();
 	elements.avatarText.textContent = initials || 'U';
 	elements.avatar.classList.add('has-initials');
+	elements.avatar.style.backgroundColor = getContactAvatarColor(name);
 }
 
 /**

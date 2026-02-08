@@ -232,10 +232,6 @@ main {
   letter-spacing: 1px;
 }
 
-.contact-overlay__avatar.has-initials {
-  background: #ff7a00;
-}
-
 .contact-overlay__avatar.has-initials img {
   display: none;
 }
