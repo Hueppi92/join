@@ -150,8 +150,8 @@
           </button>
           <div class="contact-overlay__panel-left">
             <img src="../assets/img/join_logo.svg" alt="Join" />
-            <h2 id="contact-overlay-title">Add contact</h2>
-            <p>Tasks are better with a team!</p>
+            <h2 id="contact-overlay-title" data-role="contact-title">Add contact</h2>
+            <p data-role="contact-subtitle">Tasks are better with a team!</p>
             <div class="contact-overlay__underline"></div>
           </div>
           <div class="contact-overlay__panel-right">
@@ -161,7 +161,9 @@
                   src="../assets/icons/person.svg"
                   alt=""
                   aria-hidden="true"
+                  data-role="contact-avatar-icon"
                 />
+                <span class="contact-overlay__avatar-text" data-role="contact-avatar-text"></span>
               </div>
               <form class="contact-overlay__form" novalidate>
                 <label class="contact-overlay__field">
@@ -193,8 +195,18 @@
                 <p class="field-message contact-overlay__message" data-field="phone"></p>
                 <div class="contact-overlay__actions">
                   <button
+                    id="contact-overlay-delete-btn"
+                    type="button"
+                    class="contact-overlay__btn contact-overlay__btn--ghost is-hidden"
+                    data-role="contact-delete"
+                  >
+                    Delete
+                  </button>
+                  <button
+                    id="contact-overlay-cancel-btn"
                     type="button"
                     class="contact-overlay__btn contact-overlay__btn--ghost"
+                    data-role="contact-cancel"
                     data-contact-overlay-close
                   >
                     Cancel
@@ -212,10 +224,11 @@
                     />
                   </button>
                   <button
+                    id="contact-overlay-submit-btn"
                     type="submit"
                     class="contact-overlay__btn contact-overlay__btn--primary"
                   >
-                    Create contact
+                    <span data-role="contact-submit-label">Create contact</span>
                     <img
                       src="../assets/icons/check.svg"
                       alt=""

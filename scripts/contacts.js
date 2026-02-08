@@ -9,6 +9,28 @@ function hasDb() {
 }
 
 /**
+ * Returns overlay elements used for add/edit states.
+ * @returns {{overlay: HTMLElement, title: HTMLElement | null, subtitle: HTMLElement | null, submitLabel: HTMLElement | null, deleteButton: HTMLButtonElement | null} | null}
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+function getContactOverlayElements() {
+	const overlay = document.getElementById('contact-overlay');
+	if (!overlay) return null;
+	return {
+		overlay,
+		title: overlay.querySelector('[data-role="contact-title"]'),
+		subtitle: overlay.querySelector('[data-role="contact-subtitle"]'),
+		submitLabel: overlay.querySelector('[data-role="contact-submit-label"]'),
+		deleteButton: overlay.querySelector('[data-role="contact-delete"]'),
+		cancelButton: overlay.querySelector('[data-role="contact-cancel"]'),
+		avatar: overlay.querySelector('.contact-overlay__avatar'),
+		avatarIcon: overlay.querySelector('[data-role="contact-avatar-icon"]'),
+		avatarText: overlay.querySelector('[data-role="contact-avatar-text"]'),
+	};
+}
+
+/**
  * Opens the add contact overlay.
  * @category Contacts
  * @subcategory UI & Init
@@ -53,6 +75,81 @@ function getContactFields() {
 	});
 	if (!nameInput || !emailInput || !phoneInput || !submitButton) return null;
 	return { form, nameInput, emailInput, phoneInput, submitButton, messages };
+}
+
+/**
+ * Clears validation errors for contact fields.
+ * @param {ReturnType<typeof getContactFields>} fields - Contact form fields.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+function clearContactErrors(fields) {
+	if (!fields) return;
+	clearFieldError(fields.nameInput, fields.messages.name);
+	clearFieldError(fields.emailInput, fields.messages.email);
+	clearFieldError(fields.phoneInput, fields.messages.phone);
+}
+
+/**
+ * Updates the avatar for add/edit modes.
+ * @param {{avatar: HTMLElement | null, avatarText: HTMLElement | null} | null} elements - Overlay elements.
+ * @param {string} name - Contact name.
+ * @param {boolean} useInitials - Whether to show initials.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+function updateContactAvatar(elements, name, useInitials) {
+	if (!elements?.avatar || !elements.avatarText) return;
+	if (!useInitials) {
+		elements.avatar.classList.remove('has-initials');
+		elements.avatarText.textContent = '';
+		return;
+	}
+	const parts = name.trim().split(/\s+/).filter(Boolean);
+	let initials = '';
+	if (parts.length === 1) initials = parts[0].slice(0, 2);
+	if (parts.length > 1) initials = `${parts[0][0]}${parts[parts.length - 1][0]}`;
+	initials = initials.toUpperCase();
+	elements.avatarText.textContent = initials || 'U';
+	elements.avatar.classList.add('has-initials');
+}
+
+/**
+ * Updates overlay copy and actions for add/edit modes.
+ * @param {'add' | 'edit'} mode - Overlay mode.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+function setContactOverlayMode(mode) {
+	const elements = getContactOverlayElements();
+	if (!elements) return;
+	const isEdit = mode === 'edit';
+	if (elements.title) elements.title.textContent = isEdit ? 'Edit contact' : 'Add contact';
+	if (elements.subtitle) {
+		elements.subtitle.textContent = 'Tasks are better with a team!';
+		elements.subtitle.classList.toggle('is-hidden', isEdit);
+	}
+	if (elements.submitLabel) elements.submitLabel.textContent = isEdit ? 'Save' : 'Create contact';
+	if (elements.deleteButton) {
+		elements.deleteButton.classList.toggle('is-hidden', !isEdit);
+	}
+	if (elements.cancelButton) {
+		elements.cancelButton.classList.toggle('is-hidden', isEdit);
+	}
+}
+
+/**
+ * Applies contact data to the form fields.
+ * @param {ReturnType<typeof getContactFields>} fields - Contact form fields.
+ * @param {{name?: string, email?: string, phone?: string} | null} contact - Contact data.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+function applyContactToForm(fields, contact) {
+	if (!fields) return;
+	fields.nameInput.value = contact?.name || '';
+	fields.emailInput.value = contact?.email || '';
+	fields.phoneInput.value = contact?.phone || '';
 }
 
 /**
@@ -112,6 +209,56 @@ async function saveContact(contact) {
 }
 
 /**
+ * Updates an existing contact in the database.
+ * @param {string} contactId - Contact id.
+ * @param {{name: string, email: string, phone: string}} contact - Contact data.
+ * @returns {Promise<void>} Resolves after update completes.
+ * @category Contacts
+ * @subcategory Firebase Logic
+ */
+async function updateContact(contactId, contact) {
+	if (!hasDb() || !contactId) return;
+	await db.ref(`contacts/${contactId}`).update(contact);
+}
+
+/**
+ * Deletes a contact from the database.
+ * @param {string} contactId - Contact id.
+ * @returns {Promise<void>} Resolves after delete completes.
+ * @category Contacts
+ * @subcategory Firebase Logic
+ */
+async function deleteContact(contactId) {
+	if (!hasDb() || !contactId) return;
+	await db.ref(`contacts/${contactId}`).remove();
+}
+
+/**
+ * Fetches a contact by id.
+ * @param {string} contactId - Contact id.
+ * @returns {Promise<{name?: string, email?: string, phone?: string} | null>} Contact data.
+ * @category Contacts
+ * @subcategory Firebase Logic
+ */
+async function fetchContact(contactId) {
+	if (!hasDb() || !contactId) return null;
+	const snapshot = await db.ref(`contacts/${contactId}`).get();
+	return snapshot.val();
+}
+
+/**
+ * Refreshes the contact list using external renderer if available.
+ * @returns {Promise<void>} Resolves after refresh completes.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+async function refreshContactsList() {
+	if (typeof window.loadContacts === 'function') {
+		await window.loadContacts();
+	}
+}
+
+/**
  * Initializes the add contact overlay interactions.
  * @category Contacts
  * @subcategory UI & Init
@@ -123,10 +270,30 @@ function initContactOverlay() {
 
 	const closeTargets = overlay.querySelectorAll('[data-contact-overlay-close]');
 
-	trigger.addEventListener('click', openContactOverlay);
+	trigger.addEventListener('click', () => {
+		setContactOverlayMode('add');
+		const fields = getContactFields();
+		if (fields) {
+			fields.form.dataset.mode = 'add';
+			fields.form.dataset.contactId = '';
+			fields.form.reset();
+			clearContactErrors(fields);
+			updateContactAvatar(getContactOverlayElements(), '', false);
+		}
+		openContactOverlay();
+	});
 	trigger.addEventListener('keydown', (event) => {
 		if (event.key === 'Enter' || event.key === ' ') {
 			event.preventDefault();
+			setContactOverlayMode('add');
+			const fields = getContactFields();
+			if (fields) {
+				fields.form.dataset.mode = 'add';
+				fields.form.dataset.contactId = '';
+				fields.form.reset();
+				clearContactErrors(fields);
+				updateContactAvatar(getContactOverlayElements(), '', false);
+			}
 			openContactOverlay();
 		}
 	});
@@ -146,12 +313,21 @@ function initContactForm() {
 	const fields = getContactFields();
 	if (!fields) return;
 	bindContactFieldEvents(fields);
+	const elements = getContactOverlayElements();
+	if (elements?.deleteButton) {
+		elements.deleteButton.addEventListener('click', async () => {
+			const contactId = fields.form.dataset.contactId;
+			if (!contactId) return;
+			await deleteContact(contactId);
+			await refreshContactsList();
+			fields.form.reset();
+			closeContactOverlay();
+		});
+	}
 
 	fields.form.addEventListener('submit', async (event) => {
 		event.preventDefault();
-		clearFieldError(fields.nameInput, fields.messages.name);
-		clearFieldError(fields.emailInput, fields.messages.email);
-		clearFieldError(fields.phoneInput, fields.messages.phone);
+		clearContactErrors(fields);
 		if (!validateContactFields(fields)) return;
 
 		fields.submitButton.disabled = true;
@@ -159,7 +335,14 @@ function initContactForm() {
 			const name = fields.nameInput.value.trim();
 			const email = fields.emailInput.value.trim();
 			const phone = fields.phoneInput.value.trim();
-			await saveContact({ name, email, phone, createdAt: Date.now() });
+			const mode = fields.form.dataset.mode || 'add';
+			if (mode === 'edit') {
+				const contactId = fields.form.dataset.contactId;
+				await updateContact(contactId, { name, email, phone });
+			} else {
+				await saveContact({ name, email, phone, createdAt: Date.now() });
+			}
+			await refreshContactsList();
 			fields.form.reset();
 			closeContactOverlay();
 		} finally {
@@ -168,10 +351,36 @@ function initContactForm() {
 	});
 }
 
+/**
+ * Opens the overlay in edit mode with contact data.
+ * @param {string} contactId - Contact id.
+ * @param {{name?: string, email?: string, phone?: string} | null} contact - Contact data.
+ * @returns {Promise<void>} Resolves after opening.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+async function openEditContactOverlay(contactId, contact) {
+	setContactOverlayMode('edit');
+	const fields = getContactFields();
+	if (fields) {
+		fields.form.dataset.mode = 'edit';
+		fields.form.dataset.contactId = contactId || '';
+		clearContactErrors(fields);
+		const data = contact || (await fetchContact(contactId));
+		applyContactToForm(fields, data);
+		updateContactAvatar(getContactOverlayElements(), data?.name || '', true);
+	}
+	openContactOverlay();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 	initContactOverlay();
 	initContactForm();
 });
+
+window.contactsOverlay = {
+	openEditContactOverlay,
+};
 document.addEventListener('DOMContentLoaded', initContactOverlay);
 
 // Hier wird die Render-Funktion für die Kontaktliste aufgerufen, um die Kontakte anzuzeigen, wenn die Seite geladen wird.

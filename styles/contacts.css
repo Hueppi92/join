@@ -215,12 +215,33 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 .contact-overlay__avatar img {
   width: 48px;
   height: 48px;
   filter: brightness(0) invert(1);
+}
+
+.contact-overlay__avatar-text {
+  display: none;
+  font-size: 40px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 1px;
+}
+
+.contact-overlay__avatar.has-initials {
+  background: #ff7a00;
+}
+
+.contact-overlay__avatar.has-initials img {
+  display: none;
+}
+
+.contact-overlay__avatar.has-initials .contact-overlay__avatar-text {
+  display: block;
 }
 
 .contact-overlay__form {
@@ -239,6 +260,10 @@ main {
   color: #ff3d00;
   text-align: left;
   min-height: 16px;
+}
+
+.is-hidden {
+  display: none !important;
 }
 
 .contact-overlay__field {
