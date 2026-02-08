@@ -35,3 +35,34 @@ function initContactOverlay() {
 document.addEventListener('DOMContentLoaded', initContactOverlay);
 
 // Hier wird die Render-Funktion für die Kontaktliste aufgerufen, um die Kontakte anzuzeigen, wenn die Seite geladen wird.
+
+function renderContactList() {
+	let contactListContainer = document.getElementById('contact-list');
+	contactListContainer.innerHTML = `<div class="contact-box">
+		<div>
+			<img class="contact-logo" src="../assets/icons/Profile badge@2x.png" alt="Anton Mayer" />
+		</div>
+		<div class="contact-item">
+			<span class="contact-name">${contact.name}</span>
+			<span class="contact-email">${contact.email}</span>
+			<span class="contact-phone">${contact.phone}</span>
+		</div>
+	`;
+}
+document.addEventListener('DOMContentLoaded', renderContactList);
+
+function showContactDetails(contact) {
+	let contactDetailsContainer = document.getElementById('contact-details');
+	contactDetailsContainer.innerHTML = `<div class="contact-details-box">
+		<div>
+			<img class="contact-logo" src="../assets/icons/Profile badge@2x.png" alt="${contact.name}" />
+			<span class="contact-name">${contact.name}</span>
+			<p>Edit</p><p>Delete</p>
+		</div>
+		<div class="contact-details-item">
+			<span class="contact-name">Contact Information</span>
+			<span class="contact-email">${contact.email}</span>
+			<span class="contact-phone">${contact.phone}</span>
+		</div>
+	</div>`;
+}
