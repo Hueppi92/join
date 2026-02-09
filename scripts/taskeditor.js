@@ -56,12 +56,12 @@ function loadContacts() {
 
 
             const label = document.createElement("label");
-            label.className = "assigned-item";
+            label.className = "dropdown_item";
             label.dataset.username = user.name.toLowerCase();
 
 
             label.innerHTML = `
-                <div class="assigned-avatar">${initials}</div>
+                <div class="dropdown_avatar">${initials}</div>
                 <span>${user.name}</span>
                 <input type="checkbox"
                      data-userid="${child.key}"
@@ -74,18 +74,17 @@ function loadContacts() {
 
     // Dropdown Toggle
     searchInput.addEventListener("focus", () => {
-        dropdown.classList.remove("hidden");
+        dropdown.classList.add("open");
     });
 
     dropdown.addEventListener("change", (e) => {
-        const item = e.target.closest(".assigned-item");
+        const item = e.target.closest(".dropdown_item");
         if (!item) return;
 
         item.classList.toggle("selected", e.target.checked);
         updateAssignedDisplay();
     });
 
-    // Anzeige aktualisieren
     dropdown.addEventListener("change", updateAssignedDisplay);
 }
 
@@ -103,6 +102,31 @@ function updateAssignedDisplay() {
 
     const names = Array.from(checked).map(cb => cb.dataset.username);
     searchInput.value = names.join(", ");
+}
+
+function updateAssignedAvatars() {
+    const container = document.getElementById("assignedAvatars");
+    const checked = document.querySelectorAll(
+        "#assignedDropdown input[type='checkbox']:checked"
+    );
+
+    container.innerHTML = "";
+
+    checked.forEach(cb => {
+        const name = cb.dataset.username;
+        const initials = name
+            .split(" ")
+            .map(n => n[0])
+            .join("")
+            .substring(0, 2)
+            .toUpperCase();
+
+        const avatar = document.createElement("div");
+        avatar.className = "dropdown_avatar";
+        avatar.textContent = initials;
+
+        container.appendChild(avatar);
+    });
 }
 
 // CATEGORIES
@@ -205,19 +229,19 @@ function setupAssignedSearch() {
     if (!searchInput || !dropdown) return;
 
     searchInput.addEventListener("focus", () => {
-        dropdown.classList.remove("hidden");
+        dropdown.classList.add("open");
     });
 
     document.addEventListener("click", (e) => {
         if (!wrapper.contains(e.target)) {
-            dropdown.classList.add("hidden");
+            dropdown.classList.remove("open");
         }
     });
 
     searchInput.addEventListener("input", () => {
         const value = searchInput.value.trim().toLowerCase();
 
-        dropdown.querySelectorAll(".assigned-item").forEach(item => {
+        dropdown.querySelectorAll(".dropdown_item").forEach(item => {
             const name = item.dataset.username;
 
             if (value === "") {
@@ -227,6 +251,11 @@ function setupAssignedSearch() {
             }
         });
     });
+
+    dropdown.addEventListener("change", () => {
+        updateAssignedDisplay();
+        updateAssignedAvatars();
+    });
 }
 
 function setupCategoryDropdown() {
@@ -235,20 +264,20 @@ function setupCategoryDropdown() {
     let dropdown = document.getElementById("categoryDropdown");
 
     input.addEventListener("focus", () => {
-        dropdown.classList.remove("hidden");
+        dropdown.classList.add("open");
     });
 
-    dropdown.querySelectorAll(".assigned-item").forEach(item => {
+    dropdown.querySelectorAll(".dropdown_item").forEach(item => {
         item.addEventListener("click", () => {
             input.value = item.textContent;
             input.dataset.value = item.dataset.value;
-            dropdown.classList.add("hidden");
+            dropdown.classList.remove("open");
         });
     });
 
     document.addEventListener("click", (e) => {
         if (!wrapper.contains(e.target)) {
-            dropdown.classList.add("hidden");
+            dropdown.classList.remove("open");
         }
     });
 }

@@ -105,12 +105,14 @@
         <div class="settings_block">
           <label>Assigned to</label>
 
-          <div class="select_native category-select" id="assignedSelect">
-            <div class="assigned-input">
+          <div class="select_native" id="assignedSelect">
+            <div class="selector_input">
               <input type="text" id="assignedSearch" placeholder="Select contacts to assign" autocomplete="off" />
             </div>
 
-            <div class="assigned-dropdown hidden" id="assignedDropdown">
+            <div id="assignedAvatars" class="assigned_avatars"></div>
+
+            <div class="selector_dropdown" id="assignedDropdown">
             </div>
           </div>
         </div>
@@ -118,13 +120,13 @@
         <div class="settings_block">
           <label>Category</label>
           <div class="select_native category-select" id="categorySelectWrapper">
-            <div class="assigned-input">
+            <div class="selector_input">
               <input type="text" id="categoryInput" placeholder="Select task category" readonly>
             </div>
 
-            <div class="assigned-dropdown hidden" id="categoryDropdown">
-              <label class="assigned-item" data-value="user-story">User Story</label>
-              <label class="assigned-item" data-value="technical-task">Technical Task</label>
+            <div class="selector_dropdown" id="categoryDropdown">
+              <label class="dropdown_item" data-value="user-story">User Story</label>
+              <label class="dropdown_item" data-value="technical-task">Technical Task</label>
             </div>
           </div>
         </div>
