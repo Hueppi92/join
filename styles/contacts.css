@@ -97,24 +97,29 @@ main {
 
 .contact-overlay {
   position: fixed;
-  top: 96px;
-  left: 231px;
-  width: calc(100vw - 231px);
-  height: calc(100vh - 96px);
-  display: none;
+  inset: 0;
+  display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1200;
+  visibility: visible;
+  pointer-events: none;
 }
 
 .contact-overlay.is-open {
-  display: flex;
+  pointer-events: auto;
 }
 
 .contact-overlay__backdrop {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.contact-overlay.is-open .contact-overlay__backdrop {
+  opacity: 1;
 }
 
 .contact-overlay__panel {
@@ -127,26 +132,36 @@ main {
   border-radius: 28px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
   overflow: hidden;
-  transform: translateX(120%);
-  opacity: 0;
-  transition: transform 120ms ease, opacity 120ms ease;
+  transform: translateX(100vw);
+  opacity: 1;
+  transition: transform 600ms ease;
   z-index: 1;
 }
 
 .contact-overlay.is-open .contact-overlay__panel {
   transform: translateX(0);
-  opacity: 1;
 }
 
 .contact-overlay__close {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 24px;
+  right: 48px;
   background: transparent;
   border: unset;
   font-size: 22px;
   cursor: pointer;
   z-index: 2;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 160ms ease;
+}
+
+.contact-overlay__close:hover {
+  background-color: #e0e0e0;
 }
 
 .contact-overlay__close img {
@@ -318,6 +333,7 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  transition: box-shadow 160ms ease;
 }
 
 .contact-overlay__btn img {
@@ -332,6 +348,7 @@ main {
 .contact-overlay__btn--ghost:hover {
   color: #29abe2;
   border-color: #29abe2;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 .contact-overlay__btn--ghost:hover .icon-default {
@@ -350,5 +367,11 @@ main {
 .contact-overlay__btn--primary {
   background: #2a3647;
   color: #ffffff;
+}
+
+.contact-overlay__btn--primary:hover {
+  background: #29abe2;
+  border-color: transparent;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
