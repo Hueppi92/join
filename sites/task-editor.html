@@ -36,14 +36,14 @@
           </label>
 
           <div class="left_single_row">
-            <input id="titleInput" class="first_input" type="text" placeholder="Enter a title">
+            <input id="titleInput" type="text" placeholder="Enter a title">
           </div>
 
           <small class="error_text">This field is required</small>
 
         </div>
 
-        <div class="left_row description_field">
+        <div class="left_row">
           <label>Description</label>
 
           <div class="left_single_row description_box">
@@ -105,7 +105,7 @@
         <div class="settings_block">
           <label>Assigned to</label>
 
-          <div class="assigned-select" id="assignedSelect">
+          <div class="select_native category-select" id="assignedSelect">
             <div class="assigned-input">
               <input type="text" id="assignedSearch" placeholder="Select contacts to assign" autocomplete="off" />
             </div>
@@ -116,13 +116,19 @@
         </div>
 
         <div class="settings_block">
-          <label>Category <span class="error">*</span></label>
-          <div class="select_native">
-            <select id="categorySelect">
-              <option selected disabled>Select task category</option>
-            </select>
+          <label>Category</label>
+          <div class="select_native category-select" id="categorySelectWrapper">
+            <div class="assigned-input">
+              <input type="text" id="categoryInput" placeholder="Select task category" readonly>
+            </div>
+
+            <div class="assigned-dropdown hidden" id="categoryDropdown">
+              <label class="assigned-item" data-value="user-story">User Story</label>
+              <label class="assigned-item" data-value="technical-task">Technical Task</label>
+            </div>
           </div>
         </div>
+
 
         <div class="settings_block subtasks_block">
           <label>Subtasks</label>
