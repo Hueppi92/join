@@ -55,6 +55,26 @@ function closeContactOverlay() {
 	overlay.setAttribute('aria-hidden', 'true');
 }
 
+/**
+ * Shows a temporary success toast after creating a contact.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+function showSuccessToast() {
+	const toast = document.getElementById('contact-toast');
+	if (!toast) return;
+	toast.classList.remove('is-visible');
+	void toast.offsetWidth;
+	toast.classList.add('is-visible');
+	toast.setAttribute('aria-hidden', 'false');
+	const handleEnd = () => {
+		toast.classList.remove('is-visible');
+		toast.setAttribute('aria-hidden', 'true');
+		toast.removeEventListener('animationend', handleEnd);
+	};
+	toast.addEventListener('animationend', handleEnd);
+}
+
 
 /**
  * Collects contact form fields.
@@ -401,6 +421,9 @@ function initContactForm() {
 			await refreshContactsList();
 			fields.form.reset();
 			closeContactOverlay();
+			if (mode !== 'edit') {
+				showContactSuccessToast();
+			}
 		} finally {
 			fields.submitButton.disabled = false;
 		}
