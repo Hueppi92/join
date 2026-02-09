@@ -1,4 +1,5 @@
 .editor_divider {
+    justify-content: center;
     width: 1px;
     height: 380px;
     background: #d1d1d1;
@@ -24,7 +25,8 @@
     display: flex;
     flex-direction: column;
     gap: 25px;
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
 }
 
 .left_row {
@@ -70,7 +72,7 @@
     flex: 1;
     font-size: 20px;
 
-    padding: 12px 21px;
+    padding: 14px 18px;
     line-height: 120%;
 
     border: none;
@@ -122,15 +124,17 @@
 .task_settings {
     display: flex;
     flex-direction: column;
-    gap: 48px;
-    width: 440px;
+    gap: 25px;
+    width: 100%;
+    max-width: 440px;
 }
 
 /* PRIORITY */
 .priority_row {
     display: flex;
     gap: 16px;
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
 }
 
 .prio {
@@ -207,11 +211,14 @@
     height: 48px;
     gap: 6px;
 
+    margin-bottom: 8px;
+
 }
 
 .select_native {
     position: relative;
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
 }
 
 .select_native select {
@@ -269,7 +276,8 @@
 
 .assigned-select {
     position: relative;
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
 }
 
 .assigned-input {
@@ -337,7 +345,8 @@
 
 .subtask_input {
     position: relative;
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
     height: 48px;
 
     display: flex;
@@ -564,7 +573,7 @@
     display: none;
 }
 
-@media (max-width: 1020px) {
+@media (max-width: 1280px) {
 
     .editor_wrapper {
         flex-direction: column;
@@ -614,13 +623,13 @@
     }
 
     .description_box textarea {
-        height: 96px;
+        height: 10px;
+        padding: 10px 14px;
     }
 
     .task_footer {
         position: sticky;
         bottom: 0;
-        background: #ffffff;
         padding: 16px 0 8px;
         margin-top: 24px;
         border-top: 1px solid #EDEDED;
@@ -639,22 +648,39 @@
         font-size: 16px;
     }
 
-    @media (max-width: 1020px) {
-        .modal_content {
-            width: 100%;
-            height: 100%;
-            max-width: none;
-            max-height: none;
+    .modal_content {
+        width: 100%;
+        height: 100%;
+        max-width: none;
+        max-height: none;
 
-            padding: 24px 16px;
-            border-radius: 0;
+        padding: 24px 16px;
+        border-radius: 0;
 
-            overflow-x: hidden;
-        }
+        overflow-x: hidden;
+    }
 
-        .modal_close {
-            top: 16px;
-            right: 16px;
-        }
+    .modal_close {
+        top: 16px;
+        right: 16px;
+    }
+}
+
+@media (max-width: 520px) {
+    .priority_row {
+        flex-wrap: wrap;
+    }
+
+    .prio {
+        flex: 1 1 calc(50% - 8px);
+    }
+
+    .footer_actions {
+        flex-direction: column;
+    }
+
+    .clear_btn,
+    .create_btn {
+        width: 100%;
     }
 }
