@@ -47,14 +47,23 @@ function loadContacts() {
         snapshot.forEach(child => {
             const user = child.val();
 
+            const initials = user.name
+                .split(" ")
+                .map(n => n[0])
+                .join("")
+                .substring(0, 2)
+                .toUpperCase();
+
+
             const label = document.createElement("label");
             label.className = "assigned-item";
             label.dataset.username = user.name.toLowerCase();
-            
+
 
             label.innerHTML = `
-              <span>${user.name}</span>
-              <input type="checkbox"
+                <div class="assigned-avatar">${initials}</div>
+                <span>${user.name}</span>
+                <input type="checkbox"
                      data-userid="${child.key}"
                      data-username="${user.name}">
             `;
@@ -66,6 +75,14 @@ function loadContacts() {
     // Dropdown Toggle
     searchInput.addEventListener("focus", () => {
         dropdown.classList.remove("hidden");
+    });
+
+    dropdown.addEventListener("change", (e) => {
+        const item = e.target.closest(".assigned-item");
+        if (!item) return;
+
+        item.classList.toggle("selected", e.target.checked);
+        updateAssignedDisplay();
     });
 
     // Anzeige aktualisieren
@@ -181,10 +198,21 @@ function getAssignedUsers() {
 }
 
 function setupAssignedSearch() {
-    const searchInput = document.getElementById("assignedSearch");
-    const dropdown = document.getElementById("assignedDropdown");
+    let wrapper = document.getElementById("assignedSelect");
+    let searchInput = document.getElementById("assignedSearch");
+    let dropdown = document.getElementById("assignedDropdown");
 
     if (!searchInput || !dropdown) return;
+
+    searchInput.addEventListener("focus", () => {
+        dropdown.classList.remove("hidden");
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!wrapper.contains(e.target)) {
+            dropdown.classList.add("hidden");
+        }
+    });
 
     searchInput.addEventListener("input", () => {
         const value = searchInput.value.trim().toLowerCase();
@@ -199,9 +227,29 @@ function setupAssignedSearch() {
             }
         });
     });
+}
 
-    searchInput.addEventListener("focus", () => {
+function setupCategoryDropdown() {
+    let wrapper = document.getElementById("categorySelectWrapper");
+    let input = document.getElementById("categoryInput");
+    let dropdown = document.getElementById("categoryDropdown");
+
+    input.addEventListener("focus", () => {
         dropdown.classList.remove("hidden");
+    });
+
+    dropdown.querySelectorAll(".assigned-item").forEach(item => {
+        item.addEventListener("click", () => {
+            input.value = item.textContent;
+            input.dataset.value = item.dataset.value;
+            dropdown.classList.add("hidden");
+        });
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!wrapper.contains(e.target)) {
+            dropdown.classList.add("hidden");
+        }
     });
 }
 
@@ -239,7 +287,7 @@ function setupCreateTaskButton() {
             description: document.querySelector("textarea").value.trim(),
             dueDate: date,
             priority: getActivePriority(),
-            category: document.querySelector("select:nth-of-type(2)")?.value || "",
+            category: document.getElementById("categoryInput")?.dataset.value || "",
             assignedTo: getAssignedUsers(),
             subtasks: getSubtasks(),
             status: "todo",
@@ -296,6 +344,7 @@ function loadTaskEditorPage() {
     setupRequiredField("dateInput", ".date_field");
     prioBtnActiveToggle();
     setupAssignedSearch();
+    setupCategoryDropdown();
     setupSubtasks();
     setupCreateTaskButton();
     setupClearButton();
