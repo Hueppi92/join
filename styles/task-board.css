@@ -105,6 +105,15 @@ body {
   margin-bottom: 24px;
 }
 
+.add-column-btn {
+  background-image:url('../assets/icons/plus-button.svg');
+  height:24px;
+  width:24px;
+  border-style: none;
+
+}
+
+
 .task-list {
   min-height: 500px;
   display: flex;
@@ -216,18 +225,57 @@ align-items: center;}
   gap: 16px;
   padding: 8px 0;
 }
+/* Der Container auf der kleinen Karte */
+/* 1. Sorge dafür, dass der Footer die Badges und die Prio nebeneinander hält */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 10px;
+}
 
+/* 2. Der Container für die kleinen Kreise */
+.assigned-to-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  /* Verhindert, dass der Container auf 0px schrumpft */
+  min-height: 32px; 
+}
+
+/* 3. Die Badges auf der kleinen Karte */
 .user-badge {
-  width: 35px;
-  height: 35px;
+  width: 32px !important;  /* Feste Breite erzwingen */
+  height: 32px !important; /* Feste Höhe erzwingen */
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-size: 12px;
+  border: 2px solid #ffffff; 
+  position: relative; /* WICHTIG für den z-index aus deinem JS */
+  margin-left: -8px;  /* Das macht den coolen Stapel-Effekt */
+  flex-shrink: 0;     /* Verhindert, dass die Kreise gequetscht werden */
 }
 
+/* Das erste Badge klebt ganz links */
+.user-badge:first-child {
+  margin-left: 0;
+}
+
+/* Falls das Detail-Overlay eigene Badges nutzt (wie in deinem HTML) */
+.user-badge-large {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+}
 .subtask-row {
   display: flex;
   align-items: center;
