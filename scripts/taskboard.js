@@ -122,46 +122,50 @@ function closeAddTaskModal() {
  * @param {string} taskId - Die eindeutige ID der Task aus Firebase.
  */
 async function openTaskDetail(taskId) {
-  const [taskSnap, usersSnap, taskUsersSnap] = await Promise.all([
+  const [taskSnap, usersSnap] = await Promise.all([
     firebase.database().ref('tasks/' + taskId).get(),
-    firebase.database().ref('users').get(),
-    firebase.database().ref('taskUsers/' + taskId).get()
+    firebase.database().ref('users').get()
   ]);
 
   const task = taskSnap.val();
   if (!task) return;
 
-  const taskPrio = task.priority || 'low';
   const allUsers = usersSnap.val() || {};
 
-  // --- START FALLBACK LOGIK ---
-  // 1. Zuerst versuchen wir die IDs aus dem taskUsers-Knoten zu holen
-  let userIds = taskUsersSnap.val() ? Object.keys(taskUsersSnap.val()) : [];
+  const assignedUsers = Array.isArray(task.assignedTo)
+    ? task.assignedTo.map(u => {
+        const fullUser = allUsers[u.id];
 
-  // 2. Wenn dort nichts gefunden wurde, prüfen wir, ob im Task selbst eine ID steht (yves)
-  if (userIds.length === 0 && typeof task.assignedTo === 'string' && task.assignedTo !== "") {
-    userIds.push(task.assignedTo);
-  }
-  // --- ENDE FALLBACK LOGIK ---
+        const name = u.name || fullUser?.name || 'Unknown';
 
-  const assignedUsers = userIds.map(uid => {
-    const u = allUsers[uid];
-    return u ? { 
-      name: u.name, 
-      color: u.color || '#2A3647',
-      initials: u.name ? u.name.split(' ').map(n => n[0]).join('').toUpperCase() : '?'
-    } : null;
-  }).filter(u => u !== null);
+        return {
+          name,
+          color: fullUser?.color || '#2A3647',
+          initials: name
+            .split(' ')
+            .map(n => n[0])
+            .join('')
+            .toUpperCase()
+        };
+      })
+    : [];
 
-  const taskWithUsers = { ...task, assignedTo: assignedUsers, priority: taskPrio };
-  
+  const taskWithUsers = {
+    ...task,
+    assignedTo: assignedUsers,
+    priority: task.priority || 'low'
+  };
+
   const overlay = document.getElementById('task-overlay');
-  if (overlay) {
-    overlay.querySelector('.overlay-card').innerHTML = getTaskDetailTemplate(taskWithUsers, taskId);
-    overlay.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-  }
+  if (!overlay) return;
+
+  overlay.querySelector('.overlay-card').innerHTML =
+    getTaskDetailTemplate(taskWithUsers, taskId);
+
+  overlay.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
 }
+
 /**
  * Schließt das Task-Detail-Overlay.
  * @function closeTaskDetail

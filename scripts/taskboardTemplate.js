@@ -7,72 +7,75 @@
 function getCardTemplate(task, id) {
     // 1. Daten-Normalisierung (Firebase Fix)
     const assignedToRaw = task.assignedTo || [];
-    const assignedTo = Array.isArray(assignedToRaw) ? assignedToRaw : Object.values(assignedToRaw);
-    
-    const subtasksRaw = task.subtasks || [];
-    const subtasks = Array.isArray(subtasksRaw) ? subtasksRaw : Object.values(subtasksRaw);
+    const assignedTo = Array.isArray(assignedToRaw)
+        ? assignedToRaw
+        : Object.values(assignedToRaw);
 
-    // 2. Subtask Progress berechnen
-    const doneTasks = subtasks.filter(st => st.completed || st.done).length; // Checkt beide Varianten
+    const subtasksRaw = task.subtasks || [];
+    const subtasks = Array.isArray(subtasksRaw)
+        ? subtasksRaw
+        : Object.values(subtasksRaw);
+
+    // 2. Subtask Progress
+    const doneTasks = subtasks.filter(st => st?.completed || st?.done).length;
     const progress = subtasks.length > 0 ? (doneTasks / subtasks.length) * 100 : 0;
 
-    // 3. User-Badges generieren (Max 4 anzeigen, Rest als +X)
-    let assignedHtml = '';
-    const maxVisible = 4;
-    
-    assignedTo.forEach((u, index) => {
-        if (index < maxVisible && u && u.initials) {
-            assignedHtml += `
-                <div class="user-badge" 
-                     style="background: ${u.color || '#2A3647'}; 
-                            margin-left: ${index === 0 ? '0' : '-8px'}; 
-                            z-index: ${10 - index}">
-                    ${u.initials}
-                </div>`;
-        }
-    });
+    // 3. Assigned User Badges – ALLE anzeigen
+   const assignedHtml = assignedTo
+    .filter(u => u) // Filtert leere Einträge
+    .slice(0, 4)    // Optional: Zeige nur die ersten 4, falls es zu viele sind
+    .map((u, index) => {
+        const initials = u.initials || 
+            (u.name ? u.name.split(' ').map(n => n[0]).join('').slice(0, 2) : '?');
 
-    if (assignedTo.length > maxVisible) {
-        assignedHtml += `
-            <div class="user-badge" style="background: #2A3647; margin-left: -8px; z-index: 1">
-                +${assignedTo.length - maxVisible}
-            </div>`;
-    }
+        return `
+            <div class="user-badge" 
+                 style="background-color: ${u.color || '#2A3647'}; 
+                        z-index: ${10 - index};">
+                ${initials.toUpperCase()}
+            </div>
+        `;
+    })
+    .join('');
 
-    // 4. Priorität Icon Pfad
+    // 4. Priorität
     const prio = (task.priority || 'low').toLowerCase();
 
     return `
-        <div class="card" draggable="true" 
-             onclick="openTaskDetail('${id}')" 
+        <div class="card" draggable="true"
+             onclick="openTaskDetail('${id}')"
              ondragstart="event.dataTransfer.setData('text/plain', '${id}')">
-            
+
             <div class="badge user-story">${task.category || 'User Story'}</div>
-            
+
             <div class="card-content">
                 <h2 class="card-title">${task.title || 'No Title'}</h2>
                 <p class="card-description">${task.description || ''}</p>
             </div>
 
             ${subtasks.length > 0 ? `
-            <div class="progress-container">
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: ${progress}%"></div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progress}%"></div>
+                    </div>
+                    <span>${doneTasks}/${subtasks.length} Subtasks</span>
                 </div>
-                <span>${doneTasks}/${subtasks.length} Subtasks</span>
-            </div>` : ''}
+            ` : ''}
 
             <div class="card-footer">
                 <div class="assigned-to-container">
                     ${assignedHtml}
                 </div>
                 <div class="prio-icon">
-                    <img src="../assets/icons/prio-${prio}.svg" alt="${prio}" onerror="this.style.display='none'">
+                    <img src="../assets/icons/prio-${prio}.svg"
+                         alt="${prio}"
+                         onerror="this.style.display='none'">
                 </div>
             </div>
         </div>
     `;
 }
+
 
 /**
  * Erzeugt das HTML für das Detail-Overlay einer Task.
@@ -96,14 +99,17 @@ function getTaskDetailTemplate(task, id) {
     const prioLabel = prio.charAt(0).toUpperCase() + prio.slice(1);
 
     // Assigned-To Render
-    const assignedHtml = assignedTo.map(user => `
-        <div class="assigned-user-row">
-            <div class="user-badge-large" style="background: ${user.color || '#2A3647'}">
-                ${user.initials || '?'}
-            </div>
-            <span class="user-name">${user.name || 'Unknown'}</span>
-        </div>
-    `).join('');
+    const assignedHtml = assignedTo
+    .filter(u => u)
+    .slice(0, 3) // Zeige nur die ersten 3
+    .map((u, index) => {
+        const initials = u.initials || (u.name ? u.name.split(' ').map(n => n[0]).join('').slice(0, 2) : '?');
+        return `<div class="user-badge" style="background-color: ${u.color || '#2A3647'}; z-index: ${10 - index};">${initials.toUpperCase()}</div>`;
+    })
+    .join('');
+
+// Falls mehr als 3 User da sind, füge ein "+X" Badge hinzu
+const extraUsers = assignedTo.length > 3 ? `<div class="user-badge" style="background-color: #2A3647; z-index: 0;">+${assignedTo.length - 3}</div>` : '';
 
     // 🔥 Subtasks Render (HIER ist der wichtige Fix)
     const subtasksHtml = subtasks.length > 0
