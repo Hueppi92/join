@@ -39,6 +39,7 @@ function getContactOverlayElements() {
 function openContactOverlay() {
 	const overlay = document.getElementById('contact-overlay');
 	if (!overlay) return;
+	overlay.classList.remove('is-instant');
 	overlay.classList.add('is-open');
 	overlay.setAttribute('aria-hidden', 'false');
 }
@@ -48,11 +49,17 @@ function openContactOverlay() {
  * @category Contacts
  * @subcategory UI & Init
  */
-function closeContactOverlay() {
+function closeContactOverlay(immediate = false) {
 	const overlay = document.getElementById('contact-overlay');
 	if (!overlay) return;
+	if (immediate) {
+		overlay.classList.add('is-instant');
+	}
 	overlay.classList.remove('is-open');
 	overlay.setAttribute('aria-hidden', 'true');
+	if (immediate) {
+		setTimeout(() => overlay.classList.remove('is-instant'), 0);
+	}
 }
 
 /**
@@ -61,18 +68,14 @@ function closeContactOverlay() {
  * @subcategory UI & Init
  */
 function showSuccessToast() {
-	const toast = document.getElementById('contact-toast');
+	const toast = document.getElementById('contact-success-toast');
 	if (!toast) return;
-	toast.classList.remove('is-visible');
-	void toast.offsetWidth;
-	toast.classList.add('is-visible');
 	toast.setAttribute('aria-hidden', 'false');
-	const handleEnd = () => {
-		toast.classList.remove('is-visible');
+	toast.classList.add('show');
+	setTimeout(() => {
+		toast.classList.remove('show');
 		toast.setAttribute('aria-hidden', 'true');
-		toast.removeEventListener('animationend', handleEnd);
-	};
-	toast.addEventListener('animationend', handleEnd);
+	}, 2000);
 }
 
 
@@ -369,7 +372,7 @@ function initContactOverlay() {
 		}
 	});
 
-	closeTargets.forEach((node) => node.addEventListener('click', closeContactOverlay));
+	closeTargets.forEach((node) => node.addEventListener('click', () => closeContactOverlay()));
 	window.addEventListener('keydown', (event) => {
 		if (event.key === 'Escape') closeContactOverlay();
 	});
@@ -420,9 +423,9 @@ function initContactForm() {
 			}
 			await refreshContactsList();
 			fields.form.reset();
-			closeContactOverlay();
+			closeContactOverlay(true);
 			if (mode !== 'edit') {
-				showContactSuccessToast();
+				showSuccessToast();
 			}
 		} finally {
 			fields.submitButton.disabled = false;

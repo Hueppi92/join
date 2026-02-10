@@ -122,6 +122,10 @@ main {
   opacity: 1;
 }
 
+.contact-overlay.is-instant .contact-overlay__backdrop {
+  transition: none;
+}
+
 .contact-overlay__panel {
   position: relative;
   display: grid;
@@ -136,6 +140,10 @@ main {
   opacity: 1;
   transition: transform 600ms ease;
   z-index: 1;
+}
+
+.contact-overlay.is-instant .contact-overlay__panel {
+  transition: none;
 }
 
 .contact-overlay.is-open .contact-overlay__panel {
