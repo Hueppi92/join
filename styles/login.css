@@ -275,42 +275,6 @@ button {
 	margin-top: 36px;
 }
 
-.btn {
-	height: 48px;
-	padding: 0 24px;
-	border-radius: 10px;
-	font-size: 21px;
-	font-weight: 700;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	transition: background var(--transition), color var(--transition), border-color var(--transition), box-shadow var(--transition);
-}
-
-.btn:hover {
-	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-}
-
-.btn-dark {
-	background: var(--primary);
-	color: #ffffff;
-}
-
-.btn-dark:hover {
-	background: var(--primary-hover);
-}
-
-.btn-light {
-	background: #ffffff;
-	color: var(--primary);
-	border: 1px solid var(--primary);
-}
-
-.btn-light:hover {
-	color: var(--primary-hover);
-	border-color: var(--primary-hover);
-}
-
 .login-footer {
 	display: flex;
 	justify-content: center;
