@@ -20,6 +20,7 @@
 .btn-dark {
 	background: var(--primary);
 	color: #ffffff;
+	font-weight: 700;
 }
 
 .btn-dark:hover {
@@ -30,6 +31,7 @@
 	background: #ffffff;
 	color: var(--primary);
 	border: 1px solid var(--primary);
+	font-weight: 700;
 }
 
 .btn-light:hover {
@@ -77,9 +79,21 @@
 	color: #2a3647;
 }
 
+#contact-overlay-cancel-btn {
+	font-size: 20px;
+	font-weight: 400;
+}
+
+#contact-overlay-delete-btn {
+	font-size: 21px;
+	font-weight: 400;
+}
+
 .contact-overlay__btn--primary {
 	background: #2a3647;
 	color: #ffffff;
+	font-size: 21px;
+	font-weight: 700;
 }
 
 .contact-overlay__btn--primary:hover {

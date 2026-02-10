@@ -196,14 +196,15 @@ main {
 }
 
 .contact-overlay__panel-left h2 {
-  font-size: 56px;
+  font-size: 61px;
   line-height: 1.1;
   font-weight: 700;
   margin: 0;
 }
 
 .contact-overlay__panel-left p {
-  font-size: 24px;
+  font-size: 27px;
+  font-weight: 400;
   margin: 0;
 }
 

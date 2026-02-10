@@ -248,9 +248,9 @@ function showSuccessAnimation() {
 	}
 
 	overlay.classList.remove('d-none');
-	const image = overlay.querySelector('img');
-	if (image) {
-		image.classList.add('slide-in-bottom');
+	const message = overlay.querySelector('.success-message');
+	if (message) {
+		message.classList.add('slide-in-bottom');
 	}
 
 	setTimeout(() => {
