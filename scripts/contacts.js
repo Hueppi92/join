@@ -57,9 +57,6 @@ function closeContactOverlay(immediate = false) {
 	}
 	overlay.classList.remove('is-open');
 	overlay.setAttribute('aria-hidden', 'true');
-	if (immediate) {
-		setTimeout(() => overlay.classList.remove('is-instant'), 0);
-	}
 }
 
 /**
@@ -395,7 +392,7 @@ function initContactForm() {
 			await deleteContact(contactId);
 			await refreshContactsList();
 			fields.form.reset();
-			closeContactOverlay();
+			closeContactOverlay(true);
 		});
 	}
 
