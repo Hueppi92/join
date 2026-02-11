@@ -21,36 +21,29 @@ async function renderBoard() {
       firebase.database().ref('users').get(),
       firebase.database().ref('taskUsers').get()
     ]);
-
     const tasks = tasksSnapshot.val() || {};
     const allUsers = usersSnapshot.val() || {};
     const connections = taskUsersSnapshot.val() || {};
     const columns = { 'todo': '', 'in-progress': '', 'await-feedback': '', 'done': '' };
 
     Object.entries(tasks).forEach(([taskId, task]) => {
-  // 1. Hole IDs aus dem Verbindungsknoten (mein Weg)
-  let userIdsForTask = connections[taskId] ? Object.keys(connections[taskId]) : [];
+      let userIdsForTask = connections[taskId] ? Object.keys(connections[taskId]) : [];
+      const assignedUsers = userIdsForTask.map(uid => {
+        const user = allUsers[uid];
+        if (!user) return null;
+        return {
+          name: user.name,
+          color: user.color || '#2A3647',
+          initials: user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : '?'
+        };
+      }).filter(u => u !== null);
 
-  // 2. FALLBACK: Falls ID direkt gespeichert hat (yves)
-  if (userIdsForTask.length === 0 && typeof task.assignedTo === 'string') {
-    userIdsForTask.push(task.assignedTo);
-  }
-
-  const assignedUsers = userIdsForTask.map(uid => {
-    const user = allUsers[uid];
-    if (!user) return null;
-    return {
-      name: user.name,
-      color: user.color || '#2A3647',
-      initials: user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : '?'
-    };
-  }).filter(u => u !== null);
-
-  const subtasks = task.subtasks || [];
-  const subtasksArray = Array.isArray(subtasks) ? subtasks : Object.values(subtasks);
-  const doneCount = subtasksArray.filter(st => st.completed || st.done).length;
-  const progressPercent = subtasksArray.length > 0 ? (doneCount / subtasksArray.length) * 100 : 0; 
-        const taskWithUsers = { ...task, assignedTo: assignedUsers, subtasks: subtasksArray, progress: progressPercent };
+      const subtasks = task.subtasks || [];
+      const subtasksArray = Array.isArray(subtasks) ? subtasks : Object.values(subtasks);
+      const doneCount = subtasksArray.filter(st => st.completed || st.done).length;
+      const progressPercent = subtasksArray.length > 0 ? (doneCount / subtasksArray.length) * 100 : 0; 
+      const taskWithUsers = { ...task, assignedTo: assignedUsers, subtasks: subtasksArray, progress: progressPercent };
+      
       if (columns[task.status] !== undefined) {
         columns[task.status] += getCardTemplate(taskWithUsers, taskId);
       }
@@ -80,26 +73,27 @@ function renderColumnHTML(columns) {
 
 /**
  * Öffnet das Add-Task Modal und setzt den Status der Zielspalte.
- * @function openAddTaskModal
+ * @function openAddTaskModalBoard
  * @param {string} [status='todo'] - Der Status der Spalte.
  */
-function openAddTaskModal(status = 'todo') {
-    console.log("Versuche Modal zu öffnen für Status:", status);
-    
-    // 1. Status global speichern
+function openAddTaskModalBoard(status = 'todo') {
     currentSelectedStatus = status; 
-    
-    // 2. Element suchen
     const modal = document.getElementById('addTaskModal');
     
     if (modal) {
         modal.classList.remove('hidden');
-        console.log("Modal gefunden und 'hidden' entfernt.");
+        
+        // Das ist der entscheidende Teil:
+        // Wir prüfen, ob die Initialisierung vom Task-Editor geladen ist
+        if (typeof initTaskEditor === 'function') {
+            initTaskEditor(); 
+        } else {
+            console.warn("initTaskEditor nicht gefunden. Event-Listener wurden evtl. nicht gebunden.");
+        }
     } else {
-        console.error("Fehler: Element mit ID 'addTaskModal' wurde im HTML nicht gefunden!");
+        console.error("Fehler: Element mit ID 'addTaskModal' wurde nicht gefunden!");
     }
 }
-
 /**
  * Schließt das Add-Task Modal und setzt das Formular zurück.
  * @function closeAddTaskModal
@@ -112,8 +106,6 @@ function closeAddTaskModal() {
         if (form) form.reset();
     }
 }
-
-
 
 /**
  * Öffnet das Detail-Overlay für eine spezifische Task.
