@@ -465,33 +465,63 @@ document.addEventListener('DOMContentLoaded', initContactOverlay);
 
 // Hier wird die Render-Funktion für die Kontaktliste aufgerufen, um die Kontakte anzuzeigen, wenn die Seite geladen wird.
 
-function renderContactList() {
-	let contactListContainer = document.getElementById('contact-list');
-	contactListContainer.innerHTML = `<div class="contact-box">
-		<div>
-			<img class="contact-logo" src="../assets/icons/Profile badge@2x.png" alt="Anton Mayer" />
-		</div>
-		<div class="contact-item">
-			<span class="contact-name">${contact.name}</span>
-			<span class="contact-email">${contact.email}</span>
-			<span class="contact-phone">${contact.phone}</span>
-		</div>
-	`;
-}
-document.addEventListener('DOMContentLoaded', renderContactList);
+function processData() {
+    // Eingabedaten auslesen
+    let name = document.getElementById("nameInput").value;
+    let email = document.getElementById("emailInput").value;
+    let tel = document.getElementById("telInput").value;
 
-function showContactDetails(contact) {
-	let contactDetailsContainer = document.getElementById('contact-details');
-	contactDetailsContainer.innerHTML = `<div class="contact-details-box">
-		<div>
-			<img class="contact-logo" src="../assets/icons/Profile badge@2x.png" alt="${contact.name}" />
-			<span class="contact-name">${contact.name}</span>
-			<p>Edit</p><p>Delete</p>
-		</div>
-		<div class="contact-details-item">
-			<span class="contact-name">Contact Information</span>
-			<span class="contact-email">${contact.email}</span>
-			<span class="contact-phone">${contact.phone}</span>
-		</div>
-	</div>`;
+    let contentRef = document.getElementById("contact-list");
+    contentRef.innerHTML += getBasicTemplateHtml();
+
+    // Template-Funktion um die HTML-Struktur zu generieren und die Daten einzufügen
+    function getBasicTemplateHtml() {
+        return `
+           <div class="basic-container">
+              <div>img</div>
+               <div>
+                <div><p>${name}</p></div>
+                <div><p>${email}</p></div>
+               </div>
+           </div>
+        `;
+    }
+
+let detailsRef = document.getElementById("contact-details");
+detailsRef.innerHTML = getDetailsTemplateHtml();
+
+    function getDetailsTemplateHtml() {
+    return `
+    <div class="details-container">
+       <div class="details">
+           <div class="left-column">
+              <div class="image-container">
+                <div><img src="" alt="Bild"></div>
+              </div>
+              <div class="header-container">
+                <div>${name}</div>
+                <div class="button-group">
+                  <div><button onclick="showOverlay()"type="button" title="Button 1">+</button></div>
+                  <div><button onclick="clearDetailsData()"type="button" title="Button 2">-</button></div>
+                </div>
+              </div>
+           </div>
+       </div>
+
+       <div class="right-column">
+           <div>Contact Informationen</div>
+           <div class="contact-info">
+               <div>
+                   <div>Email</div>
+                   <div>${email}</div>
+               </div>
+               <div>
+                   <div>Phone</div>
+                   <div>${tel}</div>
+               </div>
+           </div>
+       </div>
+    }
+    `;
+    }
 }
