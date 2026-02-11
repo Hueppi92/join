@@ -171,11 +171,11 @@ function getTaskDetailTemplate(task, id) {
 
             <div class="detail-actions">
                 <button class="action-btn" onclick="deleteTask('${id}')">
-                    <img src="../assets/icons/delete.svg"> Delete
+                    <img src="../assets/icons/delete_detail.png">
                 </button>
                 <div class="action-divider"></div>
                 <button class="action-btn" onclick="editTask('${id}')">
-                    <img src="../assets/icons/edit.svg"> Edit
+                    <img src="../assets/icons/edit_detail.png"> 
                 </button>
             </div>
         </div>

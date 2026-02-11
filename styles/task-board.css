@@ -26,6 +26,7 @@ body {
     margin: 0;
     padding: 0;
     color: var(--text-main);
+
 }
 
 .hidden {
@@ -37,7 +38,7 @@ body {
    ========================================================================== */
 .board-container {
     max-width: 1200px;
-    margin: 120px auto 0;
+    margin:200px 328px 0;
     padding: 0 40px;
 }
 
@@ -144,6 +145,8 @@ body {
 }
 .badge.user-story { background-color: var(--blue-badge); }
 
+
+
 .user-badge {
     width: 32px;
     height: 32px;
@@ -154,8 +157,7 @@ body {
     color: white;
     font-size: 12px;
     border: 2px solid var(--white);
-    margin-left: -8px;
-}
+       }
 
 .card-footer {
     display: flex;
@@ -265,7 +267,7 @@ body {
 
 .detail-info-row {
   width:455px;
-  margin:12px 0;
+  margin:16px 0;
   display:flex;
   gap:30px;
   
@@ -273,17 +275,72 @@ body {
 .detail-prio-row {
   display:flex;
   gap:48px;
+  margin-bottom: 16px;
+}
+.assigned-user-badge-container {
+    display:flex;
+    flex-direction: row;
+    padding:10px 36px 10px 16px;
+    align-items: center;
+    gap:16px;
 }
 
+.section-title {
+    margin-top:24px;
+    margin-bottom:16px;
+    color: var(--text-main);
+    font-weight: 400;
+}
 
-
+.subtask-row {
+    padding-left:24px;
+    padding-bottom: 12px;
+}
 .close-btn {
     position: absolute;
     top: 40px; right: 40px;
     border: none; background: none; cursor: pointer;
     font-size: 32px;
 }
+/* Styling für die Buttons unten rechts im Detail-Modal */
+.detail-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin-top: 24px;
+}
 
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+ 
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    transition: color 0.1s ease-in-out;
+}
+
+.action-btn:hover {
+    color: var(--light-blue);
+    font-weight: 700;
+}
+
+/* Der kleine senkrechte Strich zwischen Delete und Edit */
+.action-divider {
+    width: 1px;
+    height: 24px;
+    background-color: var(--separator-color);
+    margin: 0 8px;
+}
+
+/* Falls du die Icons im Button skalieren willst */
+.action-btn img {
+    height: 24px;
+    width: 48px;
+}
 .error { color: var(--error-red); }
 .error_text { color: var(--error-red); font-size: 12px; }
 
