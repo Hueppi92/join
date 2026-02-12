@@ -42,8 +42,12 @@
 
       <div class="sidebar-legal-links">
         <div class="center">
-          <div class="nav-links"><a href="./privacy-policy.html">Privacy Policy</a></div>
-          <div class="nav-links"><a href="./legal-notice.html">Legal notice</a></div>
+          <div class="active-links">
+            <div class="nav-links"><a href="./privacy-policy.html">Privacy Policy</a></div>
+          </div>
+          <div class="active-links">
+            <div class="nav-links"><a href="./legal-notice.html">Legal notice</a></div>
+          </div>
         </div>
       </div>
     </aside>
@@ -99,7 +103,7 @@
   </main>
 
   <!-- ================= ADD TASK MODAL ================= -->
-<div id="addTaskModal" class="modal hidden">
+<div id="addTaskModal" class="modal hidden" aria-hidden="true">
   <div class="modal-content">
     <button class="close-btn" onclick="closeAddTaskModal()">×</button>
     <h1 class="modal-title">Add Task</h1>

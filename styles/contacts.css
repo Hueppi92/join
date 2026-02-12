@@ -7,18 +7,32 @@ body {
   font-family: "Inter", sans-serif;
 }
 
-/* SIDEBAR: Geht über die volle Höhe */
+/* SIDEBAR + HEADER styles aligned to sidebar.css */
 aside {
-  width: 231px;
-  height: 100vh; /* Volle Bildschirmhöhe */
-  background-color: #2a3647;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 232px;
+  height: 100vh;
+  background-color: #2A3647;
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 20; /* Höher als der Header */
+  z-index: 2;
 }
 
-/* HEADER: Beginnt erst rechts neben der Sidebar */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 96px;
+  background-color: var(--white);
+  border-bottom: 1px solid #d1d1d1;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+
 header h2 {
   margin: 0;
   padding: 36px 348px;
@@ -38,12 +52,12 @@ h3 {
   border-radius: 50%;
 }
 
-/* CONTACTS SECTION: Unter dem Header, neben der Sidebar */
+/* CONTACTS SECTION */
 .contacts-section {
-  left: 231px;
+  left: 232px;
   top: 97px;
   width: 370px;
-  height: calc(100vh - 97px); /* Volle Höhe minus Header */
+  height: calc(100vh - 97px);
   position: fixed;
   background-color: white;
   border-right: 1px solid #d1d1d1;
@@ -84,9 +98,9 @@ body {
   overflow: hidden; /* Das verhindert, dass die ganze Seite wackelt */
 }
 main {
-  margin-left: 231px; /* Platz für die Sidebar */
-  margin-top: 96px; /* Platz für den Header */
-  height: calc(100vh - 96px); /* Volle Höhe minus Header */
+  margin-left: 232px; /* Platz fuer die Sidebar */
+  margin-top: 96px; /* Platz fuer den Header */
+  height: calc(100vh - 96px); /* Volle Hoehe minus Header */
   overflow: hidden; /* Verhindert Scrollen der Hauptseite */
   position: relative;
 }

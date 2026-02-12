@@ -355,11 +355,33 @@ function resetTaskForm() {
 
 // MODAL
 function openAddTaskModal() {
-    document.getElementById("addTaskModal").classList.remove("hidden");
+    const modal = document.getElementById("addTaskModal");
+    if (!modal) return;
+
+    if (modal._closeTimeout) {
+        clearTimeout(modal._closeTimeout);
+        modal._closeTimeout = null;
+    }
+
+    modal.classList.remove("hidden");
+    requestAnimationFrame(() => modal.classList.add("is-open"));
+    modal.setAttribute("aria-hidden", "false");
 }
 
 function closeAddTaskModal() {
-    document.getElementById("addTaskModal").classList.add("hidden");
+    const modal = document.getElementById("addTaskModal");
+    if (!modal) return;
+
+    modal.classList.remove("is-open");
+    modal.setAttribute("aria-hidden", "true");
+    if (modal._closeTimeout) {
+        clearTimeout(modal._closeTimeout);
+    }
+
+    modal._closeTimeout = setTimeout(() => {
+        modal.classList.add("hidden");
+        modal._closeTimeout = null;
+    }, 600);
 }
 
 function setupModalControls() {

@@ -208,6 +208,17 @@ body {
 /* ==========================================================================
    5. ADD TASK MODAL (Update für Spalten + Footer)
    ========================================================================== */
+#addTaskModal {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 160ms ease;
+}
+
+#addTaskModal.is-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
 #addTaskModal .modal-content {
     background: var(--white);
     padding: 48px;
@@ -218,6 +229,12 @@ body {
     overflow-y: auto;
     position: relative;
     box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    transform: translateX(100vw);
+    transition: transform 600ms ease;
+}
+
+#addTaskModal.is-open .modal-content {
+    transform: translateX(0);
 }
 
 #addTaskModal .modal-title {

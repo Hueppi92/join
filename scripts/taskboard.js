@@ -81,7 +81,14 @@ function openAddTaskModalBoard(status = 'todo') {
     const modal = document.getElementById('addTaskModal');
     
     if (modal) {
+        if (modal._closeTimeout) {
+            clearTimeout(modal._closeTimeout);
+            modal._closeTimeout = null;
+        }
+
         modal.classList.remove('hidden');
+        requestAnimationFrame(() => modal.classList.add('is-open'));
+        modal.setAttribute('aria-hidden', 'false');
         
         // Das ist der entscheidende Teil:
         // Wir prüfen, ob die Initialisierung vom Task-Editor geladen ist
@@ -101,7 +108,16 @@ function openAddTaskModalBoard(status = 'todo') {
 function closeAddTaskModal() {
     const modal = document.getElementById('addTaskModal');
     if (modal) {
-        modal.classList.add('hidden');
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        if (modal._closeTimeout) {
+            clearTimeout(modal._closeTimeout);
+        }
+        modal._closeTimeout = setTimeout(() => {
+            modal.classList.add('hidden');
+            modal._closeTimeout = null;
+        }, 600);
+
         const form = document.querySelector('.new_task');
         if (form) form.reset();
     }
