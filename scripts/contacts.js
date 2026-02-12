@@ -463,7 +463,7 @@ window.contactsOverlay = {
 };
 document.addEventListener('DOMContentLoaded', initContactOverlay);
 
-// Hier wird die Render-Funktion für die Kontaktliste aufgerufen, um die Kontakte anzuzeigen, wenn die Seite geladen wird.
+// Beispielhafte Funktion, um die eingegebenen Kontaktdaten zu verarbeiten und in die Kontaktliste einzufügen
 
 function processData() {
     // Eingabedaten auslesen
