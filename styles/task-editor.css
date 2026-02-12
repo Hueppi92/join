@@ -9,10 +9,20 @@
     margin: 0;
 }
 
+.addTask-container {
+    position: relative;
+    top: 200px;
+    width: 100%;
+    max-width: 1200px;
+    margin-left: 328px;
+    padding: 0 40px 40px 40px;
+    min-height: calc(100vh - 97px);
+}
+
 /* Wrapper */
 .editor_wrapper {
     display: flex;
-    align-items: center;
+    align-items: stretch;
 
     gap: 48px;
 }
@@ -104,7 +114,7 @@
 .left_single_row input,
 .description_box textarea {
     flex: 1;
-    
+
     font-size: 20px;
     line-height: 120%;
 
@@ -138,18 +148,23 @@
 .task_settings {
     display: flex;
     flex-direction: column;
-    
+
     width: 100%;
     max-width: 440px;
     gap: 25px;
 }
 
+.task_settings {
+    align-self: flex-start;
+}
+
 .settings_block {
     display: flex;
     flex-direction: column;
+    align-items: stretch;
 
     width: 440px;
-    height: 48px;
+    height: auto;
     margin-bottom: 8px;
     gap: 6px;
 
@@ -243,7 +258,11 @@
 
 /* Selectors */
 .select_native {
+    display: flex;
+    flex-direction: column;
+
     position: relative;
+
     width: 100%;
     max-width: 440px;
 }
@@ -277,7 +296,7 @@
     width: 100%;
     height: 48px;
     padding: 0px 16px;
-    
+
     background: #ffffff;
     border: 1px solid #D1D1D1;
     border-radius: 10px;
@@ -301,22 +320,21 @@
 .assigned_avatars {
     display: flex;
     gap: 8px;
-    margin-top: 8px;
 }
 
 .selector_dropdown {
     display: flex;
     flex-direction: column;
 
-    position: relative;
-    top: -10px;
+    position: absolute;
+    top: 100%;
     left: 0;
     z-index: 20;
 
     width: 100%;
     max-height: 0px;
     gap: 2px;
-    
+
     background: #ffffff;
     border-radius: 0px 0px 10px 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -329,7 +347,6 @@
 .selector_dropdown.open {
     max-height: 220px;
     overflow-y: auto;
-    padding-top: 10px;
 }
 
 .selector_dropdown::-webkit-scrollbar {
@@ -341,13 +358,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    
+
     font-size: 14px;
     font-weight: 600;
-    
+
     width: 32px;
     height: 32px;
-    
+
     color: white;
     background: #29ABE2;
     border-radius: 50%;
@@ -448,6 +465,8 @@
     margin: 4px 0 0;
     display: flex;
     flex-direction: column;
+    max-height: 180px;
+    overflow-y: auto;
     gap: 6px;
 }
 
