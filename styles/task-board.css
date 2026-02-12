@@ -1,317 +1,406 @@
-/* --- 1. VARIABLEN & BASIS --- */
+/* ==========================================================================
+   1. VARIABLEN & RESET
+   ========================================================================== */
 :root {
-  --dark-blue: #2a3647;
-  --light-blue: #29abe2;
-  --bg-color: #f6f7f8;
-  --white: #ffffff;
-  --text-main: #2a3647;
-  --text-gray: #a8a8a8;
-  --blue-badge: #0038ff;
-  --progress-bg: #f4f4f4;
-  --progress-fill: #4589ff;
-  --border-divider: #d1d1d1;
+    --dark-blue: #2A3647;
+    --light-blue: #29ABE2;
+    --bg-color: #F6F7F8;
+    --white: #FFFFFF;
+    --text-main: #2A3647;
+    --text-gray: #A8A8A8;
+    --separator-color: #D1D1D1;
+    --blue-badge: #0038FF;
+    --tech-badge: #1FD7C1;
+    --error-red: #FF8190;
+    --prio-urgent: #FF3D00;
+    --prio-medium: #FFA800;
+    --prio-low: #7AE229;
+
 }
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 body {
-  font-family: "Inter", Arial, sans-serif;
-  background-color: var(--bg-color);
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
+    font-family: "Inter", Arial, sans-serif;
+    background-color: var(--bg-color);
+    margin: 0;
+    padding: 0;
+    color: var(--text-main);
+
 }
 
-/* --- 2. BOARD LAYOUT --- */
+.hidden {
+    display: none !important;
+}
+
+/* ==========================================================================
+   2. BOARD LAYOUT (Header & Spalten)
+   ========================================================================== */
 .board-container {
-  max-width: 1200px;
-  margin: 120px auto 0 auto;
-  padding: 0 40px;
+    max-width: 1200px;
+    margin:200px 328px 0;
+    padding: 0 40px;
 }
 
 .board-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 60px;
 }
 
 .board-header h1 {
-  font-size: 72px;
-  color: var(--dark-blue);
-  margin: 0;
+    font-size: 72px;
+    margin: 0;
 }
 
 .search-add {
-  display: flex;
-  align-items: center;
-  gap: 32px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
 }
 
-/* --- 3. INPUTS & BUTTONS --- */
 .search-container {
-  display: flex;
-  align-items: center;
-  border: 1px solid var(--text-gray);
-  border-radius: 10px;
-  padding: 8px 16px;
-  background-color: var(--white);
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--text-gray);
+    border-radius: 10px;
+    padding: 8px 16px;
+    background-color: var(--white);
 }
 
 .search-container input {
-  border: none;
-  outline: none;
-  width: 250px;
-  font-size: 16px;
+    border: none;
+    outline: none;
+    width: 250px;
+    font-size: 16px;
 }
 
 .add-task {
-  background-color: var(--dark-blue);
-  color: var(--white);
-  border: none;
-  border-radius: 10px;
-  padding: 12px 24px;
-  font-size: 21px;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  transition: all 0.1s ease-in-out;
+    background-color: var(--dark-blue);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    padding: 12px 24px;
+    font-size: 21px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 100ms ease-in-out;
 }
 
 .add-task:hover {
-  background-color: var(--light-blue);
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
+    background-color: var(--light-blue);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* --- 4. KANBAN SPALTEN --- */
 .board {
-  display: flex;
-  gap: 20px;
-  justify-content: space-between;
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
 }
 
 .column {
-  flex: 1;
-  min-width: 250px;
+    flex: 1;
+    min-width: 250px;
 }
 
 .column-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
 }
 
 .add-column-btn {
-  background-image:url('../assets/icons/plus-button.svg');
-  height:24px;
-  width:24px;
-  border-style: none;
-
+    background: url("../assets/icons/plus-button.svg") no-repeat center;
+    height: 24px;
+    width: 24px;
+    border: none;
+    cursor: pointer;
 }
 
-
-.task-list {
-  min-height: 500px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-/* --- 5. TASK CARDS (BOARD) --- */
+/* ==========================================================================
+   3. BOARD CARDS
+   ========================================================================== */
 .card {
-  background: var(--white);
-  border-radius: 24px;
-  box-shadow: 0px 0px 10px 3px rgba(0, 0, 0, 0.08);
-  padding: 16px;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  transition: transform 0.1s ease-in-out;
+    background: var(--white);
+    border-radius: 24px;
+    box-shadow: 0px 0px 10px 3px rgba(0, 0, 0, 0.08);
+    padding: 16px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 100ms ease-in-out;
 }
 
-.card:hover {
-  transform: rotate(2deg);
-}
+.card:hover { transform: rotate(2deg); }
 
 .badge {
-  padding: 4px 16px;
-  border-radius: 8px;
-  font-size: 16px;
-  color: white;
-  width: fit-content;
+    padding: 4px 16px;
+    border-radius: 8px;
+    font-size: 16px;
+    color: white;
+    width: fit-content;
+}
+.badge.user-story { background-color: var(--blue-badge); }
+.badge.technical-task { background-color: var(--tech-badge); }
+
+.card-title {
+    margin-bottom:32px;
 }
 
-.badge.user-story { background-color: var(--blue-badge); }
+.user-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    border: 2px solid var(--white);
+       }
 
-
-
-.card-title { font-weight: 700; color: var(--text-main); }
-.card-footer { display:flex;
-flex-direction: row;
-justify-content: space-between;
-align-items: center;}
-
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 .progress-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 12px 0;
 }
 
 .progress-bar {
-  flex-grow: 1;
-  height: 8px;
-  background-color: var(--progress-bg);
-  border-radius: 4px;
+    flex: 1;
+    height: 8px;
+    background-color: #F4F4F4;
+    border-radius: 4px;
+    overflow: hidden;
 }
 
 .progress-fill {
-  height: 100%;
-  background-color: var(--progress-fill);
-  border-radius: 4px;
+    height: 100%;
+    background-color: #4589FF;
+    border-radius: 4px;
+    transition: width 0.2s ease-in;
 }
 
-/* --- 6. OVERLAY BASIS --- */
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
+.subtask-text {
+    font-size: 12px;
+    color: black;
+    white-space: nowrap;
+}
+.assigned-user-badge-container {
+    display:flex;
+    flex-direction:row;
+    align-items: center;
+    gap:12px;
+    padding-left:32px;
 }
 
-.hidden { display: none !important; }
-
-.overlay-card {
-  background: white;
-  border-radius: 30px;
-  width: 450px;
-  max-height: 90vh;
-  padding: 40px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  overflow-y: auto;
+/* ==========================================================================
+   4. MODALS & OVERLAYS (Basis)
+   ========================================================================== */
+.modal, .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
 }
 
-/* --- 7. TASK DETAIL (SPEZIFISCH) --- */
+/* ==========================================================================
+   5. ADD TASK MODAL (Update für Spalten + Footer)
+   ========================================================================== */
+#addTaskModal {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 160ms ease;
+}
+
+#addTaskModal.is-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#addTaskModal .modal-content {
+    background: var(--white);
+    padding: 48px;
+    border-radius: 30px;
+    width: fit-content;
+    max-width: 95vw;
+    max-height: 95vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    transform: translateX(100vw);
+    transition: transform 600ms ease;
+}
+
+#addTaskModal.is-open .modal-content {
+    transform: translateX(0);
+}
+
+#addTaskModal .modal-title {
+    font-size: 61px;
+    font-weight: 700;
+    margin-bottom: 32px;
+}
+
+/* Fix für den Button im Footer, da 'form' nicht mehr alles umschließt */
+#addTaskModal .task_footer {
+    margin-top: 32px;
+    width: 100%;
+}
+
+/* ==========================================================================
+   6. TASK DETAIL OVERLAY
+   ========================================================================== */
+#task-overlay .overlay-card {
+    background: var(--white);
+    padding: 48px;
+    border-radius: 30px;
+    width: 525px;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.task-detail-card {
+    font-size: 20px;
+}
+.detail-header {
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+
 .detail-title {
-  font-size: 48px; /* Leicht angepasst für bessere Lesbarkeit */
-  font-weight: 700;
-  color: var(--dark-blue);
-  margin: 0;
+  font-size: 48px;
+  margin-bottom:16px;
+}
+.detail-description {
+  margin-bottom:24px;
 }
 
 .detail-info-row {
-  display: flex;
-  gap: 20px;
-  font-size: 18px;
+  width:455px;
+  margin:16px 0;
+  display:flex;
+  gap:30px;
+  
 }
-
-.info-label { width: 100px; color: var(--dark-blue); font-weight: 600; }
-
-.info-value-prio { display: flex; align-items: center; gap: 10px; }
-
-.assigned-user-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 8px 0;
+.detail-prio-row {
+  display:flex;
+  gap:48px;
+  margin-bottom: 16px;
 }
-/* Der Container auf der kleinen Karte */
-/* 1. Sorge dafür, dass der Footer die Badges und die Prio nebeneinander hält */
-.card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-top: 10px;
+.info-value-prio {
+    display:flex;
+    flex-direction:row;
+    gap:12px;
+    font-size:20px;
 }
+.info-value-prio img {
 
-/* 2. Der Container für die kleinen Kreise */
+}
 .assigned-to-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  /* Verhindert, dass der Container auf 0px schrumpft */
-  min-height: 32px; 
+    display: flex ;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 5px;
+    min-height: 32px; /* Wichtig! */
 }
 
-/* 3. Die Badges auf der kleinen Karte */
-.user-badge {
-  width: 32px !important;  /* Feste Breite erzwingen */
-  height: 32px !important; /* Feste Höhe erzwingen */
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 12px;
-  border: 2px solid #ffffff; 
-  position: relative; /* WICHTIG für den z-index aus deinem JS */
-  margin-left: -8px;  /* Das macht den coolen Stapel-Effekt */
-  flex-shrink: 0;     /* Verhindert, dass die Kreise gequetscht werden */
+/* Die Badges auf dem Board */
+.card .user-badge {
+    width: 32px;
+    height: 32px;
+    margin-left: -8px; /* Der Überlappungs-Effekt */
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    color: white;
 }
 
-/* Das erste Badge klebt ganz links */
-.user-badge:first-child {
-  margin-left: 0;
+
+.section-title {
+    margin-top:24px;
+    margin-bottom:16px;
+    color: var(--text-main);
+    font-weight: 400;
 }
 
-/* Falls das Detail-Overlay eigene Badges nutzt (wie in deinem HTML) */
-.user-badge-large {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 16px;
-}
 .subtask-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 6px 8px;
-  cursor: pointer;
+    padding-left:24px;
+    padding-bottom: 12px;
 }
-
+.close-btn {
+    position: absolute;
+    top: 40px; right: 40px;
+    border: none; background: none; cursor: pointer;
+    font-size: 32px;
+}
+/* Styling für die Buttons unten rechts im Detail-Modal */
 .detail-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin-top: 24px;
 }
 
 .action-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
+    display:flex;
+    height:auto;
+    width:auto;
+    background:transparent;
+    border:none;
+    cursor: pointer;
 }
+
+.action-btn:hover {
+    color: var(--light-blue);
+    font-weight: 700;
+}
+
 
 .action-divider {
-  width: 1px;
-  height: 24px;
-  background-color: var(--border-divider);
+    width: 1px;
+    height: 24px;
+    background-color: var(--separator-color);
+    margin: 0 8px;
 }
 
-.close-btn-overlay {
-  position: absolute;
-  top: 24px;
-  right: 24px;
-  background: none;
-  border: none;
-  cursor: pointer;
+
+
+.error { color: var(--error-red); }
+.error_text { color: var(--error-red); font-size: 12px; }
+
+@media (max-width: 1280px) {
+    #addTaskModal .form-body-content {
+        flex-direction: column;
+    }
+
+    #addTaskModal .column-separator {
+        display: none;
+    }
 }

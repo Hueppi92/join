@@ -1,1 +1,103 @@
 /* Buttons, Inputs, Textareas,.... */
+
+/* Auth buttons (Login / Sign up / Guest) */
+.btn {
+	height: 48px;
+	padding: 0 24px;
+	border-radius: 10px;
+	font-size: 21px;
+	font-weight: 700;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	transition: background var(--transition), color var(--transition), border-color var(--transition), box-shadow var(--transition);
+}
+
+.btn:hover {
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.btn-dark {
+	background: var(--primary);
+	color: #ffffff;
+	font-weight: 700;
+}
+
+.btn-dark:hover {
+	background: var(--primary-hover);
+}
+
+.btn-light {
+	background: #ffffff;
+	color: var(--primary);
+	border: 1px solid var(--primary);
+	font-weight: 700;
+}
+
+.btn-light:hover {
+	color: var(--primary-hover);
+	border-color: var(--primary-hover);
+}
+
+/* Contacts overlay buttons (Create / Save / Cancel / Delete) */
+.contact-overlay__btn {
+	padding: 12px 20px;
+	border-radius: 10px;
+	border: 1px solid #2a3647;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	transition: box-shadow 160ms ease;
+}
+
+.contact-overlay__btn img {
+	width: 16px;
+	height: 16px;
+}
+
+.contact-overlay__btn .icon-hover {
+	display: none;
+}
+
+.contact-overlay__btn--ghost:hover {
+	color: #29abe2;
+	border-color: #29abe2;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.contact-overlay__btn--ghost:hover .icon-default {
+	display: none;
+}
+
+.contact-overlay__btn--ghost:hover .icon-hover {
+	display: inline;
+}
+
+.contact-overlay__btn--ghost {
+	background: transparent;
+	color: #2a3647;
+}
+
+#contact-overlay-cancel-btn {
+	font-size: 20px;
+	font-weight: 400;
+}
+
+#contact-overlay-delete-btn {
+	font-size: 21px;
+	font-weight: 400;
+}
+
+.contact-overlay__btn--primary {
+	background: #2a3647;
+	color: #ffffff;
+	font-size: 21px;
+	font-weight: 700;
+}
+
+.contact-overlay__btn--primary:hover {
+	background: #29abe2;
+	border-color: transparent;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}

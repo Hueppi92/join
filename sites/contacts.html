@@ -4,9 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="../styles/summary.css" />
-    <link rel="stylesheet" href="../styles/style.css" />
     <link rel="stylesheet" href="../styles/sidebar.css" />
+    <link rel="stylesheet" href="../styles/fonts.css" />
+    <link rel="stylesheet" href="../styles/assets.css" />
     <link rel="stylesheet" href="../styles/contacts.css" />
+    <link rel="stylesheet" href="./style.css">
     <link rel="icon" href="../assets/img/join_logo_dark.svg" />
     <title>Contacts - Join</title>
   </head>
@@ -17,7 +19,7 @@
         <a href="./help.html" class="help-btn"
           ><img src="../assets/icons/help_icon.svg" alt="Help Icon"
         /></a>
-        <button id="profile-btn" class="profile-btn"></button>
+        <button id="profile-btn" class="profile-btn" type="button" aria-label="Profile menu"></button>
       </div>
     </header>
     <main>
@@ -128,9 +130,6 @@
           <div id="contact-list" class="contacts-list">
             <!--Contacts will be rendered here-->
             </div>
-          <div id="contact-details">
-            <!--Contact details will be rendered here-->
-          </div>
       </section>
       <div id="contact-overlay" class="contact-overlay" aria-hidden="true">
         <div class="contact-overlay__backdrop" data-contact-overlay-close></div>
@@ -242,6 +241,9 @@
           </div>
         </div>
       </div>
+      <div id="contact-success-toast" class="contact-toast" role="status" aria-live="polite" aria-hidden="true">
+        Contact successfully created
+      </div>
       <div id="profile-menu" class="profile-overlay">
         <nav class="profile-menu">
           <ul class="flex-container">
@@ -258,6 +260,9 @@
         </nav>
       </div>
     </main>
+      <img class="headline" src="../assets/icons/Frame 40 (1).png" alt="Kontakte">
+      <div id="contact-details"></div>
+    </div>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>

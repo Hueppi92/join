@@ -1,19 +1,3 @@
-/**
- * @file taskboard.js
- * @description Steuert die Logik des Kanban-Boards, inklusive Laden der Daten aus Firebase, 
- * Drag-and-Drop Funktionalität und Steuerung der Modals.
- */
-
-/** @type {string} Speichert den Status der Spalte, in der eine neue Task erstellt werden soll. */
-let currentSelectedStatus = 'todo'; 
-
-/**
- * Lädt Tasks, Benutzer und deren Verknüpfungen aus der Firebase Realtime Database
- * und rendert die Task-Karten in die entsprechenden Spalten.
- * @async
- * @function renderBoard
- * @returns {Promise<void>}
- */
 async function renderBoard() {
   try {
     const [tasksSnapshot, usersSnapshot, taskUsersSnapshot] = await Promise.all([
@@ -28,29 +12,34 @@ async function renderBoard() {
     const columns = { 'todo': '', 'in-progress': '', 'await-feedback': '', 'done': '' };
 
     Object.entries(tasks).forEach(([taskId, task]) => {
-  // 1. Hole IDs aus dem Verbindungsknoten (mein Weg)
-  let userIdsForTask = connections[taskId] ? Object.keys(connections[taskId]) : [];
+      // Suche User-IDs in connections ODER direkt im Task-Objekt
+      let userIdsFromConnections = connections[taskId] ? Object.keys(connections[taskId]) : [];
+      let userIdsFromTask = Array.isArray(task.assignedTo) ? task.assignedTo : [];
+      
+      // Kombiniere beide Quellen (einige Apps speichern IDs direkt im Task)
+      let combinedIds = [...new Set([...userIdsFromConnections, ...userIdsFromTask])];
 
-  // 2. FALLBACK: Falls ID direkt gespeichert hat (yves)
-  if (userIdsForTask.length === 0 && typeof task.assignedTo === 'string') {
-    userIdsForTask.push(task.assignedTo);
-  }
+      const assignedUsers = combinedIds.map(uid => {
+        // Falls uid ein Objekt ist (z.B. {id: '...'}), nimm die ID
+        const id = typeof uid === 'object' ? uid.id : uid;
+        const user = allUsers[id];
+        if (!user) return null;
+        return {
+          name: user.name,
+          color: user.color || '#2A3647',
+          initials: user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : '?'
+        };
+      }).filter(u => u !== null);
 
-  const assignedUsers = userIdsForTask.map(uid => {
-    const user = allUsers[uid];
-    if (!user) return null;
-    return {
-      name: user.name,
-      color: user.color || '#2A3647',
-      initials: user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : '?'
-    };
-  }).filter(u => u !== null);
-
-  const subtasks = task.subtasks || [];
-  const subtasksArray = Array.isArray(subtasks) ? subtasks : Object.values(subtasks);
-  const doneCount = subtasksArray.filter(st => st.completed || st.done).length;
-  const progressPercent = subtasksArray.length > 0 ? (doneCount / subtasksArray.length) * 100 : 0; 
-        const taskWithUsers = { ...task, assignedTo: assignedUsers, subtasks: subtasksArray, progress: progressPercent };
+      const subtasks = task.subtasks || [];
+      const subtasksArray = Array.isArray(subtasks) ? subtasks : Object.values(subtasks);
+      
+      const taskWithUsers = { 
+        ...task, 
+        assignedTo: assignedUsers, 
+        subtasks: subtasksArray 
+      };
+      
       if (columns[task.status] !== undefined) {
         columns[task.status] += getCardTemplate(taskWithUsers, taskId);
       }
@@ -80,26 +69,34 @@ function renderColumnHTML(columns) {
 
 /**
  * Öffnet das Add-Task Modal und setzt den Status der Zielspalte.
- * @function openAddTaskModal
+ * @function openAddTaskModalBoard
  * @param {string} [status='todo'] - Der Status der Spalte.
  */
-function openAddTaskModal(status = 'todo') {
-    console.log("Versuche Modal zu öffnen für Status:", status);
-    
-    // 1. Status global speichern
+function openAddTaskModalBoard(status = 'todo') {
     currentSelectedStatus = status; 
-    
-    // 2. Element suchen
     const modal = document.getElementById('addTaskModal');
     
     if (modal) {
+        if (modal._closeTimeout) {
+            clearTimeout(modal._closeTimeout);
+            modal._closeTimeout = null;
+        }
+
         modal.classList.remove('hidden');
-        console.log("Modal gefunden und 'hidden' entfernt.");
+        requestAnimationFrame(() => modal.classList.add('is-open'));
+        modal.setAttribute('aria-hidden', 'false');
+        
+        // Das ist der entscheidende Teil:
+        // Wir prüfen, ob die Initialisierung vom Task-Editor geladen ist
+        if (typeof initTaskEditor === 'function') {
+            initTaskEditor(); 
+        } else {
+            console.warn("initTaskEditor nicht gefunden. Event-Listener wurden evtl. nicht gebunden.");
+        }
     } else {
-        console.error("Fehler: Element mit ID 'addTaskModal' wurde im HTML nicht gefunden!");
+        console.error("Fehler: Element mit ID 'addTaskModal' wurde nicht gefunden!");
     }
 }
-
 /**
  * Schließt das Add-Task Modal und setzt das Formular zurück.
  * @function closeAddTaskModal
@@ -107,13 +104,20 @@ function openAddTaskModal(status = 'todo') {
 function closeAddTaskModal() {
     const modal = document.getElementById('addTaskModal');
     if (modal) {
-        modal.classList.add('hidden');
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        if (modal._closeTimeout) {
+            clearTimeout(modal._closeTimeout);
+        }
+        modal._closeTimeout = setTimeout(() => {
+            modal.classList.add('hidden');
+            modal._closeTimeout = null;
+        }, 600);
+
         const form = document.querySelector('.new_task');
         if (form) form.reset();
     }
 }
-
-
 
 /**
  * Öffnet das Detail-Overlay für eine spezifische Task.

@@ -7,7 +7,7 @@
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', Arial, sans-serif;
     min-height: 100vh;
 }
 
@@ -121,7 +121,6 @@ aside > img {
     color: #FFFFFF;
     text-decoration: none;
     font-size: 16px;
-    font-weight: lighter;
     width: 100%;
 }
 

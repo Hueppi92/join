@@ -1,52 +1,25 @@
-/* Grundlegende Einstellungen */
-body {
-  margin: 0;
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
-}
 
-/* SIDEBAR: Geht über die volle Höhe */
-aside {
-  width: 231px;
-  height: 100vh; /* Volle Bildschirmhöhe */
-  background-color: #2a3647;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 20; /* Höher als der Header */
-}
-
-/* HEADER: Beginnt erst rechts neben der Sidebar */
-header h2 {
-  margin: 0;
-  padding: 36px 348px;
-  font-size: 20px;
-  font-weight: 600;
-  color: #000000;
-  font-weight: 400;
-  vertical-align: middle;
-}
 h3 {
   margin-left: 50px;
   border-bottom: 1px solid #d1d1d1;
 }
+  
 .contact-logo {
   width: 40px;
   height: 40px;
   border-radius: 50%;
 }
 
-/* CONTACTS SECTION: Unter dem Header, neben der Sidebar */
+/* CONTACTS SECTION */
 .contacts-section {
-  left: 231px;
+  left: 232px;
   top: 97px;
   width: 370px;
-  height: calc(100vh - 97px); /* Volle Höhe minus Header */
+  height: calc(100vh - 97px);
   position: fixed;
   background-color: white;
   border-right: 1px solid #d1d1d1;
-  overflow-y: scroll; 
+  overflow-y: auto; 
   overflow-x: hidden;
 }
 
@@ -74,18 +47,10 @@ h3 {
   margin: 30px;
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden; /* Das verhindert, dass die ganze Seite wackelt */
-}
 main {
-  margin-left: 231px; /* Platz für die Sidebar */
-  margin-top: 96px; /* Platz für den Header */
-  height: calc(100vh - 96px); /* Volle Höhe minus Header */
+  margin-left: 232px; /* Platz fuer die Sidebar */
+  margin-top: 96px; /* Platz fuer den Header */
+  height: calc(100vh - 96px); /* Volle Hoehe minus Header */
   overflow: hidden; /* Verhindert Scrollen der Hauptseite */
   position: relative;
 }
@@ -97,24 +62,33 @@ main {
 
 .contact-overlay {
   position: fixed;
-  top: 96px;
-  left: 231px;
-  width: calc(100vw - 231px);
-  height: calc(100vh - 96px);
-  display: none;
+  inset: 0;
+  display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1200;
+  visibility: visible;
+  pointer-events: none;
 }
 
 .contact-overlay.is-open {
-  display: flex;
+  pointer-events: auto;
 }
 
 .contact-overlay__backdrop {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.contact-overlay.is-open .contact-overlay__backdrop {
+  opacity: 1;
+}
+
+.contact-overlay.is-instant .contact-overlay__backdrop {
+  transition: none;
 }
 
 .contact-overlay__panel {
@@ -127,26 +101,40 @@ main {
   border-radius: 28px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
   overflow: hidden;
-  transform: translateX(120%);
-  opacity: 0;
-  transition: transform 120ms ease, opacity 120ms ease;
+  transform: translateX(100vw);
+  opacity: 1;
+  transition: transform 600ms ease;
   z-index: 1;
+}
+
+.contact-overlay.is-instant .contact-overlay__panel {
+  transition: none;
 }
 
 .contact-overlay.is-open .contact-overlay__panel {
   transform: translateX(0);
-  opacity: 1;
 }
 
 .contact-overlay__close {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 24px;
+  right: 48px;
   background: transparent;
   border: unset;
   font-size: 22px;
   cursor: pointer;
   z-index: 2;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 160ms ease;
+}
+
+.contact-overlay__close:hover {
+  background-color: #e0e0e0;
 }
 
 .contact-overlay__close img {
@@ -172,14 +160,15 @@ main {
 }
 
 .contact-overlay__panel-left h2 {
-  font-size: 56px;
+  font-size: 61px;
   line-height: 1.1;
   font-weight: 700;
   margin: 0;
 }
 
 .contact-overlay__panel-left p {
-  font-size: 24px;
+  font-size: 27px;
+  font-weight: 400;
   margin: 0;
 }
 
@@ -310,45 +299,31 @@ main {
   margin-top: 8px;
 }
 
-.contact-overlay__btn {
-  padding: 12px 20px;
-  border-radius: 10px;
-  border: 1px solid #2a3647;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.contact-overlay__btn img {
-  width: 16px;
-  height: 16px;
-}
-
-.contact-overlay__btn .icon-hover {
-  display: none;
-}
-
-.contact-overlay__btn--ghost:hover {
-  color: #29abe2;
-  border-color: #29abe2;
-}
-
-.contact-overlay__btn--ghost:hover .icon-default {
-  display: none;
-}
-
-.contact-overlay__btn--ghost:hover .icon-hover {
-  display: inline;
-}
-
-.contact-overlay__btn--ghost {
-  background: transparent;
-  color: #2a3647;
-}
-
-.contact-overlay__btn--primary {
+.contact-toast {
+  position: fixed;
+  bottom: 15%;
+  left: 50%;
+  transform: translateX(100vw);
   background: #2a3647;
   color: #ffffff;
+  padding: 15px 24px;
+  border-radius: 20px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+  font-size: 20px;
+  font-weight: 400;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 2000;
+  transition: transform 600ms ease-in-out;
 }
+
+.contact-toast.show {
+  transform: translateX(-50%);
+}
+
+.headline{
+  margin: 496px;
+  margin-top: 60px;
+}
+
 

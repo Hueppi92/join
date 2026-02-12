@@ -1,141 +1,215 @@
 <!DOCTYPE html>
 <html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="../style.css">
-    <link rel="stylesheet" href="../styles/sidebar.css">
-    <link rel="stylesheet" href="../styles/task-board.css" />
-    <link rel="icon" href="../assets/img/join_logo_dark.svg" />
-    <title>Join - Task Board</title>
-  </head>
-  <body>
-    <header>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../styles/sidebar.css">
+  <link rel="stylesheet" href="../styles/task-board.css" />
+  <link rel="stylesheet" href="../styles/task-editor.css" />
+  <link rel="icon" href="../assets/img/join_logo_dark.svg" />
+  <title>Join - Task Board</title>
+</head>
+
+<body>
+  <header>
       <h2>Kanban Project Management Tool</h2>
       <div class="header-btn">
-        <a href="./help.html" class="help-btn">
-            <img src="../assets/icons/help_icon.svg" alt="Help Icon">
-        </a>
-        <button id="profile-btn" class="profile-btn">DF</button>
+        <a href="./help.html" class="help-btn"
+          ><img src="../assets/icons/help_icon.svg" alt="Help Icon"
+        /></a>
+        <button id="profile-btn" class="profile-btn"></button>
       </div>
     </header>
 
-    <main>
-      <aside>
-        <img src="../assets/img/join_logo.svg" alt="Join Logo" />
-        <nav class="sidebar-navigation">
-          <div class="sidebar-navigation-item">
-            <a href="./summary.html"><img src="../assets/icons/summary_icon.svg" alt="Summary Icon">Summary</a>
-          </div>
-          <div class="sidebar-navigation-item">
-            <a href="./task-editor.html"><img src="../assets/icons/addTask_icon.svg" alt="Add Task Icon">Add Task</a>
-          </div>
-          <div class="sidebar-navigation-item active">
-            <a href="./taskboard.html"><img src="../assets/icons/board_icon.svg" alt="Board Icon">Board</a>
-          </div>
-          <div class="sidebar-navigation-item">
-            <a href="./contacts.html"><img src="../assets/icons/contacts_icon.svg" alt="Contacts Icon">Contacts</a>
-          </div>
-        </nav>
-        
-        <div class="sidebar-legal-links">
-          <div class="center">
-            <div class="active-links">
-              <div class="nav-links">
-                <a href="./privacy-policy.html">Privacy Policy</a>
-              </div>
-            </div>
-            <div class="active-links">
-              <div class="nav-links">
-                <a href="./legal-notice.html">Legal notice</a>
-              </div>
-            </div>
-          </div>
+  <main>
+    <aside>
+      <img src="../assets/img/join_logo.svg" alt="Join Logo" />
+      <nav class="sidebar-navigation">
+        <div class="sidebar-navigation-item">
+          <a href="./summary.html"><img src="../assets/icons/summary_icon.svg">Summary</a>
         </div>
-      </aside>
-
-      <div class="board-container">
-        <div class="board-header">
-          <h1>Board</h1>
-          <div class="search-add">
-            <div class="search-container">
-              <input type="text" placeholder="Find Task" id="task-search" />
-              <div class="search-divider"></div>
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M6.50185 13.0037C4.68467 13.0037 3.14673 12.3744 1.88804 11.1157C0.629346 9.85697 0 8.31903 0 6.50185C0 4.68467 0.629346 3.14673 1.88804 1.88804C3.14673 0.629346 4.68467 0 6.50185 0C8.31903 0 9.85697 0.629346 11.1157 1.88804C12.3744 3.14673 13.0037 4.68467 13.0037 6.50185C13.0037 7.23539 12.887 7.92725 12.6536 8.57744C12.4202 9.22762 12.1034 9.80279 11.7033 10.3029L17.3049 15.9045C17.4883 16.0879 17.58 16.3213 17.58 16.6047C17.58 16.8881 17.4883 17.1215 17.3049 17.3049C17.1215 17.4883 16.8881 17.58 16.6047 17.58C16.3213 17.58 16.0879 17.4883 15.9045 17.3049L10.3029 11.7033C9.80279 12.1034 9.22762 12.4202 8.57744 12.6536C7.92725 12.887 7.23539 13.0037 6.50185 13.0037ZM6.50185 11.0031C7.7522 11.0031 8.81501 10.5655 9.69026 9.69026C10.5655 8.81501 11.0031 7.7522 11.0031 6.50185C11.0031 5.25149 10.5655 4.18869 9.69026 3.31344C8.81501 2.43819 7.7522 2.00057 6.50185 2.00057C5.25149 2.00057 4.18869 2.43819 3.31344 3.31344C2.43819 4.18869 2.00057 5.25149 2.00057 6.50185C2.00057 7.7522 2.43819 8.81501 3.31344 9.69026C4.18869 10.5655 5.25149 11.0031 6.50185 11.0031Z" fill="#2A3647"/>
-              </svg>
-            </div>
-            <button type="button" onclick="openAddTaskModal()" class="add-task">Add task +</button>
-          </div>
+        <div class="sidebar-navigation-item">
+          <a href="./task-editor.html"><img src="../assets/icons/addTask_icon.svg">Add Task</a>
         </div>
+        <div class="sidebar-navigation-item active">
+          <a href="./taskboard.html"><img src="../assets/icons/board_icon.svg">Board</a>
+        </div>
+        <div class="sidebar-navigation-item">
+          <a href="./contacts.html"><img src="../assets/icons/contacts_icon.svg">Contacts</a>
+        </div>
+      </nav>
 
-        <div class="board">
-          <div class="column" id="todo">
-            <div class="column-header">
-              <h2>To do</h2>
-              <button class="add-column-btn" onclick="openAddTaskModal('todo')"></button>
-            </div>
-            <div class="task-list" id="todo-list"></div>
+      <div class="sidebar-legal-links">
+        <div class="center">
+          <div class="active-links">
+            <div class="nav-links"><a href="./privacy-policy.html">Privacy Policy</a></div>
           </div>
-
-          <div class="column" id="in-progress">
-            <div class="column-header">
-              <h2>In progress</h2>
-              <button class="add-column-btn" onclick="openAddTaskModal('in-progress')"></button>
-            </div>
-            <div class="task-list" id="inprogress-list"></div>
-          </div>
-
-          <div class="column" id="await-feedback">
-            <div class="column-header">
-              <h2>Await feedback</h2>
-              <button class="add-column-btn" onclick="openAddTaskModal('await-feedback')"></button>
-            </div>
-            <div class="task-list" id="feedback-list"></div>
-          </div>
-
-          <div class="column" id="done">
-            <div class="column-header">
-              <h2>Done</h2>
-              <button class="add-column-btn" onclick="openAddTaskModal('done')"></button>
-            </div>
-            <div class="task-list" id="done-list"></div>
+          <div class="active-links">
+            <div class="nav-links"><a href="./legal-notice.html">Legal notice</a></div>
           </div>
         </div>
       </div>
-      <div id="profile-menu" class="profile-overlay">
-        <nav class="profile-menu">
-            <ul class="flex-container">
-                <div class="hover-container">
-                    <li><a href="./legal-notice.html">Legal Notice</a></li>
-                </div>
-                <div class="hover-container">
-                    <li><a href="./privacy-policy.html">Privacy Policy</a></li>
-                </div>
-                <div class="hover-container">
-                    <li><a href="../index.html" data-logout="1">Log out</a></li>
-                </div>
-            </ul>
-        </nav>
-      </div>
-    </main>
+    </aside>
 
-    <div id="task-overlay" class="overlay hidden" onclick="handleOverlayClick(event)">
-      <div class="overlay-card" onclick="event.stopPropagation()">
+    <!-- ================= BOARD ================= -->
+    <div class="board-container">
+      <div class="board-header">
+        <h1>Board</h1>
+        <div class="search-add">
+          <div class="search-container">
+            <input type="text" placeholder="Find Task" id="task-search" />
           </div>
+          <button type="button" onclick="openAddTaskModalBoard()" class="add-task">
+            Add task +
+          </button>
+        </div>
+      </div>
+
+      <div class="board">
+        <div class="column" id="todo">
+          <div class="column-header">
+            <h2>To do</h2>
+            <button class="add-column-btn" onclick="openAddTaskModalBoard('todo')"></button>
+          </div>
+          <div class="task-list" id="todo-list"></div>
+        </div>
+
+        <div class="column" id="in-progress">
+          <div class="column-header">
+            <h2>In progress</h2>
+            <button class="add-column-btn" onclick="openAddTaskModalBoard('in-progress')"></button>
+          </div>
+          <div class="task-list" id="inprogress-list"></div>
+        </div>
+
+        <div class="column" id="await-feedback">
+          <div class="column-header">
+            <h2>Await feedback</h2>
+            <button class="add-column-btn" onclick="openAddTaskModalBoard('await-feedback')"></button>
+          </div>
+          <div class="task-list" id="feedback-list"></div>
+        </div>
+
+        <div class="column" id="done">
+          <div class="column-header">
+            <h2>Done</h2>
+            <button class="add-column-btn" onclick="openAddTaskModalBoard('done')"></button>
+          </div>
+          <div class="task-list" id="done-list"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ================= ADD TASK MODAL ================= -->
+<div id="addTaskModal" class="modal hidden" aria-hidden="true">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeAddTaskModal()">×</button>
+    <h1 class="modal-title">Add Task</h1>
+
+    <div class="editor_wrapper">
+      <form class="new_task" id="modalForm" onsubmit="createTaskFromModal(event)">
+        <div class="left_row title_field">
+          <label>Title <span class="error">*</span></label>
+          <div class="left_single_row">
+            <input id="titleInput" type="text" placeholder="Enter a title" required>
+          </div>
+          <small class="error_text hidden">This field is required</small>
+        </div>
+
+        <div class="left_row">
+          <label>Description</label>
+          <div class="left_single_row description_box">
+            <textarea id="descriptionInput" placeholder="Enter a Description"></textarea>
+          </div>
+        </div>
+
+        <div class="left_row date_field">
+          <label>Due date <span class="error">*</span></label>
+          <div class="left_single_row">
+            <input id="dateInput" type="text" placeholder="dd/mm/yyyy" required>
+            <img class="calendar_icon" src="../assets/icons/calendar.svg">
+          </div>
+          <small class="error_text hidden">This field is required</small>
+        </div>
+      </form>
+
+      <div class="editor_divider"></div>
+
+      <div class="task_settings">
+        <div class="settings_block">
+          <label>Priority</label>
+          <div class="priority_row" id="priorityRow">
+            <button type="button" class="prio urgent_btn" data-prio="urgent">Urgent <div class="prio-icon-box"><img src="../assets/icons/arrowUp.svg" class="urgent"></div></button>
+            <button type="button" class="prio medium_btn active" data-prio="medium">Medium <div class="prio-icon-box"><img src="../assets/icons/sameIcon.svg" class="medium"></div></button>
+            <button type="button" class="prio low_btn" data-prio="low">Low <div class="prio-icon-box"><img src="../assets/icons/arrowDown.svg" class="low"></div></button>
+          </div>
+        </div>
+
+        <div class="settings_block">
+          <label>Assigned to</label>
+          <div class="select_native" id="assignedSelect">
+            <div class="selector_input"><input type="text" id="assignedSearch" placeholder="Select contacts to assign"></div>
+            <div id="assignedAvatars" class="assigned_avatars"></div>
+            <div class="selector_dropdown" id="assignedDropdown"></div>
+          </div>
+        </div>
+
+        <div class="settings_block">
+          <label>Category</label>
+          <div class="select_native category-select">
+            <div class="selector_input"><input type="text" id="categoryInput" placeholder="Select task category" readonly></div>
+            <div class="selector_dropdown" id="categoryDropdown">
+              <label class="dropdown_item" data-value="user-story">User Story</label>
+              <label class="dropdown_item" data-value="technical-task">Technical Task</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings_block subtasks_block">
+          <label>Subtasks</label>
+          <div class="subtask_input">
+            <input id="subtaskInput" type="text" placeholder="Add new subtask">
+            <button type="button" class="subtask_add_btn"><p>+</p></button>
+          </div>
+          <ul id="subtaskList" class="subtask_list"></ul>
+        </div>
+      </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    
-    <script src="../scripts/firebaseConfig.js"></script>
-    <script src="../scripts/db.js"></script>
-    <script src="../scripts/auth-guard.js"></script>
-    <script src="../scripts/user-context.js"></script>
-    <script src="../script.js"></script>
-    <script src="../scripts/taskboardTemplate.js"></script>
-    <script src="../scripts/taskboard.js"></script>
+    <div class="task_footer">
+      <p><span class="error">*</span> This field is required</p>
+      <div class="footer_actions">
+        <button type="button" class="clear_btn" onclick="closeAddTaskModal()">Cancel ✕</button>
+        <button type="submit" form="modalForm" class="create_btn">Create Task ✓</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-  </body>
+    </form>
+  </div>
+</div>
+
+
+  <!-- ================= TASK DETAIL OVERLAY ================= -->
+  <div id="task-overlay" class="overlay hidden">
+    <div class="overlay-card"></div>
+  </div>
+
+  <!-- ================= SCRIPTS ================= -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <script src="../scripts/firebaseConfig.js"></script>
+  <script src="../scripts/db.js"></script>
+  <script src="../scripts/auth-guard.js"></script>
+  <script src="../scripts/user-context.js"></script>
+  <script src="../script.js"></script>
+  <script src="../scripts/taskboardTemplate.js"></script>
+  <script src="../scripts/taskboard.js"></script>
+  <script src="../scripts/taskeditor.js"></script>
+</body>
 </html>

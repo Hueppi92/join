@@ -39,6 +39,7 @@ function getContactOverlayElements() {
 function openContactOverlay() {
 	const overlay = document.getElementById('contact-overlay');
 	if (!overlay) return;
+	overlay.classList.remove('is-instant');
 	overlay.classList.add('is-open');
 	overlay.setAttribute('aria-hidden', 'false');
 }
@@ -48,11 +49,30 @@ function openContactOverlay() {
  * @category Contacts
  * @subcategory UI & Init
  */
-function closeContactOverlay() {
+function closeContactOverlay(immediate = false) {
 	const overlay = document.getElementById('contact-overlay');
 	if (!overlay) return;
+	if (immediate) {
+		overlay.classList.add('is-instant');
+	}
 	overlay.classList.remove('is-open');
 	overlay.setAttribute('aria-hidden', 'true');
+}
+
+/**
+ * Shows a temporary success toast after creating a contact.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+function showSuccessToast() {
+	const toast = document.getElementById('contact-success-toast');
+	if (!toast) return;
+	toast.setAttribute('aria-hidden', 'false');
+	toast.classList.add('show');
+	setTimeout(() => {
+		toast.classList.remove('show');
+		toast.setAttribute('aria-hidden', 'true');
+	}, 2000);
 }
 
 
@@ -245,6 +265,49 @@ function bindContactFieldEvents(fields) {
 	});
 }
 
+const LOCAL_CONTACTS_KEY = 'join_contacts_local';
+
+/**
+ * Reads local contacts map from localStorage.
+ * @returns {Record<string, {name?: string, email?: string, phone?: string, createdAt?: number}>} Local contacts map.
+ * @category Contacts
+ * @subcategory Data Handling
+ */
+function readLocalContactsMap() {
+	try {
+		const raw = localStorage.getItem(LOCAL_CONTACTS_KEY);
+		if (!raw) return {};
+		const parsed = JSON.parse(raw);
+		return parsed && typeof parsed === 'object' ? parsed : {};
+	} catch (error) {
+		return {};
+	}
+}
+
+/**
+ * Writes local contacts map into localStorage.
+ * @param {Record<string, {name?: string, email?: string, phone?: string, createdAt?: number}>} contactsMap - Contacts map to persist.
+ * @category Contacts
+ * @subcategory Data Handling
+ */
+function writeLocalContactsMap(contactsMap) {
+	try {
+		localStorage.setItem(LOCAL_CONTACTS_KEY, JSON.stringify(contactsMap || {}));
+	} catch (error) {
+		return;
+	}
+}
+
+/**
+ * Generates a local contact id.
+ * @returns {string} Local contact id.
+ * @category Contacts
+ * @subcategory Data Handling
+ */
+function createLocalContactId() {
+	return `local_${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
+}
+
 /**
  * Saves a new contact to the database.
  * @param {{name: string, email: string, phone: string}} contact - Contact data.
@@ -253,8 +316,17 @@ function bindContactFieldEvents(fields) {
  * @subcategory Firebase Logic
  */
 async function saveContact(contact) {
-	if (!hasDb()) return;
-	await db.ref('contacts').push(contact);
+	if (hasDb()) {
+		try {
+			await db.ref('contacts').push(contact);
+			return;
+		} catch (error) {
+			// Fall through to local fallback.
+		}
+	}
+	const contactsMap = readLocalContactsMap();
+	contactsMap[createLocalContactId()] = contact;
+	writeLocalContactsMap(contactsMap);
 }
 
 /**
@@ -266,8 +338,19 @@ async function saveContact(contact) {
  * @subcategory Firebase Logic
  */
 async function updateContact(contactId, contact) {
-	if (!hasDb() || !contactId) return;
-	await db.ref(`contacts/${contactId}`).update(contact);
+	if (!contactId) return;
+	if (hasDb()) {
+		try {
+			await db.ref(`contacts/${contactId}`).update(contact);
+			return;
+		} catch (error) {
+			// Fall through to local fallback.
+		}
+	}
+	const contactsMap = readLocalContactsMap();
+	if (!contactsMap[contactId]) return;
+	contactsMap[contactId] = { ...contactsMap[contactId], ...contact };
+	writeLocalContactsMap(contactsMap);
 }
 
 /**
@@ -278,8 +361,18 @@ async function updateContact(contactId, contact) {
  * @subcategory Firebase Logic
  */
 async function deleteContact(contactId) {
-	if (!hasDb() || !contactId) return;
-	await db.ref(`contacts/${contactId}`).remove();
+	if (!contactId) return;
+	if (hasDb()) {
+		try {
+			await db.ref(`contacts/${contactId}`).remove();
+			return;
+		} catch (error) {
+			// Fall through to local fallback.
+		}
+	}
+	const contactsMap = readLocalContactsMap();
+	delete contactsMap[contactId];
+	writeLocalContactsMap(contactsMap);
 }
 
 /**
@@ -290,9 +383,17 @@ async function deleteContact(contactId) {
  * @subcategory Firebase Logic
  */
 async function fetchContact(contactId) {
-	if (!hasDb() || !contactId) return null;
-	const snapshot = await db.ref(`contacts/${contactId}`).get();
-	return snapshot.val();
+	if (!contactId) return null;
+	if (hasDb()) {
+		try {
+			const snapshot = await db.ref(`contacts/${contactId}`).get();
+			return snapshot.val();
+		} catch (error) {
+			// Fall through to local fallback.
+		}
+	}
+	const contactsMap = readLocalContactsMap();
+	return contactsMap[contactId] || null;
 }
 
 /**
@@ -349,7 +450,7 @@ function initContactOverlay() {
 		}
 	});
 
-	closeTargets.forEach((node) => node.addEventListener('click', closeContactOverlay));
+	closeTargets.forEach((node) => node.addEventListener('click', () => closeContactOverlay()));
 	window.addEventListener('keydown', (event) => {
 		if (event.key === 'Escape') closeContactOverlay();
 	});
@@ -372,7 +473,7 @@ function initContactForm() {
 			await deleteContact(contactId);
 			await refreshContactsList();
 			fields.form.reset();
-			closeContactOverlay();
+			closeContactOverlay(true);
 		});
 	}
 
@@ -400,7 +501,10 @@ function initContactForm() {
 			}
 			await refreshContactsList();
 			fields.form.reset();
-			closeContactOverlay();
+			closeContactOverlay(true);
+			if (mode !== 'edit') {
+				showSuccessToast();
+			}
 		} finally {
 			fields.submitButton.disabled = false;
 		}
@@ -430,45 +534,229 @@ async function openEditContactOverlay(contactId, contact) {
 	openContactOverlay();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-	initContactOverlay();
-	initContactForm();
-});
+let contactsState = [];
+let selectedContactId = '';
+
+/**
+ * Returns initials for a contact name.
+ * @param {string} name - Contact name.
+ * @returns {string} Initials.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+function getContactInitials(name) {
+	const parts = String(name || '')
+		.trim()
+		.split(/\s+/)
+		.filter(Boolean);
+	if (!parts.length) return 'U';
+	if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+	return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+}
+
+/**
+ * Fetches all contacts from Firebase.
+ * @returns {Promise<Array<{id: string, name: string, email: string, phone: string, createdAt?: number}>>} Contact list.
+ * @category Contacts
+ * @subcategory Firebase Logic
+ */
+async function fetchContacts() {
+	let contacts = {};
+	if (hasDb()) {
+		try {
+			const snapshot = await db.ref('contacts').get();
+			contacts = snapshot.val() || {};
+		} catch (error) {
+			contacts = readLocalContactsMap();
+		}
+	} else {
+		contacts = readLocalContactsMap();
+	}
+	return Object.entries(contacts)
+		.map(([id, value]) => ({
+			id,
+			name: value?.name || '',
+			email: value?.email || '',
+			phone: value?.phone || '',
+			createdAt: value?.createdAt || 0,
+		}))
+		.sort((a, b) => a.name.localeCompare(b.name, 'de', { sensitivity: 'base' }));
+}
+
+/**
+ * Renders selected contact details on the right side.
+ * @param {{id: string, name: string, email: string, phone: string} | null} contact - Contact to render.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+function renderContactDetails(contact) {
+	const detailsRef = document.getElementById('contact-details');
+	if (!detailsRef) return;
+	detailsRef.replaceChildren();
+
+	if (!contact) {
+		const title = document.createElement('h1');
+		title.textContent = 'Contact details will be rendered here';
+		detailsRef.appendChild(title);
+		return;
+	}
+
+	const initials = getContactInitials(contact.name);
+	const color = getContactAvatarColor(contact.name);
+	const header = document.createElement('div');
+	header.className = 'contact-box';
+	header.style.margin = '0 0 24px 0';
+
+	const avatar = document.createElement('div');
+	avatar.className = 'contact-logo';
+	avatar.style.display = 'inline-flex';
+	avatar.style.alignItems = 'center';
+	avatar.style.justifyContent = 'center';
+	avatar.style.color = '#fff';
+	avatar.style.fontWeight = '700';
+	avatar.style.background = color;
+	avatar.textContent = initials;
+
+	const title = document.createElement('h2');
+	title.textContent = contact.name || 'Unknown Contact';
+
+	const body = document.createElement('div');
+	const email = document.createElement('p');
+	const emailLabel = document.createElement('strong');
+	emailLabel.textContent = 'Email: ';
+	email.appendChild(emailLabel);
+	email.appendChild(document.createTextNode(contact.email || '-'));
+	const phone = document.createElement('p');
+	const phoneLabel = document.createElement('strong');
+	phoneLabel.textContent = 'Phone: ';
+	phone.appendChild(phoneLabel);
+	phone.appendChild(document.createTextNode(contact.phone || '-'));
+	const editButton = document.createElement('button');
+	editButton.type = 'button';
+	editButton.textContent = 'Edit contact';
+	editButton.addEventListener('click', () => openEditContactOverlay(contact.id, contact));
+
+	header.appendChild(avatar);
+	header.appendChild(title);
+	body.appendChild(email);
+	body.appendChild(phone);
+	body.appendChild(editButton);
+	detailsRef.appendChild(header);
+	detailsRef.appendChild(body);
+}
+
+/**
+ * Selects a contact and updates list + details.
+ * @param {string} contactId - Contact id.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+function selectContact(contactId) {
+	selectedContactId = contactId;
+	renderContacts(contactsState);
+	const contact = contactsState.find((item) => item.id === contactId) || null;
+	renderContactDetails(contact);
+}
+
+/**
+ * Renders contacts into the contacts list.
+ * @param {Array<{id: string, name: string, email: string, phone: string}>} contacts - Contacts to render.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+function renderContacts(contacts) {
+	const listRef = document.getElementById('contact-list');
+	if (!listRef) return;
+	listRef.replaceChildren();
+
+	if (!contacts.length) {
+		const empty = document.createElement('p');
+		empty.className = 'contact-item';
+		empty.textContent = 'No contacts yet.';
+		listRef.appendChild(empty);
+		return;
+	}
+
+	const fragment = document.createDocumentFragment();
+
+	contacts.forEach((contact) => {
+		const initials = getContactInitials(contact.name);
+		const color = getContactAvatarColor(contact.name);
+		const isSelected = selectedContactId === contact.id;
+		const item = document.createElement('div');
+		item.className = 'contact-item';
+
+		const box = document.createElement('div');
+		box.className = 'contact-box';
+		box.setAttribute('role', 'button');
+		box.setAttribute('tabindex', '0');
+		box.setAttribute('aria-label', `Open ${contact.name || 'contact'}`);
+		if (isSelected) {
+			box.style.background = '#f4f4f4';
+			box.style.borderRadius = '10px';
+		}
+
+		const avatar = document.createElement('div');
+		avatar.className = 'contact-logo';
+		avatar.style.display = 'inline-flex';
+		avatar.style.alignItems = 'center';
+		avatar.style.justifyContent = 'center';
+		avatar.style.color = '#fff';
+		avatar.style.fontWeight = '700';
+		avatar.style.background = color;
+		avatar.textContent = initials;
+
+		const info = document.createElement('div');
+		const name = document.createElement('span');
+		name.className = 'contact-name';
+		name.textContent = contact.name || 'Unknown Contact';
+		const email = document.createElement('span');
+		email.className = 'contact-email';
+		email.textContent = contact.email || '';
+
+		info.appendChild(name);
+		info.appendChild(email);
+		box.appendChild(avatar);
+		box.appendChild(info);
+		box.addEventListener('click', () => selectContact(contact.id));
+		box.addEventListener('keydown', (event) => {
+			if (event.key !== 'Enter' && event.key !== ' ') return;
+			event.preventDefault();
+			selectContact(contact.id);
+		});
+
+		item.appendChild(box);
+		fragment.appendChild(item);
+	});
+
+	listRef.appendChild(fragment);
+}
+
+/**
+ * Loads contacts from Firebase and renders them into the contacts page.
+ * @returns {Promise<void>} Resolves after rendering.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+async function loadContacts() {
+	contactsState = await fetchContacts();
+
+	if (!selectedContactId || !contactsState.some((contact) => contact.id === selectedContactId)) {
+		selectedContactId = contactsState[0]?.id || '';
+	}
+
+	renderContacts(contactsState);
+	const contact = contactsState.find((item) => item.id === selectedContactId) || null;
+	renderContactDetails(contact);
+}
 
 window.contactsOverlay = {
 	openEditContactOverlay,
 };
-document.addEventListener('DOMContentLoaded', initContactOverlay);
+window.loadContacts = loadContacts;
 
-// Hier wird die Render-Funktion für die Kontaktliste aufgerufen, um die Kontakte anzuzeigen, wenn die Seite geladen wird.
-
-function renderContactList() {
-	let contactListContainer = document.getElementById('contact-list');
-	contactListContainer.innerHTML = `<div class="contact-box">
-		<div>
-			<img class="contact-logo" src="../assets/icons/Profile badge@2x.png" alt="Anton Mayer" />
-		</div>
-		<div class="contact-item">
-			<span class="contact-name">${contact.name}</span>
-			<span class="contact-email">${contact.email}</span>
-			<span class="contact-phone">${contact.phone}</span>
-		</div>
-	`;
-}
-document.addEventListener('DOMContentLoaded', renderContactList);
-
-function showContactDetails(contact) {
-	let contactDetailsContainer = document.getElementById('contact-details');
-	contactDetailsContainer.innerHTML = `<div class="contact-details-box">
-		<div>
-			<img class="contact-logo" src="../assets/icons/Profile badge@2x.png" alt="${contact.name}" />
-			<span class="contact-name">${contact.name}</span>
-			<p>Edit</p><p>Delete</p>
-		</div>
-		<div class="contact-details-item">
-			<span class="contact-name">Contact Information</span>
-			<span class="contact-email">${contact.email}</span>
-			<span class="contact-phone">${contact.phone}</span>
-		</div>
-	</div>`;
-}
+document.addEventListener('DOMContentLoaded', () => {
+	initContactOverlay();
+	initContactForm();
+	loadContacts();
+});
