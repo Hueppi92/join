@@ -1,19 +1,3 @@
-/**
- * @file taskboard.js
- * @description Steuert die Logik des Kanban-Boards, inklusive Laden der Daten aus Firebase, 
- * Drag-and-Drop Funktionalität und Steuerung der Modals.
- */
-
-/** @type {string} Speichert den Status der Spalte, in der eine neue Task erstellt werden soll. */
-let currentSelectedStatus = 'todo'; 
-
-/**
- * Lädt Tasks, Benutzer und deren Verknüpfungen aus der Firebase Realtime Database
- * und rendert die Task-Karten in die entsprechenden Spalten.
- * @async
- * @function renderBoard
- * @returns {Promise<void>}
- */
 async function renderBoard() {
   try {
     const [tasksSnapshot, usersSnapshot, taskUsersSnapshot] = await Promise.all([
@@ -21,15 +5,24 @@ async function renderBoard() {
       firebase.database().ref('users').get(),
       firebase.database().ref('taskUsers').get()
     ]);
+
     const tasks = tasksSnapshot.val() || {};
     const allUsers = usersSnapshot.val() || {};
     const connections = taskUsersSnapshot.val() || {};
     const columns = { 'todo': '', 'in-progress': '', 'await-feedback': '', 'done': '' };
 
     Object.entries(tasks).forEach(([taskId, task]) => {
-      let userIdsForTask = connections[taskId] ? Object.keys(connections[taskId]) : [];
-      const assignedUsers = userIdsForTask.map(uid => {
-        const user = allUsers[uid];
+      // Suche User-IDs in connections ODER direkt im Task-Objekt
+      let userIdsFromConnections = connections[taskId] ? Object.keys(connections[taskId]) : [];
+      let userIdsFromTask = Array.isArray(task.assignedTo) ? task.assignedTo : [];
+      
+      // Kombiniere beide Quellen (einige Apps speichern IDs direkt im Task)
+      let combinedIds = [...new Set([...userIdsFromConnections, ...userIdsFromTask])];
+
+      const assignedUsers = combinedIds.map(uid => {
+        // Falls uid ein Objekt ist (z.B. {id: '...'}), nimm die ID
+        const id = typeof uid === 'object' ? uid.id : uid;
+        const user = allUsers[id];
         if (!user) return null;
         return {
           name: user.name,
@@ -40,9 +33,12 @@ async function renderBoard() {
 
       const subtasks = task.subtasks || [];
       const subtasksArray = Array.isArray(subtasks) ? subtasks : Object.values(subtasks);
-      const doneCount = subtasksArray.filter(st => st.completed || st.done).length;
-      const progressPercent = subtasksArray.length > 0 ? (doneCount / subtasksArray.length) * 100 : 0; 
-      const taskWithUsers = { ...task, assignedTo: assignedUsers, subtasks: subtasksArray, progress: progressPercent };
+      
+      const taskWithUsers = { 
+        ...task, 
+        assignedTo: assignedUsers, 
+        subtasks: subtasksArray 
+      };
       
       if (columns[task.status] !== undefined) {
         columns[task.status] += getCardTemplate(taskWithUsers, taskId);
