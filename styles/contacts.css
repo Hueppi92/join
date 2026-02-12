@@ -1,51 +1,9 @@
-/* Grundlegende Einstellungen */
-body {
-  margin: 0;
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
-  font-family: "Inter", sans-serif;
-}
 
-/* SIDEBAR + HEADER styles aligned to sidebar.css */
-aside {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 232px;
-  height: 100vh;
-  background-color: #2A3647;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 2;
-}
-
-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 96px;
-  background-color: var(--white);
-  border-bottom: 1px solid #d1d1d1;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
-  z-index: 1;
-}
-
-header h2 {
-  margin: 0;
-  padding: 36px 348px;
-  font-size: 20px;
-  font-weight: 600;
-  color: #000000;
-  font-weight: 400;
-  vertical-align: middle;
-}
 h3 {
   margin-left: 50px;
   border-bottom: 1px solid #d1d1d1;
 }
+  
 .contact-logo {
   width: 40px;
   height: 40px;
@@ -61,7 +19,7 @@ h3 {
   position: fixed;
   background-color: white;
   border-right: 1px solid #d1d1d1;
-  overflow-y: scroll; 
+  overflow-y: auto; 
   overflow-x: hidden;
 }
 
@@ -89,14 +47,6 @@ h3 {
   margin: 30px;
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden; /* Das verhindert, dass die ganze Seite wackelt */
-}
 main {
   margin-left: 232px; /* Platz fuer die Sidebar */
   margin-top: 96px; /* Platz fuer den Header */
