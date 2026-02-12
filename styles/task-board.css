@@ -10,10 +10,12 @@
     --text-gray: #A8A8A8;
     --separator-color: #D1D1D1;
     --blue-badge: #0038FF;
+    --tech-badge: #1FD7C1;
     --error-red: #FF8190;
     --prio-urgent: #FF3D00;
     --prio-medium: #FFA800;
     --prio-low: #7AE229;
+
 }
 
 * {
@@ -144,8 +146,11 @@ body {
     width: fit-content;
 }
 .badge.user-story { background-color: var(--blue-badge); }
+.badge.technical-task { background-color: var(--tech-badge); }
 
-
+.card-title {
+    margin-bottom:32px;
+}
 
 .user-badge {
     width: 32px;
@@ -190,6 +195,13 @@ body {
     font-size: 12px;
     color: black;
     white-space: nowrap;
+}
+.assigned-user-badge-container {
+    display:flex;
+    flex-direction:row;
+    align-items: center;
+    gap:12px;
+    padding-left:32px;
 }
 
 /* ==========================================================================
@@ -259,12 +271,15 @@ body {
     width: 525px;
     max-width: 90vw;
     max-height: 90vh;
-    overflow-y: auto;
+    overflow-y: hidden;
     position: relative;
     display: flex;
     flex-direction: column;
     gap: 24px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.task-detail-card {
+    font-size: 20px;
 }
 .detail-header {
   display:flex;
@@ -294,13 +309,38 @@ body {
   gap:48px;
   margin-bottom: 16px;
 }
-.assigned-user-badge-container {
+.info-value-prio {
     display:flex;
-    flex-direction: row;
-    padding:10px 36px 10px 16px;
-    align-items: center;
-    gap:16px;
+    flex-direction:row;
+    gap:12px;
+    font-size:20px;
 }
+.info-value-prio img {
+
+}
+.assigned-to-container {
+    display: flex ;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 5px;
+    min-height: 32px; /* Wichtig! */
+}
+
+/* Die Badges auf dem Board */
+.card .user-badge {
+    width: 32px;
+    height: 32px;
+    margin-left: -8px; /* Der Überlappungs-Effekt */
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    color: white;
+}
+
 
 .section-title {
     margin-top:24px;
@@ -329,15 +369,12 @@ body {
 }
 
 .action-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
- 
-    border: none;
-    background: transparent;
+    display:flex;
+    height:auto;
+    width:auto;
+    background:transparent;
+    border:none;
     cursor: pointer;
-    font-size: 16px;
-    transition: color 0.1s ease-in-out;
 }
 
 .action-btn:hover {
@@ -345,7 +382,7 @@ body {
     font-weight: 700;
 }
 
-/* Der kleine senkrechte Strich zwischen Delete und Edit */
+
 .action-divider {
     width: 1px;
     height: 24px;
@@ -353,11 +390,8 @@ body {
     margin: 0 8px;
 }
 
-/* Falls du die Icons im Button skalieren willst */
-.action-btn img {
-    height: 24px;
-    width: 48px;
-}
+
+
 .error { color: var(--error-red); }
 .error_text { color: var(--error-red); font-size: 12px; }
 
