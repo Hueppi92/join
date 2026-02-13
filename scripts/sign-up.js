@@ -44,6 +44,12 @@ function initSignupForm() {
 	form.addEventListener('submit', (event) => handleSignupSubmit(event, fields));
 }
 
+/**
+ * Computes a stable avatar color for a user name.
+ * @param {string} name - User name.
+ * @returns {string} Hex color string.
+ */
+
 
 /**
  * Collects sign-up form fields and related message elements.
@@ -214,15 +220,17 @@ async function handleSignupSubmit(event, fields) {
 
 	setLoadingState(fields, true);
 	try {
+		const displayName = fields.nameInput.value.trim();
 		const credential = await firebase.auth().createUserWithEmailAndPassword(
 			fields.emailInput.value.trim(),
 			fields.passwordInput.value
 		);
 		sessionStorage.setItem('userId', credential.user.uid);
-		await credential.user.updateProfile({ displayName: fields.nameInput.value.trim() });
+		await credential.user.updateProfile({ displayName });
 		await firebase.database().ref(`users/${credential.user.uid}`).set({
-			name: fields.nameInput.value.trim(),
+			name: displayName,
 			email: fields.emailInput.value.trim(),
+			color: getAvatarColorFromName(displayName),
 			createdAt: Date.now(),
 		});
 		sessionStorage.removeItem('guestLogin');

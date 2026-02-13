@@ -24,10 +24,12 @@ async function renderBoard() {
         const id = typeof uid === 'object' ? uid.id : uid;
         const user = allUsers[id];
         if (!user) return null;
+        const name = user.name || '';
+        const fallbackColor = name ? getAvatarColorFromName(name) : '#2A3647';
         return {
-          name: user.name,
-          color: user.color || '#2A3647',
-          initials: user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : '?'
+          name,
+          color: user.color || fallbackColor,
+          initials: name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : '?'
         };
       }).filter(u => u !== null);
 
@@ -141,10 +143,11 @@ async function openTaskDetail(taskId) {
         const fullUser = allUsers[u.id];
 
         const name = u.name || fullUser?.name || 'Unknown';
+        const fallbackColor = getAvatarColorFromName(name);
 
         return {
           name,
-          color: fullUser?.color || '#2A3647',
+          color: fullUser?.color || fallbackColor,
           initials: name
             .split(' ')
             .map(n => n[0])

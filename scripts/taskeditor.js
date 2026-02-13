@@ -54,6 +54,8 @@ function loadContacts() {
                 .substring(0, 2)
                 .toUpperCase();
 
+            const color = user.color || getAvatarColorFromName(user.name);
+
 
             const label = document.createElement("label");
             label.className = "dropdown_item";
@@ -61,11 +63,12 @@ function loadContacts() {
 
 
             label.innerHTML = `
-                <div class="dropdown_avatar">${initials}</div>
+                 <div class="dropdown_avatar" style="background-color: ${color};">${initials}</div>
                 <span>${user.name}</span>
                 <input type="checkbox"
                      data-userid="${child.key}"
-                     data-username="${user.name}">
+                     data-username="${user.name}"
+                     data-color="${color}">
             `;
 
             dropdown.appendChild(label);
@@ -120,10 +123,12 @@ function updateAssignedAvatars() {
             .join("")
             .substring(0, 2)
             .toUpperCase();
+        const color = cb.dataset.color || getAvatarColorFromName(name);
 
         const avatar = document.createElement("div");
         avatar.className = "dropdown_avatar";
         avatar.textContent = initials;
+        avatar.style.backgroundColor = color;
 
         container.appendChild(avatar);
     });
