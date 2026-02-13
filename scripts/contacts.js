@@ -466,6 +466,7 @@ function initContactForm() {
 			const name = fields.nameInput.value.trim();
 			const email = fields.emailInput.value.trim();
 			const phone = fields.phoneInput.value.trim();
+			const color = getContactAvatarColor(name);
 			const mode = fields.form.dataset.mode || 'add';
 			if (mode === 'edit') {
 				const contactId = fields.form.dataset.contactId;
@@ -473,9 +474,9 @@ function initContactForm() {
 					setContactFormMessage('Contact cannot be saved without an id.');
 					return;
 				}
-				await updateContact(contactId, { name, email, phone });
+				await updateContact(contactId, { name, email, phone, color });
 			} else {
-				await saveContact({ name, email, phone, createdAt: Date.now() });
+				await saveContact({ name, email, phone, color, createdAt: Date.now() });
 			}
 			await refreshContactsList();
 			fields.form.reset();
