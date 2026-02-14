@@ -31,12 +31,12 @@
       <!-- LEFT -->
       <form class="new_task" id="taskForm">
         <div class="left_row title_field">
-          <label>Title
+          <label for="titleInput">Title
             <span class="error">*</span>
           </label>
 
           <div class="left_single_row">
-            <input id="titleInput" type="text" placeholder="Enter a title" required>
+            <input id="titleInput" aria-describedby="titleError" type="text" placeholder="Enter a title" required>
           </div>
 
           <small class="error_text">This field is required</small>
@@ -44,16 +44,16 @@
         </div>
 
         <div class="left_row">
-          <label>Description</label>
+          <label for="descriptionBox">Description</label>
 
           <div class="left_single_row description_box">
-            <textarea placeholder="Enter a Description"></textarea>
+            <textarea id="descriptionBox" placeholder="Enter a Description"></textarea>
           </div>
 
         </div>
 
         <div class="left_row date_field">
-          <label>Due date
+          <label for="dateInput">Due date
             <span class="error">*</span>
           </label>
 
@@ -73,7 +73,7 @@
       <div class="task_settings">
 
         <div class="settings_block">
-          <label>Priority</label>
+          <label for="priorityRow">Priority</label>
 
           <div class="priority_row" id="priorityRow">
             <button type="button" class="prio urgent_btn" data-prio="urgent">
@@ -103,14 +103,15 @@
         </div>
 
         <div class="settings_block">
-          <label>Assigned to</label>
+          <label for="assignedSelect">Assigned to</label>
 
-          <div class="select_native" id="assignedSelect">
+          <div class="select_native" id="assignedSelect" role="combobox" aria-expanded="false"
+            aria-controls="assignedDropdown">
             <div class="selector_input">
               <input type="text" id="assignedSearch" placeholder="Select contacts to assign" autocomplete="off" />
             </div>
 
-            <div class="selector_dropdown" id="assignedDropdown">
+            <div class="selector_dropdown" id="assignedDropdown" role="listbox">
             </div>
           </div>
 
@@ -118,30 +119,34 @@
         </div>
 
         <div class="settings_block">
-          <label>Category</label>
+          <label for="categorySelectWrapper">Category</label>
           <div class="select_native category-select" id="categorySelectWrapper">
             <div class="selector_input">
               <input type="text" id="categoryInput" placeholder="Select task category" readonly>
             </div>
 
             <div class="selector_dropdown" id="categoryDropdown">
-              <label class="dropdown_item" data-value="user-story">User Story</label>
-              <label class="dropdown_item" data-value="technical-task">Technical Task</label>
+              <label class="dropdown_item" data-value="user-story" role="option">User Story</label>
+              <label class="dropdown_item" data-value="technical-task" role="option">Technical Task</label>
             </div>
           </div>
         </div>
 
 
         <div class="settings_block subtasks_block">
-          <label>Subtasks</label>
+          <label for="subtaskInput">Subtasks</label>
 
           <div class="subtask_input">
             <input id="subtaskInput" type="text" placeholder="Add new subtask">
 
             <div class="subtask_actions">
-              <img src="../assets/icons/close.svg" id="subtaskClear"></img>
+              <button id="subtaskClear" aria-label="Clear subtask">
+                <img src="../assets/icons/close.svg" alt="">
+              </button>
               <div class="separator"></div>
-              <img src="../assets/icons/check.svg" id="subtaskAdd"></img>
+              <button id="subtaskAdd" aria-label="Add subtask">
+                <img src="../assets/icons/check.svg" alt=""></img>
+              </button>
             </div>
           </div>
 
@@ -165,7 +170,7 @@
 
     <aside>
       <img src="../assets/img/join_logo.svg" alt="Join Logo" />
-      <nav class="sidebar-navigation">
+      <nav class="sidebar-navigation" aria-label="Main navigation">
         <div class="sidebar-navigation-item">
           <a href="./summary.html"><img src="../assets/icons/summary_icon.svg" alt="Summary Icon">Summary</a>
         </div>
@@ -211,7 +216,7 @@
     </div>
   </main>
 
-  <div id="taskSuccessToast" class="task_success_toast">
+  <div id="taskSuccessToast" class="task_success_toast" role="status" aria-live="polite">
     Task added to board
   </div>
 

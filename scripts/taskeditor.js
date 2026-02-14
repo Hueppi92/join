@@ -28,8 +28,12 @@ function getRequiredFieldElements(inputId, wrapperClass) {
 function toggleRequiredError(input, wrapper, wasFocused) {
     if (wasFocused && input.value.trim() === "") {
         wrapper.classList.add("error");
+        input.setAttribute("aria-invalid", "true");
+        wrapper.setAttribute("aria-expanded", "true");
     } else {
         wrapper.classList.remove("error");
+        input.removeAttribute("aria-invalid");
+        wrapper.setAttribute("aria-expanded", "false");
     }
 }
 
