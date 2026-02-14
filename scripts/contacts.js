@@ -574,54 +574,90 @@ function renderContactDetails(contact) {
 	detailsRef.replaceChildren();
 
 	if (!contact) {
-		const title = document.createElement('h1');
-		title.textContent = 'Contact details will be rendered here';
-		detailsRef.appendChild(title);
+		const placeholder = document.createElement('p');
+		placeholder.className = 'contact-details-placeholder';
+		placeholder.textContent = 'Select a contact to view details.';
+		detailsRef.appendChild(placeholder);
 		return;
 	}
 
 	const initials = getContactInitials(contact.name);
 	const color = getContactAvatarColor(contact.name);
-	const header = document.createElement('div');
-	header.className = 'contact-box';
-	header.style.margin = '0 0 24px 0';
+	const profile = document.createElement('div');
+	profile.className = 'contact-details-profile';
 
 	const avatar = document.createElement('div');
-	avatar.className = 'contact-logo';
-	avatar.style.display = 'inline-flex';
-	avatar.style.alignItems = 'center';
-	avatar.style.justifyContent = 'center';
-	avatar.style.color = '#fff';
-	avatar.style.fontWeight = '700';
+	avatar.className = 'contact-details-avatar';
 	avatar.style.background = color;
 	avatar.textContent = initials;
 
-	const title = document.createElement('h2');
-	title.textContent = contact.name || 'Unknown Contact';
+	const profileInfo = document.createElement('div');
+	profileInfo.className = 'contact-details-profile-info';
 
-	const body = document.createElement('div');
-	const email = document.createElement('p');
-	const emailLabel = document.createElement('strong');
-	emailLabel.textContent = 'Email: ';
-	email.appendChild(emailLabel);
-	email.appendChild(document.createTextNode(contact.email || '-'));
-	const phone = document.createElement('p');
-	const phoneLabel = document.createElement('strong');
-	phoneLabel.textContent = 'Phone: ';
-	phone.appendChild(phoneLabel);
-	phone.appendChild(document.createTextNode(contact.phone || '-'));
+	const name = document.createElement('h2');
+	name.className = 'contact-details-name';
+	name.textContent = contact.name || 'Unknown Contact';
+
+	const actions = document.createElement('div');
+	actions.className = 'contact-details-actions';
+
 	const editButton = document.createElement('button');
 	editButton.type = 'button';
-	editButton.textContent = 'Edit contact';
+	editButton.className = 'contact-details-action';
+	editButton.innerHTML = '<img src="../assets/icons/edit_detail.png" alt="" aria-hidden="true"><span>Edit</span>';
 	editButton.addEventListener('click', () => openEditContactOverlay(contact.id, contact));
 
-	header.appendChild(avatar);
-	header.appendChild(title);
-	body.appendChild(email);
-	body.appendChild(phone);
-	body.appendChild(editButton);
-	detailsRef.appendChild(header);
-	detailsRef.appendChild(body);
+	const deleteButton = document.createElement('button');
+	deleteButton.type = 'button';
+	deleteButton.className = 'contact-details-action';
+	deleteButton.innerHTML = '<img src="../assets/icons/delete_detail.png" alt="" aria-hidden="true"><span>Delete</span>';
+	deleteButton.addEventListener('click', async () => {
+		await deleteContact(contact.id);
+		await refreshContactsList();
+	});
+
+	actions.appendChild(editButton);
+	actions.appendChild(deleteButton);
+	profileInfo.appendChild(name);
+	profileInfo.appendChild(actions);
+	profile.appendChild(avatar);
+	profile.appendChild(profileInfo);
+
+	const info = document.createElement('div');
+	info.className = 'contact-details-info';
+
+	const infoTitle = document.createElement('h3');
+	infoTitle.className = 'contact-details-info-title';
+	infoTitle.textContent = 'Contact Information';
+
+	const emailLabel = document.createElement('p');
+	emailLabel.className = 'contact-details-label';
+	emailLabel.textContent = 'Email';
+
+	const emailValue = String(contact.email || '').trim();
+	const email = document.createElement(emailValue ? 'a' : 'p');
+	email.className = 'contact-details-email';
+	email.textContent = emailValue || '-';
+	if (emailValue) {
+		email.href = `mailto:${emailValue}`;
+	}
+
+	const phoneLabel = document.createElement('p');
+	phoneLabel.className = 'contact-details-label';
+	phoneLabel.textContent = 'Phone';
+
+	const phone = document.createElement('p');
+	phone.className = 'contact-details-phone';
+	phone.textContent = contact.phone || '-';
+
+	info.appendChild(infoTitle);
+	info.appendChild(emailLabel);
+	info.appendChild(email);
+	info.appendChild(phoneLabel);
+	info.appendChild(phone);
+
+	detailsRef.appendChild(profile);
+	detailsRef.appendChild(info);
 }
 
 /**
