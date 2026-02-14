@@ -221,13 +221,13 @@ body {
    5. ADD TASK MODAL (Update für Spalten + Footer)
    ========================================================================== */
 #addTaskModal {
-    opacity: 0;
+    background: rgba(0, 0, 0, 0);
     pointer-events: none;
-    transition: opacity 160ms ease;
+    transition: background-color 160ms ease;
 }
 
 #addTaskModal.is-open {
-    opacity: 1;
+    background: rgba(0, 0, 0, 0.2);
     pointer-events: auto;
 }
 
