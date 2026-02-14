@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,14 +14,12 @@
 
 <body>
   <header>
-      <h2>Kanban Project Management Tool</h2>
-      <div class="header-btn">
-        <a href="./help.html" class="help-btn"
-          ><img src="../assets/icons/help_icon.svg" alt="Help Icon"
-        /></a>
-        <button id="profile-btn" class="profile-btn"></button>
-      </div>
-    </header>
+    <h2>Kanban Project Management Tool</h2>
+    <div class="header-btn">
+      <a href="./help.html" class="help-btn"><img src="../assets/icons/help_icon.svg" alt="Help Icon" /></a>
+      <button id="profile-btn" class="profile-btn"></button>
+    </div>
+  </header>
 
   <main>
     <aside>
@@ -103,94 +102,158 @@
   </main>
 
   <!-- ================= ADD TASK MODAL ================= -->
-<div id="addTaskModal" class="modal hidden" aria-hidden="true">
-  <div class="modal-content">
-    <button class="close-btn" onclick="closeAddTaskModal()">×</button>
-    <h1 class="modal-title">Add Task</h1>
+  <div id="addTaskModal" class="modal hidden" aria-hidden="true">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeAddTaskModal()">×</button>
+      <h1 class="modal-title">Add Task</h1>
 
-    <div class="editor_wrapper">
-      <form class="new_task" id="modalForm" onsubmit="createTaskFromModal(event)">
-        <div class="left_row title_field">
-          <label>Title <span class="error">*</span></label>
-          <div class="left_single_row">
-            <input id="titleInput" type="text" placeholder="Enter a title" required>
+      <div class="editor_wrapper">
+
+        <!-- LEFT -->
+        <form class="new_task" id="taskForm">
+          <div class="left_row title_field">
+            <label for="titleInput">Title
+              <span class="error">*</span>
+            </label>
+
+            <div class="left_single_row">
+              <input id="titleInput" aria-describedby="titleError" type="text" placeholder="Enter a title" required>
+            </div>
+
+            <small class="error_text">This field is required</small>
+
           </div>
-          <small class="error_text hidden">This field is required</small>
-        </div>
 
-        <div class="left_row">
-          <label>Description</label>
-          <div class="left_single_row description_box">
-            <textarea id="descriptionInput" placeholder="Enter a Description"></textarea>
+          <div class="left_row">
+            <label for="descriptionBox">Description</label>
+
+            <div class="left_single_row description_box">
+              <textarea id="descriptionBox" placeholder="Enter a Description"></textarea>
+            </div>
+
           </div>
-        </div>
 
-        <div class="left_row date_field">
-          <label>Due date <span class="error">*</span></label>
-          <div class="left_single_row">
-            <input id="dateInput" type="text" placeholder="dd/mm/yyyy" required>
-            <img class="calendar_icon" src="../assets/icons/calendar.svg">
+          <div class="left_row date_field">
+            <label for="dateInput">Due date
+              <span class="error">*</span>
+            </label>
+
+            <div class="left_single_row">
+              <input id="dateInput" type="date" min="2024-01-01" required>
+              <img class="calendar_icon" src="../assets/icons/calendar.svg">
+            </div>
+
+            <small class="error_text">This field is required</small>
           </div>
-          <small class="error_text hidden">This field is required</small>
-        </div>
-      </form>
+        </form>
 
-      <div class="editor_divider"></div>
+        <!-- DIVIDER -->
+        <div class="editor_divider"></div>
 
-      <div class="task_settings">
-        <div class="settings_block">
-          <label>Priority</label>
-          <div class="priority_row" id="priorityRow">
-            <button type="button" class="prio urgent_btn" data-prio="urgent">Urgent <div class="prio-icon-box"><img src="../assets/icons/arrowUp.svg" class="urgent"></div></button>
-            <button type="button" class="prio medium_btn active" data-prio="medium">Medium <div class="prio-icon-box"><img src="../assets/icons/sameIcon.svg" class="medium"></div></button>
-            <button type="button" class="prio low_btn" data-prio="low">Low <div class="prio-icon-box"><img src="../assets/icons/arrowDown.svg" class="low"></div></button>
-          </div>
-        </div>
+        <!-- RIGHT -->
+        <div class="task_settings">
 
-        <div class="settings_block">
-          <label>Assigned to</label>
-          <div class="select_native" id="assignedSelect">
-            <div class="selector_input"><input type="text" id="assignedSearch" placeholder="Select contacts to assign"></div>
-            <div id="assignedAvatars" class="assigned_avatars"></div>
-            <div class="selector_dropdown" id="assignedDropdown"></div>
-          </div>
-        </div>
+          <div class="settings_block">
+            <label for="priorityRow">Priority</label>
 
-        <div class="settings_block">
-          <label>Category</label>
-          <div class="select_native category-select">
-            <div class="selector_input"><input type="text" id="categoryInput" placeholder="Select task category" readonly></div>
-            <div class="selector_dropdown" id="categoryDropdown">
-              <label class="dropdown_item" data-value="user-story">User Story</label>
-              <label class="dropdown_item" data-value="technical-task">Technical Task</label>
+            <div class="priority_row" id="priorityRow">
+              <button type="button" class="prio urgent_btn" data-prio="urgent">
+                Urgent
+                <div>
+                  <img src="../assets/icons/arrowUp.svg" class="urgent">
+                  <img src="../assets/icons/arrowUp.svg" class="urgent">
+                </div>
+              </button>
+
+              <button type="button" class="prio medium_btn active" data-prio="medium">
+                Medium
+                <div>
+                  <img src="../assets/icons/sameIcon.svg" class="medium">
+                  <img src="../assets/icons/sameIcon.svg" class="medium">
+                </div>
+              </button>
+
+              <button type="button" class="prio low_btn" data-prio="low">
+                Low
+                <div>
+                  <img src="../assets/icons/arrowDown.svg" class="low">
+                  <img src="../assets/icons/arrowDown.svg" class="low">
+                </div>
+              </button>
             </div>
           </div>
-        </div>
 
-        <div class="settings_block subtasks_block">
-          <label>Subtasks</label>
-          <div class="subtask_input">
-            <input id="subtaskInput" type="text" placeholder="Add new subtask">
-            <button type="button" class="subtask_add_btn"><p>+</p></button>
+          <div class="settings_block">
+            <label for="assignedSelect">Assigned to</label>
+
+            <div class="select_native" id="assignedSelect" role="combobox" aria-expanded="false"
+              aria-controls="assignedDropdown">
+              <div class="selector_input">
+                <input type="text" id="assignedSearch" placeholder="Select contacts to assign" autocomplete="off" />
+              </div>
+
+              <div class="selector_dropdown" id="assignedDropdown" role="listbox">
+              </div>
+            </div>
+
+            <div id="assignedAvatars" class="assigned_avatars"></div>
           </div>
-          <ul id="subtaskList" class="subtask_list"></ul>
+
+          <div class="settings_block">
+            <label for="categorySelectWrapper">Category</label>
+            <div class="select_native category-select" id="categorySelectWrapper">
+              <div class="selector_input">
+                <input type="text" id="categoryInput" placeholder="Select task category" readonly>
+              </div>
+
+              <div class="selector_dropdown" id="categoryDropdown">
+                <label class="dropdown_item" data-value="user-story" role="option">User Story</label>
+                <label class="dropdown_item" data-value="technical-task" role="option">Technical Task</label>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="settings_block subtasks_block">
+            <label for="subtaskInput">Subtasks</label>
+
+            <div class="subtask_input">
+              <input id="subtaskInput" type="text" placeholder="Add new subtask">
+
+              <div class="subtask_actions">
+                <button id="subtaskClear" aria-label="Clear subtask">
+                  <img src="../assets/icons/close.svg" alt="">
+                </button>
+                <div class="separator"></div>
+                <button id="subtaskAdd" aria-label="Add subtask">
+                  <img src="../assets/icons/check.svg" alt=""></img>
+                </button>
+              </div>
+            </div>
+
+            <ul id="subtaskList" class="subtask_list"></ul>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="task_footer">
+        <p>
+          <span class="error">*</span>
+          This field is required
+        </p>
+
+        <div class="footer_actions">
+          <button class="clear_btn">Clear ✕</button>
+          <button class="create_btn">Create Task ✓</button>
         </div>
       </div>
     </div>
-
-    <div class="task_footer">
-      <p><span class="error">*</span> This field is required</p>
-      <div class="footer_actions">
-        <button type="button" class="clear_btn" onclick="closeAddTaskModal()">Cancel ✕</button>
-        <button type="submit" form="modalForm" class="create_btn">Create Task ✓</button>
-      </div>
-    </div>
   </div>
-</div>
 
-    </form>
+  </form>
   </div>
-</div>
+  </div>
 
 
   <!-- ================= TASK DETAIL OVERLAY ================= -->
@@ -213,4 +276,5 @@
   <script src="../scripts/taskboard.js"></script>
   <script src="../scripts/taskeditor.js"></script>
 </body>
+
 </html>
