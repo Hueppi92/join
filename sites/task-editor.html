@@ -109,11 +109,11 @@
             <div class="selector_input">
               <input type="text" id="assignedSearch" placeholder="Select contacts to assign" autocomplete="off" />
             </div>
-            
+
             <div class="selector_dropdown" id="assignedDropdown">
             </div>
           </div>
-          
+
           <div id="assignedAvatars" class="assigned_avatars"></div>
         </div>
 
@@ -137,9 +137,12 @@
 
           <div class="subtask_input">
             <input id="subtaskInput" type="text" placeholder="Add new subtask">
-            <button type="button" class="subtask_add_btn">
-              <p>+</p>
-            </button>
+
+            <div class="subtask_actions">
+              <img src="../assets/icons/close.svg" id="subtaskClear"></img>
+              <div class="separator"></div>
+              <img src="../assets/icons/check.svg" id="subtaskAdd"></img>
+            </div>
           </div>
 
           <ul id="subtaskList" class="subtask_list"></ul>

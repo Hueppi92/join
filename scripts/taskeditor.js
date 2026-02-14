@@ -157,6 +157,8 @@ function setupSubtasks() {
     let input = document.getElementById("subtaskInput");
     let list = document.getElementById("subtaskList");
     let wrapper = input.closest(".subtask_input");
+    let addBtn = document.getElementById("subtaskAdd");
+    let clearBtn = document.getElementById("subtaskClear");
 
     if (!input || !list) return;
 
@@ -165,13 +167,53 @@ function setupSubtasks() {
         if (!value) return;
 
         let li = document.createElement("li");
+
         li.innerHTML = `
-            <span>${value}</span>
-            <button type="button">✕</button>
+            <span class="subtask_text">• ${value}</span>
+
+            <div class="subtask_item_actions">
+                <img src="../assets/icons/edit.svg" class="edit_btn"></img>
+                <div class="separator"></div>
+                <img src="../assets/icons/delete.svg" class="delete_btn"></img>
+            </div>
         `;
 
-        li.querySelector("button").addEventListener("click", () => {
-            li.remove();
+        li.querySelector(".delete_btn").addEventListener("click", () => li.remove());
+        function activateEditMode(li) {
+
+            li.classList.add("editing");
+
+            const span = li.querySelector(".subtask_text");
+            const old = span.textContent.replace("• ", "");
+
+            span.innerHTML = `
+                <input class="subtask_edit_input" value="${old}">
+            `;
+
+            const input = span.querySelector("input");
+            input.focus();
+
+            function finishEdit() {
+                span.textContent = "• " + input.value.trim();
+                li.classList.remove("editing");
+            }
+
+            input.addEventListener("blur", finishEdit);
+
+            input.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    input.blur();
+                }
+            });
+        }
+
+        li.querySelector(".edit_btn").addEventListener("click", () => {
+            activateEditMode(li);
+        });
+
+        li.addEventListener("dblclick", () => {
+            activateEditMode(li);
         });
 
         list.appendChild(li);
@@ -180,8 +222,12 @@ function setupSubtasks() {
         wrapper.classList.remove("has-text");
     }
 
-    document.querySelector(".subtask_add_btn")
-        .addEventListener("click", addSubtask);
+    addBtn.addEventListener("click", addSubtask);
+
+    clearBtn.addEventListener("click", () => {
+        input.value = "";
+        wrapper.classList.remove("has-text");
+    });
 
     input.addEventListener("input", () => {
         if (input.value.trim().length > 0) {

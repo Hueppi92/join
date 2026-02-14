@@ -413,6 +413,10 @@
     border-radius: 10px;
 }
 
+.subtask_input:focus-within {
+    border: 1px solid var(--light-blue);
+}
+
 .subtask_input input {
     flex: 1;
     height: 100%;
@@ -423,40 +427,42 @@
     line-height: 120%;
 
     border: none;
+    border-radius: 10px;
     outline: none;
 }
 
-.subtask_add_btn {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-
-    width: 24px;
-    height: 24px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border: none;
-    background: none;
-    cursor: pointer;
-
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 120ms ease-in-out;
-}
-
-.subtask_input.has-text .subtask_add_btn {
+.subtask_input.has-text {
     opacity: 1;
     pointer-events: auto;
 }
 
-.subtask_add_btn p {
-    font-size: 24px;
-    filter:
-        brightness(0) saturate(100%) invert(17%) sepia(19%) saturate(1020%) hue-rotate(176deg) brightness(95%) contrast(93%);
+.subtask_actions {
+    position: absolute;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 120ms;
+}
+
+.subtask_input.has-text .subtask_actions {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.subtask_actions button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.separator {
+    width: 1px;
+    height: 16px;
+    background: #D1D1D1;
 }
 
 .subtask_list {
@@ -484,13 +490,51 @@
     font-family: Inter, sans-serif;
     font-size: 16px;
     color: #2A3647;
+    overflow-y: hidden;
 }
 
-.subtask_list li button {
+.subtask_list li:hover {
+    background: #EEEEEE;
+}
+
+.subtask_list li.editing {
+    background: white;
+    border-bottom: 1px solid #29ABE2;
+    border-radius: 0px;
+}
+
+.subtask_list li.editing .subtask_item_actions {
+    opacity: 1;
+}
+
+.subtask_item_actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0;
+    transition: opacity 120ms;
+}
+
+.subtask_item_actions button {
+    font-size: 18px;
+    color: #A8A8A8;
+}
+
+.subtask_text {
+    flex: 1;
+    display: flex;
+}
+
+.subtask_edit_input {
+    width: 100%;
+    height: 28px;
     border: none;
-    background: none;
-    cursor: pointer;
-    color: #FF3D00;
+    outline: none;
+    background: transparent;
+}
+
+.subtask_list li:hover .subtask_item_actions {
+    opacity: 1;
 }
 
 /* FOOTER */
