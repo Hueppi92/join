@@ -244,6 +244,7 @@ function bindContactFieldEvents(fields) {
 }
 
 const LOCAL_CONTACTS_KEY = 'join_contacts_local';
+const CONTACTS_CACHE_KEY = 'join_contacts_cache_v1';
 
 /**
  * Reads local contacts map from localStorage.
@@ -271,6 +272,46 @@ function readLocalContactsMap() {
 function writeLocalContactsMap(contactsMap) {
 	try {
 		localStorage.setItem(LOCAL_CONTACTS_KEY, JSON.stringify(contactsMap || {}));
+	} catch (error) {
+		return;
+	}
+}
+
+/**
+ * Reads cached contact list from localStorage.
+ * @returns {Array<{id: string, name: string, email: string, phone: string, createdAt?: number}>} Cached contacts.
+ * @category Contacts
+ * @subcategory Data Handling
+ */
+function readContactsCache() {
+	try {
+		const raw = localStorage.getItem(CONTACTS_CACHE_KEY);
+		if (!raw) return [];
+		const parsed = JSON.parse(raw);
+		if (!Array.isArray(parsed)) return [];
+		return parsed
+			.filter((item) => item && typeof item === 'object' && typeof item.id === 'string')
+			.map((item) => ({
+				id: item.id,
+				name: item.name || '',
+				email: item.email || '',
+				phone: item.phone || '',
+				createdAt: item.createdAt || 0,
+			}));
+	} catch (error) {
+		return [];
+	}
+}
+
+/**
+ * Writes contact list cache to localStorage.
+ * @param {Array<{id: string, name: string, email: string, phone: string, createdAt?: number}>} contacts - Contact list to cache.
+ * @category Contacts
+ * @subcategory Data Handling
+ */
+function writeContactsCache(contacts) {
+	try {
+		localStorage.setItem(CONTACTS_CACHE_KEY, JSON.stringify(Array.isArray(contacts) ? contacts : []));
 	} catch (error) {
 		return;
 	}
@@ -382,7 +423,7 @@ async function fetchContact(contactId) {
  */
 async function refreshContactsList() {
 	if (typeof window.loadContacts === 'function') {
-		await window.loadContacts();
+		await window.loadContacts({ preferCache: false });
 	}
 }
 
@@ -410,22 +451,6 @@ function initContactOverlay() {
 			setContactFormMessage('');
 		}
 		openContactOverlay();
-	});
-	trigger.addEventListener('keydown', (event) => {
-		if (event.key === 'Enter' || event.key === ' ') {
-			event.preventDefault();
-			setContactOverlayMode('add');
-			const fields = getContactFields();
-			if (fields) {
-				fields.form.dataset.mode = 'add';
-				fields.form.dataset.contactId = '';
-				fields.form.reset();
-				clearContactErrors(fields);
-				updateContactAvatar(getContactOverlayElements(), '', false);
-				setContactFormMessage('');
-			}
-			openContactOverlay();
-		}
 	});
 
 	closeTargets.forEach((node) => node.addEventListener('click', () => closeContactOverlay()));
@@ -551,7 +576,7 @@ async function fetchContacts() {
 	} else {
 		contacts = readLocalContactsMap();
 	}
-	return Object.entries(contacts)
+	const normalizedContacts = Object.entries(contacts)
 		.map(([id, value]) => ({
 			id,
 			name: value?.name || '',
@@ -560,6 +585,8 @@ async function fetchContacts() {
 			createdAt: value?.createdAt || 0,
 		}))
 		.sort((a, b) => a.name.localeCompare(b.name, 'de', { sensitivity: 'base' }));
+	writeContactsCache(normalizedContacts);
+	return normalizedContacts;
 }
 
 /**
@@ -707,17 +734,11 @@ function renderContacts(contacts) {
 		box.setAttribute('tabindex', '0');
 		box.setAttribute('aria-label', `Open ${contact.name || 'contact'}`);
 		if (isSelected) {
-			box.style.background = '#f4f4f4';
-			box.style.borderRadius = '10px';
+			box.classList.add('is-selected');
 		}
 
 		const avatar = document.createElement('div');
 		avatar.className = 'contact-logo';
-		avatar.style.display = 'inline-flex';
-		avatar.style.alignItems = 'center';
-		avatar.style.justifyContent = 'center';
-		avatar.style.color = '#fff';
-		avatar.style.fontWeight = '700';
 		avatar.style.background = color;
 		avatar.textContent = initials;
 
@@ -748,21 +769,61 @@ function renderContacts(contacts) {
 }
 
 /**
+ * Applies contacts to the page state and renders list + details.
+ * @param {Array<{id: string, name: string, email: string, phone: string, createdAt?: number}>} contacts - Contacts to apply.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+function applyContactsState(contacts) {
+	contactsState = Array.isArray(contacts) ? contacts : [];
+	if (!selectedContactId || !contactsState.some((contact) => contact.id === selectedContactId)) {
+		selectedContactId = contactsState[0]?.id || '';
+	}
+	renderContacts(contactsState);
+	const selectedContact = contactsState.find((item) => item.id === selectedContactId) || null;
+	renderContactDetails(selectedContact);
+}
+
+/**
+ * Compares two contact lists by relevant rendered fields.
+ * @param {Array<{id: string, name: string, email: string, phone: string, createdAt?: number}>} left - First list.
+ * @param {Array<{id: string, name: string, email: string, phone: string, createdAt?: number}>} right - Second list.
+ * @returns {boolean} True when both lists are equivalent for rendering.
+ * @category Contacts
+ * @subcategory Validation
+ */
+function areContactListsEqual(left, right) {
+	if (left.length !== right.length) return false;
+	for (let index = 0; index < left.length; index += 1) {
+		const a = left[index];
+		const b = right[index];
+		if (!a || !b) return false;
+		if (a.id !== b.id) return false;
+		if (a.name !== b.name) return false;
+		if (a.email !== b.email) return false;
+		if (a.phone !== b.phone) return false;
+		if ((a.createdAt || 0) !== (b.createdAt || 0)) return false;
+	}
+	return true;
+}
+
+/**
  * Loads contacts from Firebase and renders them into the contacts page.
  * @returns {Promise<void>} Resolves after rendering.
  * @category Contacts
  * @subcategory UI & Init
  */
-async function loadContacts() {
-	contactsState = await fetchContacts();
-
-	if (!selectedContactId || !contactsState.some((contact) => contact.id === selectedContactId)) {
-		selectedContactId = contactsState[0]?.id || '';
+async function loadContacts(options = {}) {
+	const preferCache = options?.preferCache !== false;
+	const cachedContacts = preferCache ? readContactsCache() : [];
+	if (cachedContacts.length) {
+		applyContactsState(cachedContacts);
 	}
 
-	renderContacts(contactsState);
-	const contact = contactsState.find((item) => item.id === selectedContactId) || null;
-	renderContactDetails(contact);
+	const freshContacts = await fetchContacts();
+	if (!cachedContacts.length || !areContactListsEqual(cachedContacts, freshContacts)) {
+		applyContactsState(freshContacts);
+	}
 }
 
 window.contactsOverlay = {

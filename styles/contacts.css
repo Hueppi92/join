@@ -8,6 +8,11 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 700;
 }
 
 /* CONTACTS SECTION */
@@ -47,6 +52,11 @@
   margin: 30px;
 }
 
+.contact-box.is-selected {
+  background: #f4f4f4;
+  border-radius: 10px;
+}
+
 main {
   margin-left: 232px; /* Platz fuer die Sidebar */
   margin-top: 96px; /* Platz fuer den Header */
@@ -58,6 +68,30 @@ main {
   cursor: pointer;
   width: 300px;
   margin: 28px;
+  min-height: 56px;
+  border: 1px solid #2a3647;
+  border-radius: 10px;
+  background: #2a3647;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 21px;
+  font-weight: 700;
+  font-family: inherit;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.contact-btn:hover {
+  background: #29abe2;
+  border-color: #29abe2;
+}
+
+.contact-btn img {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1);
 }
 
 .contact-overlay {
