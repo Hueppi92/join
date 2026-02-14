@@ -943,8 +943,31 @@ function loadTaskEditorPage() {
 }
 
 /**
+ * Initializes the Task Editor once.
+ *
+ * @returns {void}
+ */
+let taskEditorInitialized = false;
+function initTaskEditor() {
+    if (taskEditorInitialized) return;
+    loadTaskEditorPage();
+    taskEditorInitialized = true;
+}
+
+/**
+ * Returns true if the current page should initialize the editor immediately.
+ *
+ * @returns {boolean}
+ */
+function shouldInitTaskEditorOnLoad() {
+    return window.location.pathname.toLowerCase().includes("task-editor.html");
+}
+
+/**
  * Runs the Task Editor initialization after the DOM has fully loaded.
  */
 document.addEventListener("DOMContentLoaded", () => {
-    loadTaskEditorPage();
+    if (shouldInitTaskEditorOnLoad()) {
+        initTaskEditor();
+    }
 });
