@@ -1,25 +1,32 @@
-/* Header */
+/* =========================================================
+   HEADER
+========================================================= */
 .task_header h1 {
     font-family: Inter, sans-serif;
     font-weight: 700;
     font-size: 61px;
     line-height: 120%;
-
-    color: black;
+    
     margin: 0;
+    
+    color: black;
 }
 
+/* =========================================================
+   PAGE LAYOUT
+========================================================= */
 .addTask-container {
     position: relative;
-    top: 200px;
+    top: 0px;
+
     width: 100%;
     max-width: 1200px;
-    margin-left: 328px;
+    min-height: calc(100vh - 240px);
+    margin-top: 200px;
+    margin-left: 25%;
     padding: 0 40px 40px 40px;
-    min-height: calc(100vh - 97px);
 }
 
-/* Wrapper */
 .editor_wrapper {
     display: flex;
     align-items: stretch;
@@ -27,7 +34,19 @@
     gap: 48px;
 }
 
-/* Left Side */
+.editor_divider {
+    justify-content: center;
+
+    width: 1px;
+    height: 380px;
+
+    background: #d1d1d1;
+}
+
+/* =========================================================
+   LEFT SIDE FORM
+========================================================= */
+
 .new_task {
     display: flex;
     flex-direction: column;
@@ -48,7 +67,6 @@
     font-size: 20px;
     font-weight: 400;
     color: var(--dark-blue);
-    margin-bottom: 0px;
 }
 
 .left_row.error .error_text {
@@ -80,6 +98,29 @@
     border: 1px solid var(--light-blue);
 }
 
+.left_single_row input,
+.description_box textarea {
+    flex: 1;
+
+    font-size: 20px;
+    line-height: 120%;
+
+    padding: 10px 18px;
+
+    border: none;
+    border-radius: 10px;
+}
+
+.left_single_row input:focus,
+.description_box textarea:focus {
+    outline: 0px solid transparent;
+}
+
+.left_single_row input::placeholder,
+.description_box textarea::placeholder {
+    color: #D1D1D1;
+}
+
 .description_box {
     align-items: flex-start;
 
@@ -90,72 +131,41 @@
     min-height: 24px;
     height: 120px;
     padding: 18px 16px;
-    line-height: 120%;
 }
 
 .calendar_icon {
     width: 24px;
     height: 24px;
-
     padding-right: 12px;
     padding-left: 12px;
+
     color: #2A3647;
+
     pointer-events: none;
 }
 
 .error_text {
     display: none;
+
     font-family: Poppins, sans-serif;
     font-size: 12px;
-    color: #FF3D00;
+
     margin-top: 4px;
+
+    color: #FF3D00;
 }
 
-.left_single_row input,
-.description_box textarea {
-    flex: 1;
-
-    font-size: 20px;
-    line-height: 120%;
-
-    padding: 12px 18px;
-
-    border: none;
-    border-radius: 10px;
-}
-
-.left_single_row input::placeholder,
-.description_box textarea::placeholder {
-    color: #D1D1D1;
-}
-
-.left_single_row input:focus,
-.description_box textarea:focus {
-    outline: 0px solid transparent;
-}
-
-/* Divider */
-.editor_divider {
-    justify-content: center;
-
-    width: 1px;
-    height: 380px;
-
-    background: #d1d1d1;
-}
-
-/* Right Side */
+/* =========================================================
+   RIGHT SIDE SETTINGS
+========================================================= */
 .task_settings {
     display: flex;
     flex-direction: column;
+    align-self: flex-start;
 
     width: 100%;
     max-width: 440px;
     gap: 25px;
-}
-
-.task_settings {
-    align-self: flex-start;
 }
 
 .settings_block {
@@ -170,53 +180,60 @@
 
 }
 
-/* prios */
+/* =========================================================
+   PRIORITY
+========================================================= */
 .priority_row {
     display: flex;
-    gap: 16px;
+
     width: 100%;
     max-width: 440px;
+    gap: 16px;
 }
 
 .prio {
-    flex: 1;
-    height: 48px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-
-    border-radius: 10px;
-    border: 1px solid #D1D1D1;
-    background: #ffffff;
+    flex: 1;
 
     font-family: Inter, sans-serif;
     font-size: 20px;
     font-weight: 400;
     line-height: 120%;
 
+    height: 48px;
+    gap: 4px;
+
+    background: #ffffff;
+    border-radius: 10px;
+    border: 1px solid #D1D1D1;
+
     cursor: pointer;
     transition: all 120ms ease-in-out;
 }
 
 .prio:hover {
-    transform: translateY(-1px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    
+    transform: translateY(-1px);
 }
 
 .prio div {
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-    gap: 2px;
+    align-items: center;
+
     line-height: 0;
+    
+    gap: 2px;
 }
 
 .prio div img {
     width: 12px;
     height: auto;
+    
     filter: brightness(0) invert(1);
 }
 
@@ -256,7 +273,9 @@
     filter: brightness(0) invert(1);
 }
 
-/* Selectors */
+/* =========================================================
+   SELECTS
+========================================================= */
 .select_native {
     display: flex;
     flex-direction: column;
@@ -272,17 +291,23 @@
     position: absolute;
     right: 16px;
     top: 50%;
-    transform: translateY(-50%);
-
+    z-index: 30;
+    
     width: 24px;
     height: 24px;
-
+    
     background: url("../assets/icons/arrow_drop_down.png") no-repeat center;
-
+    
     filter:
-        brightness(0) saturate(100%) invert(17%) sepia(19%) saturate(1020%) hue-rotate(176deg) brightness(95%) contrast(93%);
-
+    brightness(0) saturate(100%) invert(17%) sepia(19%) saturate(1020%) hue-rotate(176deg) brightness(95%) contrast(93%);
+    
     pointer-events: none;
+    transition: transform 180ms ease;
+    transform: translateY(-50%);
+}
+
+.select_native.open::after {
+    transform: translateY(-50%) rotate(180deg);
 }
 
 .selector_input {
@@ -301,6 +326,7 @@
     border: 1px solid #D1D1D1;
     border-radius: 10px;
     outline: none;
+    
     cursor: pointer;
 }
 
@@ -394,6 +420,9 @@
     border-radius: 8px;
 }
 
+/* =========================================================
+   SUBTASKS
+========================================================= */
 .subtasks_block {
     height: auto;
     gap: 6px;
@@ -471,13 +500,15 @@
     margin: 4px 0 0;
     display: flex;
     flex-direction: column;
-    max-height: 180px;
+    flex-shrink: 0;
+    max-height: 136px;
     overflow-y: auto;
     gap: 6px;
+    scrollbar-width: none;
 }
 
 .subtask_list li {
-    height: 32px;
+    min-height: 32px;
     padding: 0 12px;
 
     display: flex;
@@ -537,7 +568,9 @@
     opacity: 1;
 }
 
-/* FOOTER */
+/* =========================================================
+   FOOTER BUTTONS
+========================================================= */
 .task_footer {
     display: flex;
     justify-content: space-between;
@@ -577,6 +610,19 @@
     cursor: pointer;
 }
 
+.clear_btn:hover {
+    background: #FFFFFF;
+    border: 1px solid #29ABE2;
+    color: #29ABE2;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transform: translateY(-1px);
+}
+
+.clear_btn:active {
+    transform: translateY(1px);
+    box-shadow: none;
+}
+
 .create_btn {
     display: flex;
     align-items: center;
@@ -599,17 +645,31 @@
         box-shadow 100ms ease-in-out;
 }
 
+.create_btn:hover {
+    background: #29ABE2;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transform: translateY(-1px);
+}
+
 .create_btn:active {
-    transform: scale(0.96);
-    box-shadow: 0 1px 0 #1f2936;
+    transform: translateY(1px);
+    box-shadow: none;
 }
 
 .clear_btn,
 .create_btn {
     line-height: 1;
+    transition:
+        background 120ms ease,
+        color 120ms ease,
+        border 120ms ease,
+        transform 80ms ease,
+        box-shadow 120ms ease;
 }
 
-/* MODAL */
+/* =========================================================
+   MODAL
+========================================================= */
 .modal {
     display: flex;
     justify-content: center;
@@ -675,6 +735,30 @@
     display: none;
 }
 
+/* =========================================================
+   SUCCESS TOAST
+========================================================= */
+.task_success_toast {
+    position: fixed;
+    left: 50%;
+    bottom: -120px;
+    transform: translateX(-50%);
+    padding: 16px 32px;
+    border-radius: 12px;
+    background: #2A3647;
+    color: white;
+    font-size: 18px;
+    z-index: 9999;
+    transition: bottom 300ms ease;
+}
+
+.task_success_toast.show {
+    bottom: 50%;
+}
+
+/* =========================================================
+   RESPONSIBILITY
+========================================================= */
 @media (max-width: 1280px) {
 
     .editor_wrapper {

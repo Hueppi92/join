@@ -29,14 +29,14 @@
     <div class="editor_wrapper">
 
       <!-- LEFT -->
-      <form class="new_task">
+      <form class="new_task" id="taskForm">
         <div class="left_row title_field">
           <label>Title
             <span class="error">*</span>
           </label>
 
           <div class="left_single_row">
-            <input id="titleInput" type="text" placeholder="Enter a title">
+            <input id="titleInput" type="text" placeholder="Enter a title" required>
           </div>
 
           <small class="error_text">This field is required</small>
@@ -58,7 +58,7 @@
           </label>
 
           <div class="left_single_row">
-            <input id="dateInput" type="text" placeholder="dd/mm/yyyy">
+            <input id="dateInput" type="date" min="2024-01-01" required>
             <img class="calendar_icon" src="../assets/icons/calendar.svg">
           </div>
 
@@ -210,6 +210,11 @@
       </nav>
     </div>
   </main>
+
+  <div id="taskSuccessToast" class="task_success_toast">
+    Task added to board
+  </div>
+
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -217,10 +222,11 @@
   <script src="../scripts/db.js"></script>
   <script src="../scripts/auth-guard.js"></script>
   <script src="../scripts/user-context.js"></script>
+  <script src="../scripts/taskeditor.js"></script>
   <script src="../script.js"></script>
   <script src="../scripts/avatar-utils.js"></script>
+
 </body>
 
-<script src="../scripts/taskeditor.js"></script>
 
 </html>
