@@ -96,6 +96,10 @@
 	font-weight: 700;
 }
 
+.contact-overlay__btn--primary img {
+	filter: brightness(0) invert(1);
+}
+
 .contact-overlay__btn--primary:hover {
 	background: #29abe2;
 	border-color: transparent;

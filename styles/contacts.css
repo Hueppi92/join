@@ -129,8 +129,8 @@ main {
   position: relative;
   display: grid;
   grid-template-columns: 42% 58%;
-  width: min(1080px, 94%);
-  min-height: 500px;
+  width: min(1212px, 94%);
+  height: min(592px, calc(100vh - 40px));
   background: #ffffff;
   border-radius: 28px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
@@ -270,10 +270,6 @@ main {
   gap: 18px;
 }
 
-.contact-overlay__message {
-  margin: -8px 0 2px;
-}
-
 .contact-overlay__form-message {
   margin: 6px 0 0;
   font-size: 12px;
@@ -295,35 +291,44 @@ main {
 
 .contact-overlay__field {
   position: relative;
-  display: flex;
-  align-items: center;
+  display: block;
 }
 
 .contact-overlay__field input {
   width: 100%;
   padding: 14px 44px 14px 16px;
   border-radius: 10px;
-  border: 1px solid #d1d1d1;
+  border: 1px solid var(--border, #d1d1d1);
   outline: none;
   font-size: 20px;
   color: #000000;
   transition: border-color 100ms ease-in-out;
 }
 
+.contact-overlay__field input.input-error {
+  border-color: #ff3d00;
+}
+
 .contact-overlay__field input::placeholder {
-  color: #a8a8a8;
+  color: var(--muted, #a8a8a8);
 }
 
 .contact-overlay__field input:focus {
-  border-color: #29abe2;
+  border-color: var(--primary-hover, #29abe2);
 }
 
 .contact-overlay__field img {
   position: absolute;
-  right: 14px;
+  top: 24px;
+  right: 16px;
+  transform: translateY(-50%);
   width: 20px;
   height: 20px;
   opacity: 0.6;
+}
+
+.contact-overlay__field .contact-overlay__message {
+  margin: 4px 0 0;
 }
 
 .contact-overlay__actions {
