@@ -559,6 +559,33 @@ function getContactInitials(name) {
 }
 
 /**
+ * Sorts contacts by name for stable list rendering.
+ * @param {Array<{id: string, name: string, email: string, phone: string, createdAt?: number}>} contacts - Contact list.
+ * @returns {Array<{id: string, name: string, email: string, phone: string, createdAt?: number}>} Sorted contacts.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+function sortContactsByName(contacts) {
+	return [...contacts].sort((a, b) =>
+		String(a?.name || '').localeCompare(String(b?.name || ''), 'de', { sensitivity: 'base' })
+	);
+}
+
+/**
+ * Returns the visual group letter for a contact name.
+ * @param {string} name - Contact name.
+ * @returns {string} Group letter or '#'.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+function getContactGroupLetter(name) {
+	const normalizedName = String(name || '').trim();
+	if (!normalizedName) return '#';
+	const firstCharacter = normalizedName.charAt(0).toLocaleUpperCase('de-DE');
+	return /[A-ZÄÖÜ]/.test(firstCharacter) ? firstCharacter : '#';
+}
+
+/**
  * Fetches all contacts from Firebase.
  * @returns {Promise<Array<{id: string, name: string, email: string, phone: string, createdAt?: number}>>} Contact list.
  * @category Contacts
@@ -583,10 +610,10 @@ async function fetchContacts() {
 			email: value?.email || '',
 			phone: value?.phone || '',
 			createdAt: value?.createdAt || 0,
-		}))
-		.sort((a, b) => a.name.localeCompare(b.name, 'de', { sensitivity: 'base' }));
-	writeContactsCache(normalizedContacts);
-	return normalizedContacts;
+		}));
+	const sortedContacts = sortContactsByName(normalizedContacts);
+	writeContactsCache(sortedContacts);
+	return sortedContacts;
 }
 
 /**
@@ -730,7 +757,9 @@ function renderContacts(contacts) {
 	if (!listRef) return;
 	listRef.replaceChildren();
 
-	if (!contacts.length) {
+	const sortedContacts = sortContactsByName(Array.isArray(contacts) ? contacts : []);
+
+	if (!sortedContacts.length) {
 		const empty = document.createElement('p');
 		empty.className = 'contact-item';
 		empty.textContent = 'No contacts yet.';
@@ -739,49 +768,64 @@ function renderContacts(contacts) {
 	}
 
 	const fragment = document.createDocumentFragment();
-
-	contacts.forEach((contact) => {
-		const initials = getContactInitials(contact.name);
-		const color = getContactAvatarColor(contact.name);
-		const isSelected = selectedContactId === contact.id;
-		const item = document.createElement('div');
-		item.className = 'contact-item';
-
-		const box = document.createElement('div');
-		box.className = 'contact-box';
-		box.setAttribute('role', 'button');
-		box.setAttribute('tabindex', '0');
-		box.setAttribute('aria-label', `Open ${contact.name || 'contact'}`);
-		if (isSelected) {
-			box.classList.add('is-selected');
+	const groupedContacts = sortedContacts.reduce((groups, contact) => {
+		const groupLetter = getContactGroupLetter(contact.name);
+		if (!groups.has(groupLetter)) {
+			groups.set(groupLetter, []);
 		}
+		groups.get(groupLetter).push(contact);
+		return groups;
+	}, new Map());
 
-		const avatar = document.createElement('div');
-		avatar.className = 'contact-logo';
-		avatar.style.background = color;
-		avatar.textContent = initials;
+	groupedContacts.forEach((group, groupLetter) => {
+		const title = document.createElement('h3');
+		title.className = 'contact-group-title';
+		title.textContent = groupLetter;
+		fragment.appendChild(title);
 
-		const info = document.createElement('div');
-		const name = document.createElement('span');
-		name.className = 'contact-name';
-		name.textContent = contact.name || 'Unknown Contact';
-		const email = document.createElement('span');
-		email.className = 'contact-email';
-		email.textContent = contact.email || '';
+		group.forEach((contact) => {
+			const initials = getContactInitials(contact.name);
+			const color = getContactAvatarColor(contact.name);
+			const isSelected = selectedContactId === contact.id;
+			const item = document.createElement('div');
+			item.className = 'contact-item';
 
-		info.appendChild(name);
-		info.appendChild(email);
-		box.appendChild(avatar);
-		box.appendChild(info);
-		box.addEventListener('click', () => selectContact(contact.id));
-		box.addEventListener('keydown', (event) => {
-			if (event.key !== 'Enter' && event.key !== ' ') return;
-			event.preventDefault();
-			selectContact(contact.id);
+			const box = document.createElement('div');
+			box.className = 'contact-box';
+			box.setAttribute('role', 'button');
+			box.setAttribute('tabindex', '0');
+			box.setAttribute('aria-label', `Open ${contact.name || 'contact'}`);
+			if (isSelected) {
+				box.classList.add('is-selected');
+			}
+
+			const avatar = document.createElement('div');
+			avatar.className = 'contact-logo';
+			avatar.style.background = color;
+			avatar.textContent = initials;
+
+			const info = document.createElement('div');
+			const name = document.createElement('span');
+			name.className = 'contact-name';
+			name.textContent = contact.name || 'Unknown Contact';
+			const email = document.createElement('span');
+			email.className = 'contact-email';
+			email.textContent = contact.email || '';
+
+			info.appendChild(name);
+			info.appendChild(email);
+			box.appendChild(avatar);
+			box.appendChild(info);
+			box.addEventListener('click', () => selectContact(contact.id));
+			box.addEventListener('keydown', (event) => {
+				if (event.key !== 'Enter' && event.key !== ' ') return;
+				event.preventDefault();
+				selectContact(contact.id);
+			});
+
+			item.appendChild(box);
+			fragment.appendChild(item);
 		});
-
-		item.appendChild(box);
-		fragment.appendChild(item);
 	});
 
 	listRef.appendChild(fragment);
@@ -794,7 +838,7 @@ function renderContacts(contacts) {
  * @subcategory UI & Init
  */
 function applyContactsState(contacts) {
-	contactsState = Array.isArray(contacts) ? contacts : [];
+	contactsState = sortContactsByName(Array.isArray(contacts) ? contacts : []);
 	if (!selectedContactId || !contactsState.some((contact) => contact.id === selectedContactId)) {
 		selectedContactId = contactsState[0]?.id || '';
 	}

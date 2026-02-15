@@ -6,9 +6,17 @@
     --white: #ffffff;
 }
 
-.contacts-list h3 {
-  margin-left: 50px;
+.contacts-list {
+  padding-bottom: 20px;
+}
+
+.contact-group-title {
+  margin: 6px 28px 10px;
+  padding: 8px 22px 12px;
   border-bottom: 1px solid #d1d1d1;
+  font-size: 26px;
+  font-weight: 400;
+  color: #000000;
 }
   
 .contact-logo {
@@ -37,7 +45,7 @@
 
 /* Kontakt-Styling */
 .contact-item {
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: none;
 }
 
 .contact-name {
@@ -50,7 +58,7 @@
 .contact-box {
   padding: 12px;
   width: 300px;
-  margin: 28px;
+  margin: 0 28px 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
