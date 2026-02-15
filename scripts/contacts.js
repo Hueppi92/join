@@ -590,15 +590,30 @@ async function fetchContacts() {
 }
 
 /**
- * Renders selected contact details on the right side.
- * @param {{id: string, name: string, email: string, phone: string} | null} contact - Contact to render.
+ * Restarts the contact details slide-in animation.
+ * @param {HTMLElement} detailsRef - Details container element.
  * @category Contacts
  * @subcategory UI & Init
  */
-function renderContactDetails(contact) {
+function animateContactDetails(detailsRef) {
+	if (!detailsRef) return;
+	detailsRef.classList.remove('is-entering');
+	void detailsRef.offsetWidth;
+	detailsRef.classList.add('is-entering');
+}
+
+/**
+ * Renders selected contact details on the right side.
+ * @param {{id: string, name: string, email: string, phone: string} | null} contact - Contact to render.
+ * @param {{animate?: boolean}} [options] - Render options.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+function renderContactDetails(contact, options = {}) {
 	const detailsRef = document.getElementById('contact-details');
 	if (!detailsRef) return;
 	detailsRef.replaceChildren();
+	detailsRef.classList.remove('is-entering');
 
 	if (!contact) {
 		const placeholder = document.createElement('p');
@@ -685,6 +700,10 @@ function renderContactDetails(contact) {
 
 	detailsRef.appendChild(profile);
 	detailsRef.appendChild(info);
+
+	if (options.animate) {
+		animateContactDetails(detailsRef);
+	}
 }
 
 /**
@@ -697,7 +716,7 @@ function selectContact(contactId) {
 	selectedContactId = contactId;
 	renderContacts(contactsState);
 	const contact = contactsState.find((item) => item.id === contactId) || null;
-	renderContactDetails(contact);
+	renderContactDetails(contact, { animate: true });
 }
 
 /**

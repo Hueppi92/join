@@ -1,3 +1,10 @@
+:root {
+    --dark-blue: #2a3647;
+    --light-blue: #29abe2;
+    --bg-color: #f6f7f8;
+    --bg-color-secondary: #38485e;
+    --white: #ffffff;
+}
 
 .contacts-list h3 {
   margin-left: 50px;
@@ -12,7 +19,6 @@
   align-items: center;
   justify-content: center;
   color: #ffffff;
-  font-weight: 700;
   margin-right: 35px;
 }
 
@@ -36,12 +42,10 @@
 
 .contact-name {
   display: block;
-  font-weight: bold;
 }
 
 .contact-email {
   color: #007cee;
-  font-size: 0.9em;
 }
 .contact-box {
   padding: 12px;
@@ -56,8 +60,9 @@
 }
 
 .contact-box.is-selected {
-  background: #f4f4f4;
+  background: var(--dark-blue);
   border-radius: 10px;
+  color: #ffffff;
 }
 
 main {
@@ -371,6 +376,7 @@ main {
   bottom: 0;
   padding: 72px 0 48px;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -412,6 +418,21 @@ main {
   align-items: flex-start;
   gap: 32px;
   text-align: left;
+}
+
+#contact-details.is-entering {
+  animation: contact-details-slide-in 280ms cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+@keyframes contact-details-slide-in {
+  from {
+    transform: translateX(72px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 .contact-details-placeholder {
@@ -478,6 +499,14 @@ main {
 
 .contact-details-action:hover {
   color: #29abe2;
+}
+
+.contact-details-action:hover img[src$='edit.svg'] {
+  content: url('../assets/icons/edit_hover.svg');
+}
+
+.contact-details-action:hover img[src$='delete.svg'] {
+  content: url('../assets/icons/delete_hover.svg');
 }
 
 .contact-details-info {
