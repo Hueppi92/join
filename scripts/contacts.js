@@ -631,13 +631,13 @@ function renderContactDetails(contact) {
 	const editButton = document.createElement('button');
 	editButton.type = 'button';
 	editButton.className = 'contact-details-action';
-	editButton.innerHTML = '<img src="../assets/icons/edit_detail.png" alt="" aria-hidden="true"><span>Edit</span>';
+	editButton.innerHTML = '<img src="../assets/icons/edit.svg" alt="" aria-hidden="true"><span>Edit</span>';
 	editButton.addEventListener('click', () => openEditContactOverlay(contact.id, contact));
 
 	const deleteButton = document.createElement('button');
 	deleteButton.type = 'button';
 	deleteButton.className = 'contact-details-action';
-	deleteButton.innerHTML = '<img src="../assets/icons/delete_detail.png" alt="" aria-hidden="true"><span>Delete</span>';
+	deleteButton.innerHTML = '<img src="../assets/icons/delete.svg" alt="" aria-hidden="true"><span>Delete</span>';
 	deleteButton.addEventListener('click', async () => {
 		await deleteContact(contact.id);
 		await refreshContactsList();

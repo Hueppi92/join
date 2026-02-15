@@ -5,14 +5,15 @@
 }
   
 .contact-logo {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: #ffffff;
   font-weight: 700;
+  margin-right: 35px;
 }
 
 /* CONTACTS SECTION */
@@ -30,7 +31,6 @@
 
 /* Kontakt-Styling */
 .contact-item {
-  padding: 15px;
   border-bottom: 1px solid #f0f0f0;
 }
 
@@ -45,11 +45,14 @@
 }
 .contact-box {
   padding: 12px;
+  width: 300px;
+  margin: 28px;
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 12px;
-  margin: 30px;
+  /* margin: 30px; */
 }
 
 .contact-box.is-selected {
@@ -407,7 +410,7 @@ main {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 28px;
+  gap: 32px;
   text-align: left;
 }
 
@@ -428,7 +431,7 @@ main {
   border-radius: 50%;
   border: 3px solid #ffffff;
   box-shadow: 0 0 0 1px #d1d1d1;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   color: #ffffff;
@@ -485,7 +488,7 @@ main {
 }
 
 .contact-details-info-title {
-  margin: 0 0 20px;
+  margin: 21px 0;
   font-size: 20px;
   font-weight: 400;
   color: #000000;
