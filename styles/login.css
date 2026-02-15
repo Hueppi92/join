@@ -419,6 +419,16 @@ button {
 }
 
 @media (max-width: 768px) {
+	body.login-page {
+		min-height: 100vh;
+		height: auto;
+		overflow-y: auto;
+	}
+
+	.login-page .page-shell {
+		min-height: 100vh;
+	}
+
 	.login-page .login-splash {
 		background: var(--primary);
 	}
@@ -432,15 +442,20 @@ button {
 	}
 
 	.login-page .login-header {
-		padding: 32px 24px 0;
+		display: contents;
 	}
 
 	.login-page .login-logo {
+		order: 1;
+		align-self: flex-start;
 		width: 64px;
+		margin: 32px 0 0 24px;
 	}
 
 	.login-page .login-main {
-		padding: 80px 16px 24px;
+		order: 2;
+		flex: 1;
+		padding: 48px 16px 24px;
 	}
 
 	.login-page .login-card {
@@ -481,13 +496,15 @@ button {
 	}
 
 	.login-page .login-header-actions {
-		position: fixed;
-		left: 50%;
-		bottom: 112px;
-		transform: translateX(-50%);
+		order: 3;
+		position: static;
+		transform: none;
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		margin: 20px auto 0;
 		gap: 24px;
 		font-size: 20px;
-		z-index: 2;
 	}
 
 	.login-page .login-header-text {
@@ -500,20 +517,22 @@ button {
 	}
 
 	.login-page .login-footer {
-		position: fixed;
-		left: 50%;
-		bottom: 28px;
-		transform: translateX(-50%);
-		padding: 0;
+		order: 4;
+		position: static;
+		transform: none;
+		padding: 20px 0 28px;
 		gap: 28px;
 		font-size: 16px;
-		z-index: 2;
 	}
 }
 
 @media (max-width: 420px) {
+	.login-page .login-logo {
+		margin: 24px 0 0 16px;
+	}
+
 	.login-page .login-main {
-		padding-top: 72px;
+		padding: 40px 12px 20px;
 	}
 
 	.login-page .login-card {
@@ -530,7 +549,7 @@ button {
 
 	.login-page .login-header-actions {
 		gap: 16px;
-		bottom: 108px;
+		margin-top: 16px;
 	}
 
 	.login-page .login-header-text {
@@ -540,5 +559,6 @@ button {
 	.login-page .login-footer {
 		gap: 20px;
 		font-size: 14px;
+		padding-bottom: 20px;
 	}
 }
