@@ -16,6 +16,7 @@
 function runSplashAnimation() {
 	const elements = getSplashElements();
 	if (!elements) return;
+	setSplashTheme(elements);
 
 	if (shouldSkipSplash()) {
 		clearSkipSplash();
@@ -24,29 +25,46 @@ function runSplashAnimation() {
 	}
 
 	const endRect = elements.headerLogo.getBoundingClientRect();
-	const startScale = getSplashStartScale(endRect.height);
+	const startScale = getResponsiveSplashStartScale(getSplashStartScale(endRect.height));
 	prepareSplashLogo(elements.splashLogo, startScale);
+	prepareSplashLogo(elements.splashLogoEnd, startScale);
 	setHeaderLogoVisibility(elements.headerLogo, false);
 
 	const delta = getCenterDelta(elements.splashLogo, endRect);
-	const logoAnimation = animateSplashLogo(elements.splashLogo, startScale, delta);
+	const endScale = getSplashEndScale(elements.splashLogo, endRect);
+	const logoAnimation = animateSplashLogo(elements.splashLogo, startScale, endScale, delta, 1, 0.2);
+	const endLogoAnimation = animateSplashLogo(elements.splashLogoEnd, startScale, endScale, delta, 0, 1);
 	const overlayAnimation = fadeOutOverlay(elements.splashBg, 500, 1000);
-	syncAnimationEnd(logoAnimation, overlayAnimation, elements);
+	syncAnimationEnd([logoAnimation, endLogoAnimation], overlayAnimation, elements);
+}
+
+/**
+ * Applies device-specific splash logo variant.
+ * @param {{splashLogo: HTMLElement, splashLogoEnd: HTMLElement}} elements - Splash logo elements.
+ * @category Login
+ * @subcategory UI & Init
+ */
+function setSplashTheme({ splashLogo, splashLogoEnd }) {
+	if (!splashLogo || !splashLogoEnd || !('src' in splashLogo) || !('src' in splashLogoEnd)) return;
+	const isMobile = window.matchMedia('(max-width: 768px)').matches;
+	splashLogo.src = isMobile ? './assets/img/join_logo.svg' : './assets/img/join_logo_dark.svg';
+	splashLogoEnd.src = './assets/img/join_logo_dark.svg';
 }
 
 /**
  * Gets the required splash elements.
- * @returns {{splashLogo: HTMLElement, headerLogo: HTMLElement, splashBg: HTMLElement} | null} Required splash elements or null if missing.
+ * @returns {{splashLogo: HTMLElement, splashLogoEnd: HTMLElement, headerLogo: HTMLElement, splashBg: HTMLElement} | null} Required splash elements or null if missing.
  * @category Login
  * @subcategory UI & Init
  */
 function getSplashElements() {
 	const splashLogo = document.querySelector('.login-splash-logo');
+	const splashLogoEnd = document.querySelector('.login-splash-logo-end');
 	const headerLogo = document.querySelector('.login-logo');
 	const splashBg = document.querySelector('.login-splash');
-	if (!splashLogo || !headerLogo || !splashBg) return null;
+	if (!splashLogo || !splashLogoEnd || !headerLogo || !splashBg) return null;
 
-	return { splashLogo, headerLogo, splashBg };
+	return { splashLogo, splashLogoEnd, headerLogo, splashBg };
 }
 
 /**
@@ -85,16 +103,23 @@ function getCenterDelta(splashLogo, endRect) {
  * @param {HTMLElement} splashLogo - The splash logo element.
  * @param {number} startScale - The initial scale for the splash logo.
  * @param {{x: number, y: number}} delta - Delta offsets to reach the header logo.
+ * @param {number} endScale - Target scale at animation end.
+ * @param {number} fromOpacity - Start opacity.
+ * @param {number} toOpacity - End opacity.
  * @returns {Animation} The animation instance for the logo.
  * @category Login
  * @subcategory UI & Init
  */
-function animateSplashLogo(splashLogo, startScale, delta) {
+function animateSplashLogo(splashLogo, startScale, endScale, delta, fromOpacity = 1, toOpacity = 1) {
 	return splashLogo.animate(
 		[
-			{ transform: `translate(-50%, -50%) translate(0px, 0px) scale(${startScale})` },
 			{
-				transform: `translate(-50%, -50%) translate(${delta.x}px, ${delta.y}px) scale(1)`,
+				transform: `translate(-50%, -50%) translate(0px, 0px) scale(${startScale})`,
+				opacity: fromOpacity,
+			},
+			{
+				transform: `translate(-50%, -50%) translate(${delta.x}px, ${delta.y}px) scale(${endScale})`,
+				opacity: toOpacity,
 			},
 		],
 		{
@@ -104,6 +129,22 @@ function animateSplashLogo(splashLogo, startScale, delta) {
 			fill: 'forwards',
 		}
 	);
+}
+
+/**
+ * Calculates the exact end scale so splash logo matches header logo size.
+ * @param {HTMLElement} splashLogo - The splash logo element.
+ * @param {DOMRect} endRect - The target header logo bounds.
+ * @returns {number} Target end scale.
+ * @category Login
+ * @subcategory UI & Init
+ */
+function getSplashEndScale(splashLogo, endRect) {
+	if (!splashLogo || !endRect || endRect.height <= 0) return 1;
+	const baseHeight = splashLogo.offsetHeight;
+	if (!baseHeight) return 1;
+
+	return endRect.height / baseHeight;
 }
 
 /**
@@ -124,6 +165,23 @@ function getSplashStartScale(logoHeight) {
 	if (targetHeight <= 0) return 1;
 
 	return Math.max(1, targetHeight / logoHeight);
+}
+
+/**
+ * Applies responsive tuning to the splash start scale.
+ * Keeps desktop behavior unchanged and reduces mobile start size slightly.
+ * @param {number} baseScale - The dynamic base start scale.
+ * @returns {number} Responsive start scale.
+ * @category Login
+ * @subcategory UI & Init
+ */
+function getResponsiveSplashStartScale(baseScale) {
+	if (!baseScale) return 1;
+	const isMobile = window.matchMedia('(max-width: 768px)').matches;
+	if (!isMobile) return baseScale;
+
+	const mobileFactor = 0.75;
+	return Math.max(1, baseScale * mobileFactor);
 }
 
 /**
@@ -148,13 +206,15 @@ function clearSkipSplash() {
 /**
  * Shows the final state immediately without animations.
  * @param {HTMLElement} splashLogo - The splash logo element.
+ * @param {HTMLElement} splashLogoEnd - The end-color splash logo element.
  * @param {HTMLElement} headerLogo - The header logo element.
  * @param {HTMLElement} splashBg - The splash background element.
  * @category Login
  * @subcategory UI & Init
  */
-function showFinalSplashState({ splashLogo, headerLogo, splashBg }) {
+function showFinalSplashState({ splashLogo, splashLogoEnd, headerLogo, splashBg }) {
 	hideElement(splashLogo);
+	hideElement(splashLogoEnd);
 	hideElement(splashBg);
 	setHeaderLogoVisibility(headerLogo, true);
 }
@@ -162,14 +222,16 @@ function showFinalSplashState({ splashLogo, headerLogo, splashBg }) {
 /**
  * Finalizes the animation by swapping the logos after animations finish.
  * @param {HTMLElement} splashLogo - The splash logo element.
+ * @param {HTMLElement} splashLogoEnd - The end-color splash logo element.
  * @param {HTMLElement} headerLogo - The header logo element.
  * @param {HTMLElement} splashBg - The splash background element.
  * @category Login
  * @subcategory UI & Init
  */
-function finishSplashAnimation({ splashLogo, headerLogo, splashBg }) {
+function finishSplashAnimation({ splashLogo, splashLogoEnd, headerLogo, splashBg }) {
 	hideElement(splashBg);
 	hideElement(splashLogo);
+	hideElement(splashLogoEnd);
 	setHeaderLogoVisibility(headerLogo, true);
 }
 
@@ -194,15 +256,16 @@ function fadeOutOverlay(splashBg, delay = 0, duration = 1000) {
 
 /**
  * Waits for both animations to finish before finalizing the splash.
- * @param {Animation} logoAnimation - The splash logo animation.
+ * @param {Animation[]} logoAnimations - Splash logo animations.
  * @param {Animation | null} overlayAnimation - The overlay fade animation.
- * @param {{splashLogo: HTMLElement, headerLogo: HTMLElement, splashBg: HTMLElement}} elements - Required splash elements.
+ * @param {{splashLogo: HTMLElement, splashLogoEnd: HTMLElement, headerLogo: HTMLElement, splashBg: HTMLElement}} elements - Required splash elements.
  * @category Login
  * @subcategory UI & Init
  */
-function syncAnimationEnd(logoAnimation, overlayAnimation, elements) {
+function syncAnimationEnd(logoAnimations, overlayAnimation, elements) {
 	const overlayFinished = overlayAnimation ? overlayAnimation.finished : Promise.resolve();
-	Promise.all([logoAnimation.finished, overlayFinished]).then(() => finishSplashAnimation(elements));
+	const logoFinished = (logoAnimations || []).filter(Boolean).map((animation) => animation.finished);
+	Promise.all([...logoFinished, overlayFinished]).then(() => finishSplashAnimation(elements));
 }
 
 /**

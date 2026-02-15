@@ -36,7 +36,8 @@ body {
 }
 
 .skip-splash .login-splash,
-.skip-splash .login-splash-logo {
+.skip-splash .login-splash-logo,
+.skip-splash .login-splash-logo-end {
 	display: none;
 }
 
@@ -76,6 +77,19 @@ body {
 	transform-origin: center;
 	z-index: 999;
 	pointer-events: none;
+}
+
+.login-splash-logo-end {
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	width: 100px;
+	height: auto;
+	transform: translate(-50%, -50%);
+	transform-origin: center;
+	z-index: 1000;
+	pointer-events: none;
+	opacity: 0;
 }
 
 a {
@@ -402,4 +416,129 @@ button {
 
 .signup-actions {
 	margin-top: 16px;
+}
+
+@media (max-width: 768px) {
+	.login-page .login-splash {
+		background: var(--primary);
+	}
+
+	.login-page .login-splash-logo {
+		width: 76px;
+	}
+
+	.login-page .login-splash-logo-end {
+		width: 76px;
+	}
+
+	.login-page .login-header {
+		padding: 32px 24px 0;
+	}
+
+	.login-page .login-logo {
+		width: 64px;
+	}
+
+	.login-page .login-main {
+		padding: 80px 16px 24px;
+	}
+
+	.login-page .login-card {
+		width: 100%;
+		max-width: 396px;
+		padding: 32px 20px;
+		border-radius: 30px;
+	}
+
+	.login-page .login-card h1 {
+		font-size: 47px;
+	}
+
+	.login-page .login-underline {
+		width: 88px;
+	}
+
+	.login-page .login-form {
+		gap: 18px;
+	}
+
+	.login-page .input-field input {
+		height: 48px;
+		font-size: 20px;
+	}
+
+	.login-page .login-actions {
+		margin-top: 18px;
+		gap: 18px;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.login-page .login-actions .btn {
+		width: 180px;
+		height: 48px;
+		font-size: 16px;
+	}
+
+	.login-page .login-header-actions {
+		position: fixed;
+		left: 50%;
+		bottom: 112px;
+		transform: translateX(-50%);
+		gap: 24px;
+		font-size: 20px;
+		z-index: 2;
+	}
+
+	.login-page .login-header-text {
+		font-size: 20px;
+	}
+
+	.login-page .login-header-signup {
+		font-size: 16px;
+		height: 49px;
+	}
+
+	.login-page .login-footer {
+		position: fixed;
+		left: 50%;
+		bottom: 28px;
+		transform: translateX(-50%);
+		padding: 0;
+		gap: 28px;
+		font-size: 16px;
+		z-index: 2;
+	}
+}
+
+@media (max-width: 420px) {
+	.login-page .login-main {
+		padding-top: 72px;
+	}
+
+	.login-page .login-card {
+		padding: 28px 16px;
+	}
+
+	.login-page .login-card h1 {
+		font-size: 40px;
+	}
+
+	.login-page .input-field input {
+		font-size: 18px;
+	}
+
+	.login-page .login-header-actions {
+		gap: 16px;
+		bottom: 108px;
+	}
+
+	.login-page .login-header-text {
+		font-size: 20px;
+	}
+
+	.login-page .login-footer {
+		gap: 20px;
+		font-size: 14px;
+	}
 }
