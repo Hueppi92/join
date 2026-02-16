@@ -186,7 +186,7 @@ function updateSignupButtonState(fields) {
 }
 
 /**
- * Checks if required inputs (except privacy) are filled and valid.
+ * Checks if required inputs are filled and valid.
  * @param {SignupFields} fields - Collected sign-up form fields.
  * @returns {boolean} True if all required inputs are valid.
  * @category Sign-Up
@@ -197,7 +197,8 @@ function isSignupInputReady(fields) {
 		fields.nameInput.value.trim().length > 0 &&
 		isEmailValid(fields.emailInput.value) &&
 		fields.passwordInput.value.trim().length >= 6 &&
-		fields.passwordInput.value === fields.confirmInput.value
+		fields.passwordInput.value === fields.confirmInput.value &&
+		fields.privacyInput.checked
 	);
 }
 
