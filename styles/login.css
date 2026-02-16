@@ -419,6 +419,25 @@ button {
 }
 
 @media (max-width: 768px) {
+	#success-overlay .success-message {
+		--success-stop-offset: 300px;
+	}
+
+	.slide-in-bottom {
+		animation: slide-up-mobile 0.5s ease-in-out forwards;
+	}
+
+	@keyframes slide-up-mobile {
+		0% {
+			transform: translateY(100vh);
+			opacity: 0;
+		}
+		100% {
+			transform: translateY(var(--success-stop-offset));
+			opacity: 1;
+		}
+	}
+
 	body.login-page {
 		min-height: 100vh;
 		height: auto;
