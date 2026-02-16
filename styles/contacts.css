@@ -119,12 +119,15 @@ main {
   align-items: center;
   justify-content: center;
   z-index: 1200;
-  visibility: visible;
+  visibility: hidden;
   pointer-events: none;
+  transition: visibility 0s linear 600ms;
 }
 
 .contact-overlay.is-open {
+  visibility: visible;
   pointer-events: auto;
+  transition-delay: 0s;
 }
 
 .contact-overlay__backdrop {
@@ -132,7 +135,7 @@ main {
   inset: 0;
   background: rgba(0, 0, 0, 0.2);
   opacity: 0;
-  transition: opacity 160ms ease;
+  transition: opacity 600ms ease;
 }
 
 .contact-overlay.is-open .contact-overlay__backdrop {
