@@ -1,38 +1,44 @@
 function getCardTemplate(task, id) {
+  const assignedToRaw = task.assignedTo || [];
 
-    const assignedToRaw = task.assignedTo || [];
+  const assignedTo = Array.isArray(assignedToRaw)
+    ? assignedToRaw
+    : Object.values(assignedToRaw);
 
-    const assignedTo = Array.isArray(assignedToRaw) ? assignedToRaw : Object.values(assignedToRaw);
+  const subtasksRaw = task.subtasks || [];
 
-    const subtasksRaw = task.subtasks || [];
+  const subtasks = Array.isArray(subtasksRaw)
+    ? subtasksRaw
+    : Object.values(subtasksRaw);
 
-    const subtasks = Array.isArray(subtasksRaw) ? subtasksRaw : Object.values(subtasksRaw);
+  const categoryText = task.category || "User Story";
 
+  const categoryClass = categoryText.toLowerCase().replace(/\s+/g, "-");
 
+  const doneTasks = subtasks.filter((st) => st?.completed || st?.done).length;
 
-    const categoryText = task.category || "User Story";
+  const progress =
+    subtasks.length > 0 ? (doneTasks / subtasks.length) * 100 : 0;
 
-    const categoryClass = categoryText.toLowerCase().replace(/\s+/g, "-");
+  const validUsers = assignedTo.filter((u) => u && typeof u === "object");
 
-    const doneTasks = subtasks.filter((st) => st?.completed || st?.done).length;
+  const assignedHtml = validUsers
 
-    const progress = subtasks.length > 0 ? (doneTasks / subtasks.length) * 100 : 0;
+    .slice(0, 3) // Nur die ersten 3
 
+    .map((u, index) => {
+      const name = u.name || "";
 
+      const initials =
+        u.initials ||
+        (name.includes(" ")
+          ? name
+              .split(" ")
+              .map((n) => n[0])
+              .join("")
+          : name.slice(0, 2));
 
-    const validUsers = assignedTo.filter((u) => u && typeof u === "object");
-
-    const assignedHtml = validUsers
-
-        .slice(0, 3) // Nur die ersten 3
-
-        .map((u, index) => {
-
-            const name = u.name || "";
-
-            const initials = u.initials || (name.includes(" ") ? name.split(" ").map((n) => n[0]).join("") : name.slice(0, 2));
-
-            return `
+      return `
 
                 <div class="user-badge" 
 
@@ -45,16 +51,12 @@ function getCardTemplate(task, id) {
                     ${initials.toUpperCase()}
 
                 </div>`;
+    })
+    .join("");
 
-        }).join("");
+  const prio = (task.priority || "low").toLowerCase();
 
-
-
-    const prio = (task.priority || "low").toLowerCase();
-
-
-
-    return `
+  return `
 
         <div class="card" draggable="true" onclick="event.stopPropagation(); openTaskDetail('${id}')" ondragstart="event.dataTransfer.setData('text/plain', '${id}')">
 
@@ -68,7 +70,9 @@ function getCardTemplate(task, id) {
 
             </div>
 
-            ${subtasks.length > 0 ? `
+            ${
+              subtasks.length > 0
+                ? `
 
                 <div class="progress-container">
 
@@ -76,8 +80,8 @@ function getCardTemplate(task, id) {
 
                     <span class="subtask-text">${doneTasks}/${subtasks.length} Subtasks</span>
 
-                </div>` : ""
-
+                </div>`
+                : ""
             }
 
             <div class="card-footer">
@@ -93,46 +97,50 @@ function getCardTemplate(task, id) {
             </div>
 
         </div>`;
-
 }
 
-
-
 function getTaskDetailTemplate(task, id) {
+  const assignedToRaw = task.assignedTo || [];
+  const rawDate = task.dueDate || "";
+  const formattedDate = rawDate.includes("-")
+    ? rawDate.split("-").reverse().join(".")
+    : rawDate;
+  const assignedTo = Array.isArray(assignedToRaw)
+    ? assignedToRaw
+    : Object.values(assignedToRaw);
 
-    const assignedToRaw = task.assignedTo || [];
+  const subtasksRaw = task.subtasks || [];
 
-    const assignedTo = Array.isArray(assignedToRaw) ? assignedToRaw : Object.values(assignedToRaw);
+  const subtasks = Array.isArray(subtasksRaw)
+    ? subtasksRaw
+    : Object.values(subtasksRaw);
 
-    const subtasksRaw = task.subtasks || [];
+  const categoryText = task.category || "User Story";
 
-    const subtasks = Array.isArray(subtasksRaw) ? subtasksRaw : Object.values(subtasksRaw);
+  const categoryClass = categoryText.toLowerCase().replace(/\s+/g, "-");
 
+  const prio = (task.priority || "low").toLowerCase();
 
+  const prioLabel = prio.charAt(0).toUpperCase() + prio.slice(1);
 
-    const categoryText = task.category || "User Story";
+  const validUsers = assignedTo.filter((u) => u && typeof u === "object");
 
-    const categoryClass = categoryText.toLowerCase().replace(/\s+/g, "-");
+  const assignedHtml = validUsers
 
-    const prio = (task.priority || "low").toLowerCase();
+    .slice(0, 3) // Nur die ersten 3 auflisten
 
-    const prioLabel = prio.charAt(0).toUpperCase() + prio.slice(1);
+    .map((u) => {
+      const name = u.name || "Unknown";
 
+      const initials =
+        u.initials ||
+        name
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .slice(0, 2);
 
-
-    const validUsers = assignedTo.filter((u) => u && typeof u === "object");
-
-    const assignedHtml = validUsers
-
-        .slice(0, 3) // Nur die ersten 3 auflisten
-
-        .map((u) => {
-
-            const name = u.name || "Unknown";
-
-            const initials = u.initials || name.split(" ").map((n) => n[0]).join("").slice(0, 2);
-
-            return `
+      return `
 
                 <div class="assigned-user-badge-container">
 
@@ -145,20 +153,20 @@ function getTaskDetailTemplate(task, id) {
                     <span>${name}</span>
 
                 </div>`;
+    })
+    .join("");
 
-        }).join("");
+  const subtasksHtml =
+    subtasks.length > 0
+      ? subtasks
+          .map((st, index) => {
+            const isObject = typeof st === "object" && st !== null;
 
+            const title = isObject ? st.title || `Subtask ${index + 1}` : st;
 
+            const completed = isObject && (st.completed || st.done);
 
-    const subtasksHtml = subtasks.length > 0 ? subtasks.map((st, index) => {
-
-        const isObject = typeof st === "object" && st !== null;
-
-        const title = isObject ? st.title || `Subtask ${index + 1}` : st;
-
-        const completed = isObject && (st.completed || st.done);
-
-        return `
+            return `
 
             <div class="subtask-row" onclick="updateSubtaskStatus('${id}', ${index}, ${!completed})">
 
@@ -167,12 +175,11 @@ function getTaskDetailTemplate(task, id) {
                 <span>${title}</span>
 
             </div>`;
+          })
+          .join("")
+      : "No subtasks";
 
-    }).join("") : "No subtasks";
-
-
-
-    return `
+  return `
 
         <div class="task-detail-card">
 
@@ -196,7 +203,7 @@ function getTaskDetailTemplate(task, id) {
 
                 <span class="info-label">Due date:</span>
 
-                <span class="info-value">${task.dueDate || "--/--/----"}</span>
+                <span class="info-value">${formattedDate || "--.--.----"}</span>
 
             </div>
 
@@ -241,5 +248,70 @@ function getTaskDetailTemplate(task, id) {
             </div>
 
         </div>`;
+}
 
+function getEditTaskTemplate(task, id) {
+  const prios = ["urgent", "medium", "low"];
+  const currentPrio = (task.priority || "low").toLowerCase();
+
+  return ` <div class="card-inner"><button class="close-btn-overlay" onclick="closeTaskDetail()">
+                <img src="../assets/icons/close.svg" alt="Close">
+            </button>
+        <div class="task-edit-container">
+           
+            
+            <div class="edit-scroll-area">
+                <label class="edit-label">Title</label>
+                <input type="text" id="edit-title" class="edit-input" value="${task.title || ""}">
+
+                <label class="edit-label">Description</label>
+                <textarea id="edit-description" class="edit-textarea">${task.description || ""}</textarea>
+
+                <label class="edit-label">Due date</label>
+                <input type="date" id="edit-date" class="edit-input" value="${task.dueDate || ""}">
+
+                <label class="edit-label">Priority</label>
+                <div class="priority-row-edit">
+                    ${prios
+                      .map(
+                        (p) => `
+                        <button class="prio-btn-edit ${currentPrio === p ? "active-" + p : ""}" 
+                                onclick="setEditPriority('${p}')" id="prio-${p}">
+                            ${p.charAt(0).toUpperCase() + p.slice(1)}
+                            <img src="../assets/icons/prio-${p}.svg">
+                        </button>
+                    `,
+                      )
+                      .join("")}
+                </div>
+
+    <label class="edit-label">Assigned to</label>
+<div class="custom-select-container">
+    <div class="edit-input custom-select-header" onclick="toggleEditContactList()">
+        <span>Select contacts to assign</span>
+        <img src="../assets/icons/arrow_drop_down.png" id="dropdown-arrow">
+    </div>
+    <div id="edit-contact-list" class="custom-contact-list hidden">
+        </div>
+</div>
+<div id="edit-assigned-badges" class="edit-assigned-row"></div>
+
+                <label class="edit-label">Subtasks</label>
+                <div class="subtask-input-container">
+                    <input type="text" id="edit-subtask-input" class="edit-input" placeholder="Add new subtask">
+                    <img src="../assets/icons/plus-button.svg" onclick="addSubtaskInEdit()">
+                </div>
+                <ul id="edit-subtask-list" class="edit-subtask-list">
+                    </ul>
+            </div>
+
+           
+            </div>
+             
+                <button class="save-btn" onclick="saveTaskEdit('${id}')">
+                    Ok <img src="../assets/icons/check.svg">
+                </button>
+        
+        </div>
+    `;
 }

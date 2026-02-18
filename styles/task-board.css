@@ -15,7 +15,6 @@
     --prio-urgent: #FF3D00;
     --prio-medium: #FFA800;
     --prio-low: #7AE229;
-
 }
 
 * {
@@ -28,7 +27,6 @@ body {
     margin: 0;
     padding: 0;
     color: var(--text-main);
-
 }
 
 .hidden {
@@ -40,7 +38,7 @@ body {
    ========================================================================== */
 .board-container {
     max-width: 1200px;
-    margin:200px 328px 0;
+    margin: 200px 328px 0;
     padding: 0 40px;
 }
 
@@ -147,9 +145,13 @@ body {
 }
 .badge.user-story { background-color: var(--blue-badge); }
 .badge.technical-task { background-color: var(--tech-badge); }
-
+.card-inner {
+    display:flex;
+    flex-direction:column;
+    }
+ 
 .card-title {
-    margin-bottom:32px;
+    margin-bottom: 32px;
 }
 
 .user-badge {
@@ -162,13 +164,18 @@ body {
     color: white;
     font-size: 12px;
     border: 2px solid var(--white);
-       }
+}
+
+.card .user-badge {
+    margin-left: -8px;
+}
 
 .card-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
+
 .progress-container {
     display: flex;
     align-items: center;
@@ -196,13 +203,6 @@ body {
     color: black;
     white-space: nowrap;
 }
-.assigned-user-badge-container {
-    display:flex;
-    flex-direction:row;
-    align-items: center;
-    gap:12px;
-    padding-left:32px;
-}
 
 /* ==========================================================================
    4. MODALS & OVERLAYS (Basis)
@@ -216,53 +216,85 @@ body {
     justify-content: center;
     z-index: 1000;
 }
-
-/* ==========================================================================
-   5. ADD TASK MODAL (Update für Spalten + Footer)
-   ========================================================================== */
-#addTaskModal {
-    background: rgba(0, 0, 0, 0);
-    pointer-events: none;
-    transition: background-color 160ms ease;
-}
-
-#addTaskModal.is-open {
-    background: rgba(0, 0, 0, 0.2);
-    pointer-events: auto;
-}
-
-#addTaskModal .modal-content {
-    background: var(--white);
-    padding: 48px;
-    border-radius: 30px;
-    width: fit-content;
-    max-width: 95vw;
-    max-height: 95vh;
-    overflow-y: auto;
+.modal-content form {
+    display: flex;
+    gap: 48px;
     position: relative;
-    box-shadow: 0 0 20px rgba(0,0,0,0.2);
-    transform: translateX(100vw);
-    transition: transform 600ms ease;
 }
 
-#addTaskModal.is-open .modal-content {
-    transform: translateX(0);
+/* Die Trennlinie in der Mitte */
+.modal-content form::after {
+    content: "";
+    width: 1px;
+    background-color: #D1D1D1;
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 80px; /* Platz für die Buttons lassen */
 }
 
-#addTaskModal .modal-title {
-    font-size: 61px;
-    font-weight: 700;
-    margin-bottom: 32px;
+.left-side, .right-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+/* 1. FIX FÜR DAS MODAL-CONTAINER (image_d95d98.png) */
+#addTaskModal .modal-content {
+    width: 1116px !important;
+    max-width: 95vw;
+    background-color: white;
+    border-radius: 30px;
+    padding: 64px 74px;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
 }
 
-/* Fix für den Button im Footer, da 'form' nicht mehr alles umschließt */
-#addTaskModal .task_footer {
-    margin-top: 32px;
+/* 2. FIX FÜR DIE ZWEI SPALTEN */
+#addTaskModal .editor_wrapper {
+    display: flex;
+    justify-content: space-between;
+    gap: 48px;
     width: 100%;
 }
 
+#addTaskModal .editor_left, 
+#addTaskModal .task_settings {
+    flex: 1;
+    width: 50%; /* Erzwingt die hälftige Teilung */
+}
+
+/* 3. FIX FÜR DIE FARBBALKEN BEI DEN NAMEN (image_d906e2.png) */
+.assigned-user-badge-container {
+    display: flex !important;
+    align-items: center !important;
+    background-color: transparent !important; /* Entfernt den Balken-Hintergrund */
+    width: fit-content !important; /* Verhindert das Ausdehnen über die Zeile */
+    margin-bottom: 8px;
+    gap: 12px;
+}
+
+.user-badge {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    color: white;
+    font-size: 12px;
+    /* Hier wird die Hintergrundfarbe nur auf den Kreis angewendet */
+}
+
+/* 4. FIX FÜR DIE TRENNLINIE */
+.editor_divider {
+    width: 1px;
+    background-color: #D1D1D1;
+    min-height: 400px;
+}
 /* ==========================================================================
-   6. TASK DETAIL OVERLAY
+   5. TASK DETAIL OVERLAY
    ========================================================================== */
 #task-overlay .overlay-card {
     background: var(--white);
@@ -278,88 +310,180 @@ body {
     gap: 24px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
-.task-detail-card {
+/* Labels styling */
+.edit-label {
     font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 8px;
+    margin-top: 16px;
+}
+
+/* Input Styling wie in der Vorlage */
+.edit-input, .edit-textarea, .custom-select-header {
+    width: 100%;
+    padding: 12px 21px;
+    border: 1px solid #D1D1D1;
+    border-radius: 10px;
+    font-size: 20px;
+    background-color: white;
+    outline: none;
+}
+
+.edit-input:focus, .edit-textarea:focus {
+    border-color: #29ABE2;
+}
+
+/* Kalender-Icon Styling */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    background: url('../assets/icons/calendar.svg') no-repeat; /* Pfad anpassen */
+    cursor: pointer;
+}
+.priority-row-edit {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.prio-btn-edit {
+    box-shadow: 0px 0px 4px rgba(0,0,0,0.1);
+    border: none;
+    border-radius: 10px;
+    padding: 16px;
+    font-size: 20px;
+    font-weight: 400;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex: 1;
+}
+
+/* Spezifische Farben für den aktiven Zustand (Medium ist in Vorlage aktiv) */
+.prio-btn-edit.active-medium {
+    background-color: #FFA800 !important;
+    color: white;
+    font-weight: 700;
+}
+
+/* Icons weiß färben wenn aktiv */
+.prio-btn-edit.active-medium img {
+    filter: brightness(0) invert(1);
+}
+.edit-action-container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    margin-top: 32px;
+}
+
+/* Cancel / Clear Button */
+.cancel-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 24px;
+    border: 1px solid #2A3647;
+    border-radius: 10px;
+    background: white;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.cancel-btn:hover {
+    border-color: #29ABE2;
+    color: #29ABE2;
+    box-shadow: 0 4px 4px rgba(0,0,0,0.1);
+}
+
+/* Create Task Button */
+.save-btn {
+    background-color: #2A3647;
+    color: white;
+    padding: 16px 24px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 700;
+    font-size: 21px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.save-btn:hover {
+    background-color: #29ABE2;
 }
 .detail-header {
-  display:flex;
-  flex-direction: row;
-  justify-content: space-between;
-  margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 24px;
 }
-
 
 .detail-title {
-  font-size: 48px;
-  margin-bottom:16px;
-}
-.detail-description {
-  margin-bottom:24px;
-}
-
-.detail-info-row {
-  width:455px;
-  margin:16px 0;
-  display:flex;
-  gap:30px;
-  
-}
-.detail-prio-row {
-  display:flex;
-  gap:48px;
-  margin-bottom: 16px;
-}
-.info-value-prio {
-    display:flex;
-    flex-direction:row;
-    gap:12px;
-    font-size:20px;
-}
-.info-value-prio img {
-
+    font-size: 48px;
+    margin-bottom: 16px;
 }
 .assigned-to-container {
-    display: flex ;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 32px;
+}
+
+
+.assigned-user-badge-container {
+    display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
     padding-left: 5px;
-    min-height: 32px; /* Wichtig! */
+    min-height: 32px;
+   
+}
+.assigned-user-badge-container span{
+    padding-left: 10px;
 }
 
-/* Die Badges auf dem Board */
-.card .user-badge {
-    width: 32px;
-    height: 32px;
-    margin-left: -8px; /* Der Überlappungs-Effekt */
-    border: 2px solid #ffffff;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 12px;
-    color: white;
-}
-
-
-.section-title {
-    margin-top:24px;
-    margin-bottom:16px;
-    color: var(--text-main);
-    font-weight: 400;
-}
-
-.subtask-row {
-    padding-left:24px;
-    padding-bottom: 12px;
-}
 .close-btn {
     position: absolute;
     top: 40px; right: 40px;
     border: none; background: none; cursor: pointer;
     font-size: 32px;
 }
-/* Styling für die Buttons unten rechts im Detail-Modal */
+.close-btn-overlay {
+    position: absolute;
+    top: 40px; right: 40px;
+    border: none; background: none; cursor: pointer;
+    font-size: 32px;
+}
+.info-label {
+  width:120px;
+  min-width:120px;
+  font-size:18px;
+  color:#2a3647;
+}
+.detail-info-row,
+.detail-prio-row {
+    display:flex;
+    align-items: center;
+    margin-bottom:15px;
+}
+.detail-description {
+    margin-bottom:32px;
+    color: var(--text-main)
+}
+.info-value-prio span {
+    margin-right: 10px;
+}
+.section-title {
+    margin-bottom:24px;
+}
+.detail-section {
+    margin: 32px 0;
+}
 .detail-actions {
     display: flex;
     justify-content: flex-end;
@@ -367,13 +491,14 @@ body {
     gap: 8px;
     margin-top: 24px;
 }
-
-.action-btn {
+.detail-prio-row {
     display:flex;
-    height:auto;
-    width:auto;
-    background:transparent;
-    border:none;
+    flex-direction: row;
+}
+.action-btn {
+    display: flex;
+    background: transparent;
+    border: none;
     cursor: pointer;
 }
 
@@ -382,7 +507,6 @@ body {
     font-weight: 700;
 }
 
-
 .action-divider {
     width: 1px;
     height: 24px;
@@ -390,17 +514,399 @@ body {
     margin: 0 8px;
 }
 
+/* ==========================================================================
+   6. EDIT MODE STYLES (Verbessert)
+   ========================================================================== */
+.task-edit-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-height: 75vh;
+}
 
+.edit-scroll-area {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 12px;
+    flex-grow: 1;
+    margin:  24px 0;
+}
 
+/* Scrollbar Design */
+.edit-scroll-area::-webkit-scrollbar {
+    width: 6px;
+}
+.edit-scroll-area::-webkit-scrollbar-thumb {
+    background-color: var(--separator-color);
+    border-radius: 10px;
+}
+
+.edit-label {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--dark-blue);
+    margin-top: 16px;
+    display: block;
+}
+
+.edit-input, .edit-textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--separator-color);
+    border-radius: 10px;
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+    margin-top: 8px;
+}
+
+.edit-input:focus, .edit-textarea:focus {
+    border-color: var(--light-blue);
+}
+
+.edit-textarea {
+    min-height: 80px;
+    resize: none;
+}
+
+/* Priority Buttons */
+.priority-row-edit {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.prio-btn-edit {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 4px;
+    border-radius: 10px;
+    background: var(--white);
+    border: 1px solid var(--separator-color);
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.1s ease;
+}
+
+.prio-btn-edit.active-urgent { background-color: var(--prio-urgent) !important; color: white; border-color: var(--prio-urgent); }
+.prio-btn-edit.active-medium { background-color: var(--prio-medium) !important; color: white; border-color: var(--prio-medium); }
+.prio-btn-edit.active-low { background-color: var(--prio-low) !important; color: white; border-color: var(--prio-low); }
+
+.prio-btn-edit[class*="active-"] img {
+    filter: brightness(0) invert(1);
+}
+
+/* --- NEU: Assigned To Badges & Select --- */
+.edit-assigned-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-left: 0 !important;
+    margin-top: 8px;
+}
+
+/* --- NEU: Subtask Management --- */
+.subtask-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.subtask-row {
+    display:flex;
+    align-items: center;
+    gap:12px;
+}
+.subtask-input-container input {
+    margin-top: 0;
+    padding-right: 45px;
+}
+
+.subtask-input-container img {
+    position: absolute;
+    right: 12px;
+    cursor: pointer;
+    width: 24px;
+    transition: transform 0.1s;
+}
+
+.subtask-input-container img:hover {
+    transform: scale(1.1);
+}
+
+.edit-subtask-list {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0;
+}
+
+.edit-subtask-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    transition: background 0.1s;
+}
+
+.edit-subtask-item:hover {
+    background-color: #EEEEEE;
+}
+
+.edit-subtask-item img {
+    width: 18px;
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.edit-subtask-item img:hover {
+    opacity: 1;
+}
+
+/* Save Button Footer */
+.edit-action-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+    padding-top: 16px;
+    background-color: var(--white);
+}
+
+.save-btn {
+    background-color: var(--dark-blue);
+    color: var(--white);
+    padding: 12px 24px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+    width:fit-content;
+    align-self: flex-end;
+}
+
+.save-btn:hover {
+    background-color: var(--light-blue);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
+}
+.custom-select-container {
+    position: relative;
+    width: 100%;
+}
+
+.custom-select-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    background: white;
+}
+
+.custom-contact-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #D1D1D1;
+    border-radius: 0 0 10px 10px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.contact-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.contact-item:hover { background-color: #EEEEEE; }
+.contact-item.selected { background-color: #2A3647; color: white; }
+
+.contact-item-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+/* ==========================================================================
+   ADD TASK MODAL – ISOLIERTER FIX (SONST NICHTS)
+   ========================================================================== */
+
+/* Modal Container */
+#addTaskModal .modal-content {
+    min-width: 1460px;
+    max-width: 95vw;
+    max-height: 90vh;
+    background-color: white;
+    border-radius: 30px;
+    padding: 64px 74px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* wichtig */
+}
+
+/* Wrapper für Inhalt + Footer */
+#addTaskModal form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    
+}
+
+/* Scrollbarer Hauptinhalt */
+#addTaskModal .editor_wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 48px;
+    flex: 1;
+    overflow-y: auto;
+    
+    
+}
+
+/* Spalten */
+#addTaskModal .editor_left,
+#addTaskModal .task_settings {
+    flex: 1;
+    min-width: 0; /* verhindert Overflow-Bugs */
+    display: flex;
+    flex-direction: column;
+    max-width:50%;
+}
+
+/* Trennlinie – volle Höhe */
+#addTaskModal .editor_divider {
+    width:0px;
+    background-color: #D1D1D1;
+    
+}
+
+/* Footer bleibt unten */
+#addTaskModal .edit-action-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    padding-top: 24px;
+    margin-top: 24px;
+    border-top: 1px solid #D1D1D1;
+    flex-shrink: 0;
+}
+
+/* Inputs */
+#addTaskModal .edit-input,
+#addTaskModal .edit-textarea,
+#addTaskModal .custom-select-header {
+    margin:0;
+    padding: 5px ;
+    border: 1px solid #D1D1D1;
+    border-radius: 10px;
+    font-size: 16px;
+    outline: none;
+}
+
+#addTaskModal .edit-textarea {
+    min-height: 80px;
+    resize: none;
+}
+
+/* Labels */
+#addTaskModal .edit-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #2A3647;
+    margin: 16px 0 8px;
+}
+
+/* Priority */
+#addTaskModal .priority-row-edit {
+    display: flex;
+    gap: 8px;
+}
+
+#addTaskModal .prio-btn-edit {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #D1D1D1;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+#addTaskModal .prio-btn-edit.active-urgent {
+    background-color: #FF3D00;
+    color: white;
+}
+
+#addTaskModal .prio-btn-edit.active-medium {
+    background-color: #FFA800;
+    color: white;
+}
+
+#addTaskModal .prio-btn-edit.active-low {
+    background-color: #7AE229;
+    color: white;
+}
+
+/* Subtask Input Icon */
+#addTaskModal .subtask-input-container {
+    position: relative;
+}
+
+#addTaskModal .subtask-input-container img {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+/* Save Button */
+#addTaskModal .save-btn {
+    background-color: #2A3647;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 10px;
+    border: none;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#addTaskModal .save-btn:hover {
+    background-color: #29ABE2;
+}
+ .footer-actions {
+    display:flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+/* ==========================================================================
+   7. UTILS & MEDIA QUERIES
+   ========================================================================== */
 .error { color: var(--error-red); }
 .error_text { color: var(--error-red); font-size: 12px; }
 
 @media (max-width: 1280px) {
     #addTaskModal .form-body-content {
         flex-direction: column;
-    }
-
-    #addTaskModal .column-separator {
-        display: none;
     }
 }

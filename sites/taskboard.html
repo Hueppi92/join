@@ -4,39 +4,44 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="../styles/sidebar.css">
   <link rel="stylesheet" href="../styles/fonts.css" />
   <link rel="stylesheet" href="../styles/task-board.css" />
   <link rel="stylesheet" href="../styles/task-editor.css" />
   <link rel="icon" href="../assets/img/join_logo_dark.svg" />
+
   <title>Join - Task Board</title>
 </head>
 
-<body>
+<body onload="renderBoard()">
   <header>
     <h2>Kanban Project Management Tool</h2>
     <div class="header-btn">
-      <a href="./help.html" class="help-btn"><img src="../assets/icons/help_icon.svg" alt="Help Icon" /></a>
-      <button id="profile-btn" class="profile-btn"></button>
+      <a href="./help.html" class="help-btn">
+        <img src="../assets/icons/help_icon.svg" alt="Help Icon" />
+      </a>
+      <button id="profile-btn" class="profile-btn" type="button" aria-label="Open Profile"></button>
     </div>
   </header>
 
   <main>
     <aside>
       <img src="../assets/img/join_logo.svg" alt="Join Logo" />
+
       <nav class="sidebar-navigation">
         <div class="sidebar-navigation-item">
-          <a href="./summary.html"><img src="../assets/icons/summary_icon.svg">Summary</a>
+          <a href="./summary.html"><img src="../assets/icons/summary_icon.svg" alt="">Summary</a>
         </div>
         <div class="sidebar-navigation-item">
-          <a href="./task-editor.html"><img src="../assets/icons/addTask_icon.svg">Add Task</a>
+          <a href="./task-editor.html"><img src="../assets/icons/addTask_icon.svg" alt="">Add Task</a>
         </div>
         <div class="sidebar-navigation-item active">
-          <a href="./taskboard.html"><img src="../assets/icons/board_icon.svg">Board</a>
+          <a href="./taskboard.html"><img src="../assets/icons/board_icon.svg" alt="">Board</a>
         </div>
         <div class="sidebar-navigation-item">
-          <a href="./contacts.html"><img src="../assets/icons/contacts_icon.svg">Contacts</a>
+          <a href="./contacts.html"><img src="../assets/icons/contacts_icon.svg" alt="">Contacts</a>
         </div>
       </nav>
 
@@ -51,31 +56,17 @@
         </div>
       </div>
     </aside>
-    <div id="profile-menu" class="profile-overlay">
-      <nav class="profile-menu">
-        <ul class="flex-container">
-          <div class="hover-container">
-            <li><a href="./legal-notice.html">Legal Notice</a></li>
-          </div>
-          <div class="hover-container">
-            <li><a href="./privacy-policy.html">Privacy Policy</a></li>
-          </div>
-          <div class="hover-container">
-            <li><a href="../index.html" data-logout="1">Log out</a></li>
-          </div>
-        </ul>
-      </nav>
-    </div>
 
-    <!-- ================= BOARD ================= -->
     <div class="board-container">
       <div class="board-header">
         <h1>Board</h1>
+
         <div class="search-add">
           <div class="search-container">
-            <input type="text" placeholder="Find Task" id="task-search" />
+            <input type="text" placeholder="Find Task" id="task-search" aria-label="Search for tasks" />
           </div>
-          <button type="button" onclick="openAddTaskModalBoard()" class="add-task">
+
+          <button type="button" class="add-task" onclick="openAddTaskModalBoard()">
             Add task +
           </button>
         </div>
@@ -85,7 +76,7 @@
         <div class="column" id="todo">
           <div class="column-header">
             <h2>To do</h2>
-            <button class="add-column-btn" onclick="openAddTaskModalBoard('todo')"></button>
+            <button type="button" class="add-column-btn" onclick="openAddTaskModalBoard('todo')"></button>
           </div>
           <div class="task-list" id="todo-list"></div>
         </div>
@@ -93,7 +84,7 @@
         <div class="column" id="in-progress">
           <div class="column-header">
             <h2>In progress</h2>
-            <button class="add-column-btn" onclick="openAddTaskModalBoard('in-progress')"></button>
+            <button type="button" class="add-column-btn" onclick="openAddTaskModalBoard('in-progress')"></button>
           </div>
           <div class="task-list" id="inprogress-list"></div>
         </div>
@@ -101,7 +92,7 @@
         <div class="column" id="await-feedback">
           <div class="column-header">
             <h2>Await feedback</h2>
-            <button class="add-column-btn" onclick="openAddTaskModalBoard('await-feedback')"></button>
+            <button type="button" class="add-column-btn" onclick="openAddTaskModalBoard('await-feedback')"></button>
           </div>
           <div class="task-list" id="feedback-list"></div>
         </div>
@@ -109,7 +100,7 @@
         <div class="column" id="done">
           <div class="column-header">
             <h2>Done</h2>
-            <button class="add-column-btn" onclick="openAddTaskModalBoard('done')"></button>
+            <button type="button" class="add-column-btn" onclick="openAddTaskModalBoard('done')"></button>
           </div>
           <div class="task-list" id="done-list"></div>
         </div>
@@ -117,167 +108,99 @@
     </div>
   </main>
 
-  <!-- ================= ADD TASK MODAL ================= -->
+  <div id="task-overlay" class="overlay hidden" onclick="handleOverlayClick(event)">
+    <div class="overlay-card" onclick="event.stopPropagation()"></div>
+  </div>
+
   <div id="addTaskModal" class="modal hidden" aria-hidden="true">
     <div class="modal-content">
-      <button class="close-btn" onclick="closeAddTaskModal()">×</button>
+      <button type="button" class="close-btn" onclick="closeAddTaskModal()">×</button>
       <h1 class="modal-title">Add Task</h1>
 
-      <div class="editor_wrapper">
-
-        <!-- LEFT -->
-        <form class="new_task" id="taskForm">
-          <div class="left_row title_field">
-            <label for="titleInput">Title
-              <span class="error">*</span>
-            </label>
-
-            <div class="left_single_row">
-              <input id="titleInput" aria-describedby="titleError" type="text" placeholder="Enter a title" required>
+      <form id="taskForm">
+        <div class="editor_wrapper">
+          
+          <div class="editor_left">
+            <div class="left_row">
+              <label class="edit-label" for="title">Title <span class="error">*</span></label>
+              <input id="title" class="edit-input" type="text" placeholder="Enter a title" required>
+              <small class="error_text hidden">This field is required</small>
             </div>
 
-            <small class="error_text">This field is required</small>
-
-          </div>
-
-          <div class="left_row">
-            <label for="descriptionBox">Description</label>
-
-            <div class="left_single_row description_box">
-              <textarea id="descriptionBox" placeholder="Enter a Description"></textarea>
+            <div class="left_row">
+              <label class="edit-label" for="description">Description</label>
+              <textarea id="description" class="edit-textarea" placeholder="Enter a Description"></textarea>
             </div>
 
-          </div>
-
-          <div class="left_row date_field">
-            <label for="dateInput">Due date
-              <span class="error">*</span>
-            </label>
-
-            <div class="left_single_row">
-              <input id="dateInput" type="date" min="2024-01-01" required>
-              <img class="calendar_icon" src="../assets/icons/calendar.svg">
-            </div>
-
-            <small class="error_text">This field is required</small>
-          </div>
-        </form>
-
-        <!-- DIVIDER -->
-        <div class="editor_divider"></div>
-
-        <!-- RIGHT -->
-        <div class="task_settings">
-
-          <div class="settings_block">
-            <label for="priorityRow">Priority</label>
-
-            <div class="priority_row" id="priorityRow">
-              <button type="button" class="prio urgent_btn" data-prio="urgent">
-                Urgent
-                <div>
-                  <img src="../assets/icons/arrowUp.svg" class="urgent">
-                  <img src="../assets/icons/arrowUp.svg" class="urgent">
-                </div>
-              </button>
-
-              <button type="button" class="prio medium_btn active" data-prio="medium">
-                Medium
-                <div>
-                  <img src="../assets/icons/sameIcon.svg" class="medium">
-                  <img src="../assets/icons/sameIcon.svg" class="medium">
-                </div>
-              </button>
-
-              <button type="button" class="prio low_btn" data-prio="low">
-                Low
-                <div>
-                  <img src="../assets/icons/arrowDown.svg" class="low">
-                  <img src="../assets/icons/arrowDown.svg" class="low">
-                </div>
-              </button>
+            <div class="left_row">
+              <label class="edit-label" for="date">Due date <span class="error">*</span></label>
+              <input id="date" class="edit-input" type="date" min="2024-01-01" required>
+              <small class="error_text hidden">This field is required</small>
             </div>
           </div>
 
-          <div class="settings_block">
-            <label for="assignedSelect">Assigned to</label>
+          <div class="editor_divider"></div>
 
-            <div class="select_native" id="assignedSelect" role="combobox" aria-expanded="false"
-              aria-controls="assignedDropdown">
-              <div class="selector_input">
-                <input type="text" id="assignedSearch" placeholder="Select contacts to assign" autocomplete="off" />
-              </div>
-
-              <div class="selector_dropdown" id="assignedDropdown" role="listbox">
-              </div>
-            </div>
-
-            <div id="assignedAvatars" class="assigned_avatars"></div>
-          </div>
-
-          <div class="settings_block">
-            <label for="categorySelectWrapper">Category</label>
-            <div class="select_native category-select" id="categorySelectWrapper">
-              <div class="selector_input">
-                <input type="text" id="categoryInput" placeholder="Select task category" readonly>
-              </div>
-
-              <div class="selector_dropdown" id="categoryDropdown">
-                <label class="dropdown_item" data-value="user-story" role="option">User Story</label>
-                <label class="dropdown_item" data-value="technical-task" role="option">Technical Task</label>
-              </div>
-            </div>
-          </div>
-
-
-          <div class="settings_block subtasks_block">
-            <label for="subtaskInput">Subtasks</label>
-
-            <div class="subtask_input">
-              <input id="subtaskInput" type="text" placeholder="Add new subtask">
-
-              <div class="subtask_actions">
-                <button id="subtaskClear" aria-label="Clear subtask">
-                  <img src="../assets/icons/close.svg" alt="">
+          <div class="task_settings">
+            <div class="settings_block">
+              <label class="edit-label">Priority</label>
+              <div class="priority-row-edit" id="priorityRow">
+                <button type="button" class="prio-btn-edit" data-prio="urgent">
+                  Urgent <img src="../assets/icons/prio-urgent.svg" alt="">
                 </button>
-                <div class="separator"></div>
-                <button id="subtaskAdd" aria-label="Add subtask">
-                  <img src="../assets/icons/check.svg" alt=""></img>
+                <button type="button" class="prio-btn-edit active-medium" data-prio="medium">
+                  Medium <img src="../assets/icons/prio-medium.svg" alt="">
+                </button>
+                <button type="button" class="prio-btn-edit" data-prio="low">
+                  Low <img src="../assets/icons/prio-low.svg" alt="">
                 </button>
               </div>
             </div>
 
-            <ul id="subtaskList" class="subtask_list"></ul>
+            <div class="settings_block">
+              <label class="edit-label">Assigned to</label>
+              <div class="custom-select-container">
+                <div class="custom-select-header" onclick="toggleContactDropdown()">
+                  Select contacts to assign 
+                </div>
+                <div id="assignedDropdown" class="custom-contact-list hidden"></div>
+              </div>
+              <div id="assignedAvatars" class="edit-assigned-row"></div>
+            </div>
+
+            <div class="settings_block">
+              <label class="edit-label">Category <span class="error">*</span></label>
+              <div class="custom-select-container">
+                <div class="custom-select-header">Select task category <span>▼</span></div>
+                <div class="custom-contact-list hidden">
+                  <div class="contact-item" data-value="user-story">User Story</div>
+                  <div class="contact-item" data-value="technical-task">Technical Task</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings_block">
+              <label class="edit-label">Subtasks</label>
+              <div class="subtask-input-container">
+                <input class="edit-input" id="subtask" type="text" placeholder="Add new subtask">
+                <img src="../assets/icons/check.svg" onclick="addSubtask()" alt="Add">
+              </div>
+              <ul id="subtaskList" class="edit-subtask-list"></ul>
+            </div>
           </div>
         </div>
 
-      </div>
-
-      <div class="task_footer">
-        <p>
-          <span class="error">*</span>
-          This field is required
-        </p>
-
-        <div class="footer_actions">
-          <button class="clear_btn">Clear ✕</button>
-          <button class="create_btn">Create Task ✓</button>
+        <div class="edit-action-container">
+          <p><span class="error">*</span> This field is required</p>
+          <div class="footer_actions">
+            <button type="button" class="cancel-btn" onclick="closeAddTaskModal()">Clear ✕</button>
+            <button type="submit" class="save-btn">Create Task ✓</button>
+          </div>
         </div>
-      </div>
+      </form>
     </div>
   </div>
 
-  </form>
-  </div>
-  </div>
-
-
-  <!-- ================= TASK DETAIL OVERLAY ================= -->
-  <div id="task-overlay" class="overlay hidden">
-    <div class="overlay-card"></div>
-  </div>
-
-  <!-- ================= SCRIPTS ================= -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -291,6 +214,7 @@
   <script src="../scripts/taskboardTemplate.js"></script>
   <script src="../scripts/taskboard.js"></script>
   <script src="../scripts/taskeditor.js"></script>
+
 </body>
 
 </html>
