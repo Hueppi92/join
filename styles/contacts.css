@@ -559,6 +559,95 @@ main {
   color: #000000;
 }
 
+@media (max-width: 430px) {
+  html,
+  body {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  main {
+    margin-left: 0;
+    margin-top: 80px;
+    height: calc(100vh - 160px);
+    height: calc(100dvh - 160px);
+    overflow: hidden;
+  }
+
+  .contacts-section {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    height: 100%;
+    border-right: none;
+    background: transparent;
+    overflow: hidden;
+  }
+
+  .contacts-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .contacts-header {
+    height: 0;
+  }
+
+  .contacts-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 0 110px;
+  }
+
+  .contact-group-title {
+    margin: 0 32px 10px;
+    padding: 8px 0 12px;
+  }
+
+  .contact-box {
+    width: auto;
+    margin: 0 20px 8px;
+    padding: 12px 12px;
+  }
+
+  .contact-logo {
+    margin-right: 0;
+  }
+
+  .contact-details-section {
+    display: none;
+  }
+
+  .contact-btn {
+    position: fixed;
+    right: 16px;
+    bottom: 90px;
+    width: 56px;
+    min-height: 56px;
+    height: 56px;
+    margin: 0;
+    padding: 0;
+    border-radius: 50%;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    z-index: 16;
+  }
+
+  .contact-btn span {
+    display: none;
+  }
+
+  .contact-btn img {
+    width: 32px;
+    height: 32px;
+    content: url('../assets/icons/person_add.svg');
+    filter: none;
+  }
+}
+
 @media (max-width: 768px) {
   .contact-overlay {
     align-items: center;
@@ -572,6 +661,11 @@ main {
     min-height: 780px;
     max-height: calc(100vh - 24px);
     border-radius: 30px;
+    transform: translateY(100vh);
+  }
+
+  .contact-overlay.is-open .contact-overlay__panel {
+    transform: translateY(0);
   }
 
   .contact-overlay__panel-left {
@@ -668,11 +762,29 @@ main {
   }
 }
 
-@media (max-width: 420px) {
+@media (max-width: 430px) {
+  body.contact-overlay-open {
+    overflow: hidden;
+  }
+
+  body.contact-overlay-open .contacts-list,
+  body.contact-overlay-open .contacts-section {
+    overflow: hidden;
+  }
+
+  .contact-overlay {
+    align-items: flex-start;
+    padding: 80px 8px 80px;
+  }
+
   .contact-overlay__panel {
-    width: calc(100vw - 16px);
-    min-height: 660px;
-    max-height: calc(100vh - 16px);
+    width: min(396px, calc(100vw - 16px));
+    height: calc(100vh - 160px);
+    height: calc(100dvh - 160px);
+    min-height: calc(100vh - 160px);
+    min-height: calc(100dvh - 160px);
+    max-height: calc(100vh - 160px);
+    max-height: calc(100dvh - 160px);
   }
 
   .contact-overlay__panel-left {

@@ -42,6 +42,7 @@ function openContactOverlay() {
 	overlay.classList.remove('is-instant');
 	overlay.classList.add('is-open');
 	overlay.setAttribute('aria-hidden', 'false');
+	document.body.classList.add('contact-overlay-open');
 }
 
 /**
@@ -57,6 +58,7 @@ function closeContactOverlay(immediate = false) {
 	}
 	overlay.classList.remove('is-open');
 	overlay.setAttribute('aria-hidden', 'true');
+	document.body.classList.remove('contact-overlay-open');
 }
 
 /**
