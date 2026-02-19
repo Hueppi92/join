@@ -239,6 +239,10 @@ aside > img {
     height: 46px;
 }
 
+.mobile-help-link {
+    display: none;
+}
+
 .hover-container:hover {
     background-color: var(--bg-color-secondary);
 }
@@ -249,4 +253,177 @@ aside > img {
 
 #profile-menu.is-open {
     display: block;
+}
+
+@media (max-width: 430px) {
+    #profile-menu {
+        display: block;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateX(110%);
+        transition: transform 0.28s ease, opacity 0.28s ease, visibility 0s linear 0.28s;
+        will-change: transform, opacity;
+    }
+
+    #profile-menu.is-open {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateX(0);
+        transition-delay: 0s;
+    }
+
+    header {
+        left: 0;
+        height: 80px;
+        z-index: 20;
+    }
+
+    header h2 {
+        display: none;
+    }
+
+    header::before {
+        content: "";
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 32px;
+        height: 39px;
+        background: url("../assets/img/join_logo_dark.svg") no-repeat center / contain;
+    }
+
+    .header-btn {
+        top: 20px;
+        right: 16px;
+        gap: 0;
+    }
+
+    .help-btn {
+        display: none;
+    }
+
+    .profile-btn {
+        width: 40px;
+        height: 40px;
+        border-width: 2px;
+        font-size: 18px;
+    }
+
+    .profile-overlay {
+        top: 80px;
+        right: 12px;
+        height: 204px;
+    }
+
+    aside {
+        top: auto;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 80px;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 12px;
+        box-sizing: border-box;
+        z-index: 15;
+    }
+
+    aside > img,
+    .sidebar-legal-links {
+        display: none;
+    }
+
+    .sidebar-navigation {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        gap: 4px;
+    }
+
+    .sidebar-navigation-item {
+        flex: 1;
+        height: 68px;
+        margin: 0;
+        padding-left: 0;
+        border-radius: 16px;
+    }
+
+    .sidebar-navigation-item a {
+        justify-content: center;
+        flex-direction: column;
+        text-align: center;
+        gap: 6px;
+        font-size: 14px;
+        line-height: 1.2;
+        white-space: nowrap;
+    }
+
+    .sidebar-navigation-item a img {
+        width: 24px;
+        height: 24px;
+    }
+
+    .mobile-help-link {
+        display: flex;
+    }
+}
+
+@media (max-width: 320px) {
+    header {
+        height: 80px;
+    }
+
+    header::before {
+        left: 16px;
+        width: 32px;
+        height: 39px;
+    }
+
+    .header-btn {
+        top: 20px;
+        right: 16px;
+    }
+
+    .profile-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 16px;
+    }
+
+    .profile-overlay {
+        top: 80px;
+        right: 16px;
+        height: 204px;
+    }
+
+    aside {
+        height: 80px;
+        padding: 4px 8px;
+    }
+
+    .sidebar-navigation {
+        gap: 2px;
+    }
+
+    .sidebar-navigation-item {
+        height: 64px;
+        border-radius: 14px;
+    }
+
+    .sidebar-navigation-item a {
+        gap: 4px;
+        font-size: 13px;
+    }
+
+    .sidebar-navigation-item a img {
+        width: 22px;
+        height: 22px;
+    }
 }

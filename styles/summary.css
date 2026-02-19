@@ -192,3 +192,201 @@ body {
     font-weight: 700;
     color: var(--light-blue);
 }
+
+@media (max-width: 430px) {
+    body {
+        display: block;
+        align-items: stretch;
+    }
+
+    .content-container {
+        max-width: none;
+        margin-left: 0;
+        padding: 0 20px 104px;
+        box-sizing: border-box;
+    }
+
+    .summary-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 28px;
+        padding-top: 106px;
+    }
+
+    .summary-header h1 {
+        order: 1;
+        font-size: 48px;
+    }
+
+    .summary-header p {
+        order: 2;
+        font-size: 24px;
+    }
+
+    .divider {
+        order: 3;
+        width: 90px;
+        height: 3px;
+    }
+
+    .dashboard-wrapper {
+        display: block;
+    }
+
+    .metrics-section {
+        gap: 16px;
+        max-width: none;
+        padding-right: 0;
+    }
+
+    .row-top,
+    .row-bottom {
+        gap: 12px;
+    }
+
+    .card {
+        border-radius: 24px;
+    }
+
+    .small-card {
+        gap: 10px;
+        height: 110px;
+        padding: 14px 10px;
+    }
+
+    .mini-card {
+        height: 122px;
+        padding: 12px 8px;
+    }
+
+    .urgent-card {
+        gap: 12px;
+        padding: 16px;
+    }
+
+    .urgent-left {
+        gap: 10px;
+    }
+
+    .v-divider {
+        height: 76px;
+    }
+
+    .urgent-right {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .icon-container {
+        width: 46px;
+        height: 46px;
+    }
+
+    .icon-container svg {
+        width: 100%;
+        height: 100%;
+    }
+
+    .number {
+        font-size: 42px;
+    }
+
+    .date {
+        font-size: 22px;
+        margin-bottom: 3px;
+    }
+
+    .label {
+        text-align: center;
+    }
+
+    .urgent-right .label {
+        text-align: left;
+    }
+
+    .greeting-section {
+        display: none;
+    }
+}
+
+@media (max-width: 320px) {
+    .content-container {
+        padding: 0 12px 96px;
+    }
+
+    .summary-header {
+        padding-top: 94px;
+        gap: 6px;
+        margin-bottom: 20px;
+    }
+
+    .summary-header h1 {
+        font-size: 40px;
+    }
+
+    .summary-header p {
+        font-size: 18px;
+        line-height: 1.25;
+    }
+
+    .divider {
+        width: 112px;
+    }
+
+    .metrics-section {
+        gap: 12px;
+    }
+
+    .row-top,
+    .row-bottom {
+        gap: 8px;
+    }
+
+    .card {
+        border-radius: 20px;
+    }
+
+    .small-card {
+        gap: 6px;
+        height: 100px;
+        padding: 10px 8px;
+    }
+
+    .mini-card {
+        height: 116px;
+        padding: 8px 6px;
+    }
+
+    .urgent-card {
+        gap: 8px;
+        padding: 12px;
+    }
+
+    .urgent-left {
+        gap: 8px;
+    }
+
+    .v-divider {
+        width: 1px;
+        height: 60px;
+    }
+
+    .number {
+        font-size: 36px;
+    }
+
+    .label {
+        font-size: 14px;
+        line-height: 1.2;
+    }
+
+    .date {
+        font-size: 16px;
+        margin-bottom: 2px;
+    }
+
+    .mini-card .label {
+        font-size: 11px;
+    }
+}

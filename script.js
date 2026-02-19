@@ -157,6 +157,37 @@ function initLogoutLinks() {
 }
 
 /**
+ * Adds a help link to profile menu for mobile layout.
+ * @param {HTMLElement} profileMenu - Profile menu overlay element.
+ * @category Shared
+ * @subcategory UI & Init
+ */
+function initMobileHelpLink(profileMenu) {
+	if (!profileMenu) return;
+	const list = profileMenu.querySelector('.flex-container');
+	if (!list || list.querySelector('[data-mobile-help="1"]')) return;
+
+	const helpItem = document.createElement('div');
+	helpItem.className = 'hover-container mobile-help-link';
+
+	const helpLi = document.createElement('li');
+	const helpAnchor = document.createElement('a');
+	helpAnchor.href = window.location.pathname.includes('/sites/') ? './help.html' : './sites/help.html';
+	helpAnchor.textContent = 'Help';
+	helpAnchor.setAttribute('data-mobile-help', '1');
+
+	helpLi.appendChild(helpAnchor);
+	helpItem.appendChild(helpLi);
+
+	const firstItem = list.firstElementChild;
+	if (firstItem) {
+		list.insertBefore(helpItem, firstItem);
+		return;
+	}
+	list.appendChild(helpItem);
+}
+
+/**
  * Initializes the profile menu toggle functionality.
  * @category Shared
  * @subcategory UI & Init
@@ -166,6 +197,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	const profileMenu = document.querySelector('#profile-menu');
 
 	if (profileBtn && profileMenu) {
+		initMobileHelpLink(profileMenu);
+
 		profileBtn.addEventListener('click', (event) => {
 			event.stopPropagation();
 			profileMenu.classList.toggle('is-open');
