@@ -66,11 +66,26 @@
 	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
+.contact-overlay__btn--ghost:focus-visible {
+	color: #29abe2;
+	border-color: #29abe2;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+	outline: none;
+}
+
 .contact-overlay__btn--ghost:hover .icon-default {
 	display: none;
 }
 
+.contact-overlay__btn--ghost:focus-visible .icon-default {
+	display: none;
+}
+
 .contact-overlay__btn--ghost:hover .icon-hover {
+	display: inline;
+}
+
+.contact-overlay__btn--ghost:focus-visible .icon-hover {
 	display: inline;
 }
 
@@ -104,4 +119,11 @@
 	background: #29abe2;
 	border-color: transparent;
 	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.contact-overlay__btn--primary:focus-visible {
+	background: #29abe2;
+	border-color: transparent;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+	outline: none;
 }

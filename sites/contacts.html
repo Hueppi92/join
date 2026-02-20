@@ -96,11 +96,29 @@
       </section>
       <section class="contact-details-section">
         <div class="contact-details-headline">
-          <h1>Contacts</h1>
-          <span class="contact-details-headline-divider" aria-hidden="true"></span>
-          <p>Better with a team</p>
+          <div class="contact-details-headline-text">
+            <h1>Contacts</h1>
+            <span class="contact-details-headline-divider" aria-hidden="true"></span>
+            <p>Better with a team</p>
+          </div>
+          <button id="mobile-contact-back-btn" class="mobile-contact-back-btn" type="button" aria-label="Zurück zur Kontaktliste">
+            <img src="../assets/icons/left_hover.svg" alt="" aria-hidden="true" />
+          </button>
         </div>
         <div id="contact-details"></div>
+        <button id="mobile-contact-detail-menu-btn" class="mobile-contact-detail-menu-btn" type="button" aria-label="Kontakt Aktionen öffnen">
+          <span aria-hidden="true"></span>
+        </button>
+        <div id="mobile-contact-detail-menu" class="mobile-contact-detail-menu" aria-hidden="true">
+          <button id="mobile-contact-menu-edit" class="mobile-contact-detail-menu__item" type="button">
+            <img src="../assets/icons/edit.svg" alt="" aria-hidden="true" />
+            <span>Edit</span>
+          </button>
+          <button id="mobile-contact-menu-delete" class="mobile-contact-detail-menu__item" type="button">
+            <img src="../assets/icons/delete.svg" alt="" aria-hidden="true" />
+            <span>Delete</span>
+          </button>
+        </div>
       </section>
       <div id="contact-overlay" class="contact-overlay" aria-hidden="true">
         <div class="contact-overlay__backdrop" data-contact-overlay-close></div>
