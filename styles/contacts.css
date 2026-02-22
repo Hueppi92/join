@@ -6,6 +6,13 @@
     --white: #ffffff;
 }
 
+body {
+  display: block;
+  justify-content: initial;
+  align-items: initial;
+  background-color: var(--bg-color);
+}
+
 .contacts-list {
   padding-bottom: 20px;
 }
