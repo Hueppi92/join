@@ -608,6 +608,70 @@ main {
   color: #000000;
 }
 
+@media (max-width: 1200px) {
+  .contacts-section {
+    width: 320px;
+  }
+
+  .contact-group-title {
+    margin: 6px 20px 10px;
+    padding: 8px 8px 12px;
+  }
+
+  .contact-box {
+    width: auto;
+    margin: 0 20px 8px;
+  }
+
+  .contact-logo {
+    margin-right: 20px;
+  }
+
+  .contact-btn {
+    width: calc(100% - 40px);
+    margin: 20px;
+  }
+
+  .contact-details-section {
+    left: calc(232px + 320px + 28px);
+    right: 28px;
+    padding: 48px 0 40px;
+    gap: 40px;
+  }
+
+  .contact-details-headline,
+  .contact-details-headline-text {
+    gap: 20px;
+  }
+
+  .contact-details-headline h1 {
+    font-size: 52px;
+  }
+
+  .contact-details-headline p {
+    font-size: 24px;
+  }
+
+  .contact-details-profile {
+    gap: 20px;
+  }
+
+  .contact-details-avatar {
+    width: 96px;
+    height: 96px;
+    font-size: 36px;
+  }
+
+  .contact-details-name {
+    font-size: 38px;
+  }
+
+  .contact-details-actions {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+}
+
 @media (max-width: 576px) {
   html,
   body {
