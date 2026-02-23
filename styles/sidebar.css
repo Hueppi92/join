@@ -259,7 +259,7 @@ aside > img {
     display: block;
 }
 
-@media (max-width: 576px) {
+@media (max-width: 992px) {
     #profile-menu {
         display: block;
         opacity: 0;

@@ -610,7 +610,7 @@ main {
 
 @media (max-width: 1200px) {
   .contacts-section {
-    width: 320px;
+    width: 300px;
   }
 
   .contact-group-title {
@@ -633,10 +633,10 @@ main {
   }
 
   .contact-details-section {
-    left: calc(232px + 320px + 28px);
-    right: 28px;
-    padding: 48px 0 40px;
-    gap: 40px;
+    left: calc(232px + 300px + 24px);
+    right: 24px;
+    padding: 40px 0 32px;
+    gap: 32px;
   }
 
   .contact-details-headline,
@@ -653,7 +653,7 @@ main {
   }
 
   .contact-details-profile {
-    gap: 20px;
+    gap: 16px;
   }
 
   .contact-details-avatar {
@@ -667,8 +667,74 @@ main {
   }
 
   .contact-details-actions {
-    gap: 12px;
+    gap: 10px;
     flex-wrap: wrap;
+  }
+
+  .contact-details-info {
+    gap: 12px;
+  }
+
+  .contact-details-info-title {
+    margin: 12px 0;
+  }
+}
+
+@media (max-width: 992px) {
+  main {
+    margin-left: 0;
+    margin-top: 80px;
+    height: calc(100vh - 160px);
+    height: calc(100dvh - 160px);
+  }
+
+  .contacts-section {
+    left: 0;
+    top: 80px;
+    width: 320px;
+    height: calc(100vh - 160px);
+    height: calc(100dvh - 160px);
+  }
+
+  .contact-details-section {
+    top: 80px;
+    left: 320px;
+    width: calc(100vw - 320px);
+    right: 0;
+    bottom: 80px;
+    padding: 32px 20px 24px;
+    gap: 28px;
+  }
+
+  .contact-details-headline,
+  .contact-details-headline-text {
+    gap: 16px;
+  }
+
+  .contact-details-headline h1 {
+    font-size: 47px;
+  }
+
+  .contact-details-headline p {
+    font-size: 20px;
+  }
+
+  .contact-details-avatar {
+    width: 84px;
+    height: 84px;
+    font-size: 30px;
+  }
+
+  .contact-details-name {
+    font-size: 32px;
+  }
+
+  .contact-details-info-title,
+  .contact-details-label,
+  .contact-details-email,
+  .contact-details-phone,
+  .contact-details-action {
+    font-size: 18px;
   }
 }
 
@@ -996,7 +1062,7 @@ main {
   }
 }
 
-@media (max-width: 768px) {
+@media (min-width: 577px) and (max-width: 768px) {
   .contact-overlay {
     align-items: center;
     padding: 12px;
