@@ -114,11 +114,15 @@ aside > img {
     background-color: #091931;
 }
 
+.sidebar-navigation-item.active a {
+    color: white;
+}
+
 .sidebar-navigation-item a {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #FFFFFF;
+    color: #CDCDCD;
     text-decoration: none;
     font-size: 16px;
     width: 100%;
@@ -141,7 +145,7 @@ aside > img {
 .sidebar-legal-links .nav-links a {
     display: flex;
     align-items: center;
-    color: #CDCDCD;
+    color: #A8A8A8;
     text-decoration: none;
     font-size: 16px;
 }
