@@ -680,6 +680,24 @@ main {
   }
 }
 
+@media (min-width: 993px) and (max-width: 1200px) {
+  .contact-overlay__panel-left {
+    padding: 40px 32px;
+  }
+
+  .contact-overlay__panel-left h2 {
+    font-size: 46px;
+  }
+
+  .contact-overlay__panel-right {
+    padding: 40px 32px;
+  }
+
+  .contact-overlay__form-layout {
+    gap: 16px;
+  }
+}
+
 @media (max-width: 992px) {
   main {
     margin-left: 0;
@@ -1062,7 +1080,7 @@ main {
   }
 }
 
-@media (min-width: 577px) and (max-width: 768px) {
+@media (min-width: 577px) and (max-width: 992px) {
   .contact-overlay {
     align-items: center;
     padding: 12px;
