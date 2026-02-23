@@ -100,7 +100,7 @@
         <div class="column" id="done">
           <div class="column-header">
             <h2>Done</h2>
-            <button type="button" class="add-column-btn" onclick="openAddTaskModalBoard('done')"></button>
+            
           </div>
           <div class="task-list" id="done-list"></div>
         </div>
@@ -117,88 +117,148 @@
       <button type="button" class="close-btn" onclick="closeAddTaskModal()">×</button>
       <h1 class="modal-title">Add Task</h1>
 
-      <form id="taskForm">
-        <div class="editor_wrapper">
-          
-          <div class="editor_left">
-            <div class="left_row">
-              <label class="edit-label" for="title">Title <span class="error">*</span></label>
-              <input id="title" class="edit-input" type="text" placeholder="Enter a title" required>
-              <small class="error_text hidden">This field is required</small>
-            </div>
+      <div class="editor_wrapper">
 
-            <div class="left_row">
-              <label class="edit-label" for="description">Description</label>
-              <textarea id="description" class="edit-textarea" placeholder="Enter a Description"></textarea>
-            </div>
+      <!-- LEFT -->
+      <form class="new_task" id="taskForm">
+        <div class="left_row title_field">
+          <label for="titleInput">Title
+            <span class="error">*</span>
+          </label>
 
-            <div class="left_row">
-              <label class="edit-label" for="date">Due date <span class="error">*</span></label>
-              <input id="date" class="edit-input" type="date" min="2024-01-01" required>
-              <small class="error_text hidden">This field is required</small>
-            </div>
+          <div class="left_single_row">
+            <input id="titleInput" aria-describedby="titleError" type="text" placeholder="Enter a title" required>
           </div>
 
-          <div class="editor_divider"></div>
+          <small class="error_text">This field is required</small>
 
-          <div class="task_settings">
-            <div class="settings_block">
-              <label class="edit-label">Priority</label>
-              <div class="priority-row-edit" id="priorityRow">
-                <button type="button" class="prio-btn-edit" data-prio="urgent">
-                  Urgent <img src="../assets/icons/prio-urgent.svg" alt="">
-                </button>
-                <button type="button" class="prio-btn-edit active-medium" data-prio="medium">
-                  Medium <img src="../assets/icons/prio-medium.svg" alt="">
-                </button>
-                <button type="button" class="prio-btn-edit" data-prio="low">
-                  Low <img src="../assets/icons/prio-low.svg" alt="">
-                </button>
-              </div>
-            </div>
-
-            <div class="settings_block">
-              <label class="edit-label">Assigned to</label>
-              <div class="custom-select-container">
-                <div class="custom-select-header" onclick="toggleContactDropdown()">
-                  Select contacts to assign 
-                </div>
-                <div id="assignedDropdown" class="custom-contact-list hidden"></div>
-              </div>
-              <div id="assignedAvatars" class="edit-assigned-row"></div>
-            </div>
-
-            <div class="settings_block">
-              <label class="edit-label">Category <span class="error">*</span></label>
-              <div class="custom-select-container">
-                <div class="custom-select-header">Select task category <span>▼</span></div>
-                <div class="custom-contact-list hidden">
-                  <div class="contact-item" data-value="user-story">User Story</div>
-                  <div class="contact-item" data-value="technical-task">Technical Task</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="settings_block">
-              <label class="edit-label">Subtasks</label>
-              <div class="subtask-input-container">
-                <input class="edit-input" id="subtask" type="text" placeholder="Add new subtask">
-                <img src="../assets/icons/check.svg" onclick="addSubtask()" alt="Add">
-              </div>
-              <ul id="subtaskList" class="edit-subtask-list"></ul>
-            </div>
-          </div>
         </div>
 
-        <div class="edit-action-container">
-          <p><span class="error">*</span> This field is required</p>
-          <div class="footer_actions">
-            <button type="button" class="cancel-btn" onclick="closeAddTaskModal()">Clear ✕</button>
-            <button type="submit" class="save-btn">Create Task ✓</button>
+        <div class="left_row">
+          <label for="descriptionBox">Description</label>
+
+          <div class="left_single_row description_box">
+            <textarea id="descriptionBox" placeholder="Enter a Description"></textarea>
           </div>
+
+        </div>
+
+        <div class="left_row date_field">
+          <label for="dateInput">Due date
+            <span class="error">*</span>
+          </label>
+
+          <div class="left_single_row">
+            <input id="dateInput" type="date" min="2024-01-01" required>
+            <img class="calendar_icon" src="../assets/icons/calendar.svg">
+          </div>
+
+          <small class="error_text">This field is required</small>
         </div>
       </form>
+
+      <!-- DIVIDER -->
+      <div class="editor_divider"></div>
+
+      <!-- RIGHT -->
+      <div class="task_settings">
+
+        <div class="settings_block">
+          <label for="priorityRow">Priority</label>
+
+          <div class="priority_row" id="priorityRow">
+            <button type="button" class="prio urgent_btn" data-prio="urgent">
+              Urgent
+              <div>
+                <img src="../assets/icons/arrowUp.svg" class="urgent">
+                <img src="../assets/icons/arrowUp.svg" class="urgent">
+              </div>
+            </button>
+
+            <button type="button" class="prio medium_btn active" data-prio="medium">
+              Medium
+              <div>
+                <img src="../assets/icons/sameIcon.svg" class="medium">
+                <img src="../assets/icons/sameIcon.svg" class="medium">
+              </div>
+            </button>
+
+            <button type="button" class="prio low_btn" data-prio="low">
+              Low
+              <div>
+                <img src="../assets/icons/arrowDown.svg" class="low">
+                <img src="../assets/icons/arrowDown.svg" class="low">
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div class="settings_block">
+          <label for="assignedSelect">Assigned to</label>
+
+          <div class="select_native" id="assignedSelect" role="combobox" aria-expanded="false"
+            aria-controls="assignedDropdown">
+            <div class="selector_input">
+              <input type="text" id="assignedSearch" placeholder="Select contacts to assign" autocomplete="off" />
+            </div>
+
+            <div class="selector_dropdown" id="assignedDropdown" role="listbox">
+            </div>
+          </div>
+
+          <div id="assignedAvatars" class="assigned_avatars"></div>
+        </div>
+
+        <div class="settings_block">
+          <label for="categorySelectWrapper">Category</label>
+          <div class="select_native category-select" id="categorySelectWrapper">
+            <div class="selector_input">
+              <input type="text" id="categoryInput" placeholder="Select task category" readonly>
+            </div>
+
+            <div class="selector_dropdown" id="categoryDropdown">
+              <label class="dropdown_item" data-value="user-story" role="option">User Story</label>
+              <label class="dropdown_item" data-value="technical-task" role="option">Technical Task</label>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="settings_block subtasks_block">
+          <label for="subtaskInput">Subtasks</label>
+
+          <div class="subtask_input">
+            <input id="subtaskInput" type="text" placeholder="Add new subtask">
+
+            <div class="subtask_actions">
+              <button id="subtaskClear" aria-label="Clear subtask">
+                <img src="../assets/icons/close.svg" alt="">
+              </button>
+              <div class="separator"></div>
+              <button id="subtaskAdd" aria-label="Add subtask">
+                <img src="../assets/icons/check.svg" alt=""></img>
+              </button>
+            </div>
+          </div>
+
+          <ul id="subtaskList" class="subtask_list"></ul>
+        </div>
+      </div>
+
     </div>
+
+    <div class="task_footer">
+      <p>
+        <span class="error">*</span>
+        This field is required
+      </p>
+
+      <div class="footer_actions">
+        <button class="clear_btn">Clear ✕</button>
+        <button class="create_btn">Create Task ✓</button>
+      </div>
+    </div>
+
   </div>
   <div id="profile-menu" class="profile-overlay">
         <nav class="profile-menu">

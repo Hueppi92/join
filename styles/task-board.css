@@ -222,16 +222,7 @@ body {
     position: relative;
 }
 
-/* Die Trennlinie in der Mitte */
-.modal-content form::after {
-    content: "";
-    width: 1px;
-    background-color: #D1D1D1;
-    position: absolute;
-    left: 50%;
-    top: 0;
-    bottom: 80px; /* Platz für die Buttons lassen */
-}
+
 
 .left-side, .right-side {
     flex: 1;
@@ -743,161 +734,156 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     gap: 12px;
 }
 /* ==========================================================================
-   ADD TASK MODAL – ISOLIERTER FIX (SONST NICHTS)
+   4. ADD TASK MODAL (Optimiert)
    ========================================================================== */
 
-/* Modal Container */
+/* Modal Container & Basis */
 #addTaskModal .modal-content {
-    min-width: 1460px;
+    width: 1116px;
     max-width: 95vw;
     max-height: 90vh;
-    background-color: white;
+    background-color: var(--white);
     border-radius: 30px;
-    padding: 64px 74px;
+    padding: 48px 64px;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* wichtig */
+    overflow: hidden;
+    position: relative;
 }
 
-/* Wrapper für Inhalt + Footer */
 #addTaskModal form {
     display: flex;
     flex-direction: column;
     flex: 1;
     overflow: hidden;
-    
 }
 
-/* Scrollbarer Hauptinhalt */
+/* Zweispaltiges Layout */
 #addTaskModal .editor_wrapper {
     display: flex;
-    flex-direction: row;
+    justify-content: space-between;
     gap: 48px;
     flex: 1;
     overflow-y: auto;
-    
-    
+    padding-right: 8px; /* Platz für Scrollbar */
 }
 
-/* Spalten */
 #addTaskModal .editor_left,
 #addTaskModal .task_settings {
     flex: 1;
-    min-width: 0; /* verhindert Overflow-Bugs */
+    min-width: 0;
+    max-width: 50%;
     display: flex;
     flex-direction: column;
-    max-width:50%;
 }
 
-/* Trennlinie – volle Höhe */
+/* Trennlinie */
 #addTaskModal .editor_divider {
-    width:0px;
-    background-color: #D1D1D1;
-    
-}
-
-/* Footer bleibt unten */
-#addTaskModal .edit-action-container {
-    display: flex;
-    justify-content: flex-end;
-    gap: 16px;
-    padding-top: 24px;
-    margin-top: 24px;
-    border-top: 1px solid #D1D1D1;
+    width: 1px;
+    background-color: var(--separator-color);
+    margin: 0;
     flex-shrink: 0;
 }
 
-/* Inputs */
+/* Formular-Elemente */
+#addTaskModal label, 
+#addTaskModal .edit-label {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--dark-blue);
+    margin: 16px 0 8px;
+    display: block;
+}
+
 #addTaskModal .edit-input,
 #addTaskModal .edit-textarea,
 #addTaskModal .custom-select-header {
-    margin:0;
-    padding: 5px ;
-    border: 1px solid #D1D1D1;
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--separator-color);
     border-radius: 10px;
     font-size: 16px;
     outline: none;
+    background-color: var(--white);
 }
 
 #addTaskModal .edit-textarea {
-    min-height: 80px;
+    min-height: 100px;
     resize: none;
 }
 
-/* Labels */
-#addTaskModal .edit-label {
-    font-size: 12px;
-    font-weight: 700;
-    color: #2A3647;
-    margin: 16px 0 8px;
-}
-
-/* Priority */
+/* Priorität-Buttons */
 #addTaskModal .priority-row-edit {
     display: flex;
     gap: 8px;
+    margin-top: 8px;
 }
 
 #addTaskModal .prio-btn-edit {
     flex: 1;
     padding: 12px;
     border-radius: 10px;
-    border: 1px solid #D1D1D1;
-    background: white;
+    border: 1px solid var(--separator-color);
+    background: var(--white);
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     cursor: pointer;
+    font-weight: 400;
+    transition: all 100ms;
 }
 
-#addTaskModal .prio-btn-edit.active-urgent {
-    background-color: #FF3D00;
-    color: white;
+#addTaskModal .prio-btn-edit.active-urgent { background-color: var(--prio-urgent); color: var(--white); border-color: var(--prio-urgent); }
+#addTaskModal .prio-btn-edit.active-medium { background-color: var(--prio-medium); color: var(--white); border-color: var(--prio-medium); }
+#addTaskModal .prio-btn-edit.active-low { background-color: var(--prio-low); color: var(--white); border-color: var(--prio-low); }
+
+#addTaskModal .prio-btn-edit[class*="active-"] img {
+    filter: brightness(0) invert(1);
 }
 
-#addTaskModal .prio-btn-edit.active-medium {
-    background-color: #FFA800;
-    color: white;
-}
-
-#addTaskModal .prio-btn-edit.active-low {
-    background-color: #7AE229;
-    color: white;
-}
-
-/* Subtask Input Icon */
+/* Subtasks */
 #addTaskModal .subtask-input-container {
     position: relative;
+    display: flex;
+    align-items: center;
 }
 
 #addTaskModal .subtask-input-container img {
     position: absolute;
     right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
     cursor: pointer;
 }
 
-/* Save Button */
+/* Footer & Buttons */
+#addTaskModal .edit-action-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    padding-top: 24px;
+    margin-top: 24px;
+    border-top: 1px solid var(--separator-color);
+    flex-shrink: 0;
+}
+
 #addTaskModal .save-btn {
-    background-color: #2A3647;
-    color: white;
+    background-color: var(--dark-blue);
+    color: var(--white);
     padding: 12px 24px;
     border-radius: 10px;
     border: none;
     font-size: 18px;
     font-weight: 700;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 #addTaskModal .save-btn:hover {
-    background-color: #29ABE2;
-}
- .footer-actions {
-    display:flex;
-    align-items: center;
-    justify-content: flex-end;
+    background-color: var(--light-blue);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
 }
 /* ==========================================================================
    7. UTILS & MEDIA QUERIES
@@ -905,8 +891,102 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .error { color: var(--error-red); }
 .error_text { color: var(--error-red); font-size: 12px; }
 
-@media (max-width: 1280px) {
-    #addTaskModal .form-body-content {
+/* ==========================================================================
+   7. MEDIA QUERIES (FLIESSEND RESPONSIVE)
+   ========================================================================== */
+
+/* 1. TABLET & KLEINER DESKTOP (ca. 1100px - 1280px) */
+@media (max-width: 1200px) {
+    .board-container {
+        margin: 100px auto 0;
+        padding: 0 20px;
+    }
+
+    #addTaskModal .modal-content {
+        width: 90vw;
+        padding: 40px;
+    }
+
+    #addTaskModal .editor_wrapper {
+        gap: 24px;
+    }
+}
+
+/* 2. UMSTIEG VON 2 AUF 1 SPALTE (Modal & Editor) */
+@media (max-width: 1000px) {
+    #addTaskModal .editor_wrapper {
         flex-direction: column;
+        overflow-y: auto;
+    }
+
+    #addTaskModal .editor_left, 
+    #addTaskModal .task_settings {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    #addTaskModal .editor_divider {
+        display: none; /* Trennlinie weg, wenn untereinander */
+    }
+    
+    .board-header h1 {
+        font-size: 48px;
+    }
+}
+
+/* 3. MOBILE (Board-Spalten stapeln & Header-Umbruch) */
+@media (max-width: 768px) {
+    .board-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .search-add {
+        width: 100%;
+        flex-direction: column-reverse; /* Suche oben, Button unten oder umgekehrt */
+        align-items: stretch;
+    }
+
+    .board {
+        flex-direction: column;
+        align-items: center;
+        gap: 40px;
+    }
+
+    .column {
+        width: 100%;
+        max-width: 400px; /* Damit Karten auf Handys nicht zu breit werden */
+        min-width: unset;
+    }
+
+    .board-header h1 {
+        font-size: 36px;
+    }
+
+    #addTaskModal .modal-content {
+        padding: 24px;
+        border-radius: 20px;
+    }
+
+    .priority-row-edit {
+        flex-wrap: wrap; /* Prio-Buttons brechen bei sehr schmalen Handys um */
+    }
+
+    .prio-btn-edit {
+        padding: 10px;
+        font-size: 16px;
+    }
+}
+
+/* 4. SEHR KLEINE SMARTPHONES */
+@media (max-width: 480px) {
+    .board-container {
+        margin-top: 80px;
+    }
+
+    .add-task {
+        width: 100%;
+        text-align: center;
     }
 }
