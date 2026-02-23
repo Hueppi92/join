@@ -22,3 +22,8 @@ h2 {
 .paragraph_1 {
   margin-bottom: 20px;
 }
+.block {
+  display: flex;
+  align-items: stretch;
+  gap:40px;
+}
