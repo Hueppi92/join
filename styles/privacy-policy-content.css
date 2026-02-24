@@ -2,4 +2,12 @@
 .privacy-policy-content {
     margin: 300px;
     margin-top: 120px;
+    overflow-x: scroll;
+}
+
+@media (max-width: 768px) {
+    .privacy-policy-content {
+        margin: 20px;
+        margin-top: 120px;
+    }
 }
