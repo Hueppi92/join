@@ -868,12 +868,22 @@
     .search-container input { width: 160px; }
 }
 
+@media (max-width: 992px) {
+    .board-container {
+        margin-left: 0;
+        width: 100%;
+        min-height: 100%;
+        padding: 16px 20px 20px;
+    }
+}
+
 @media (max-width: 768px) {
     /* Sidebar versteckt auf Mobile */
     .board-container {
         margin-left: 0;
         width: 100%;
-        padding: 80px 16px 90px 16px;
+        min-height: 100%;
+        padding: 16px 16px 20px;
     }
 
     .board-header { flex-direction: column; align-items: stretch; gap: 12px; margin-bottom: 20px; }
@@ -909,7 +919,7 @@
 }
 
 @media (max-width: 480px) {
-    .board-container { margin-left: 0; width: 100%; padding: 80px 12px 90px; }
+    .board-container { margin-left: 0; width: 100%; min-height: 100%; padding: 12px 12px 16px; }
     .board-header h1 { font-size: 30px; }
     .card { padding: 14px; border-radius: 16px; }
     .badge { font-size: 13px; padding: 3px 10px; }
@@ -927,7 +937,7 @@
 }
 
 @media (max-width: 360px) {
-    .board-container { margin-left: 0; width: 100%; padding: 80px 10px 90px; }
+    .board-container { margin-left: 0; width: 100%; min-height: 100%; padding: 10px 10px 16px; }
     .search-add { flex-wrap: wrap; }
     .search-container { width: 100%; }
     .add-task { width: 100%; justify-content: center; }

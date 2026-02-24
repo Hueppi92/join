@@ -11,6 +11,7 @@ body {
   justify-content: initial;
   align-items: initial;
   background-color: var(--bg-color);
+  overflow: hidden;
 }
 
 .contacts-list {
@@ -41,9 +42,9 @@ body {
 /* CONTACTS SECTION */
 .contacts-section {
   left: 232px;
-  top: 97px;
+  top: 96px;
   width: 370px;
-  height: calc(100vh - 97px);
+  height: calc(100vh - 96px);
   position: fixed;
   background-color: white;
   border-right: 1px solid #d1d1d1;
@@ -82,12 +83,16 @@ body {
   color: #ffffff;
 }
 
-main {
+body main {
   margin-left: 232px; /* Platz fuer die Sidebar */
   margin-top: 96px; /* Platz fuer den Header */
   height: calc(100vh - 96px); /* Volle Hoehe minus Header */
   overflow: hidden; /* Verhindert Scrollen der Hauptseite */
   position: relative;
+  top: auto;
+  right: auto;
+  bottom: auto;
+  left: auto;
 }
 .contact-btn {
   cursor: pointer;
@@ -405,13 +410,18 @@ main {
   left: calc(232px + 370px + 56px);
   right: 48px;
   bottom: 0;
-  padding: 72px 0 48px;
-  overflow-y: auto;
+  padding: clamp(40px, 8vh, 72px) 0 clamp(24px, 6vh, 48px);
+  overflow-y: hidden;
   overflow-x: hidden;
+  scrollbar-width: none;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 56px;
+  gap: clamp(24px, 6vh, 56px);
+}
+
+.contact-details-section.is-scrollable {
+  overflow-y: auto;
 }
 
 .contact-details-headline {
@@ -699,7 +709,7 @@ main {
 }
 
 @media (max-width: 992px) {
-  main {
+  body main {
     margin-left: 0;
     margin-top: 80px;
     height: calc(100vh - 160px);
@@ -764,7 +774,7 @@ main {
     overflow: hidden;
   }
 
-  main {
+  body main {
     margin-left: 0;
     margin-top: 80px;
     height: calc(100vh - 160px);

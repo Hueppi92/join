@@ -4,6 +4,8 @@
     --bg-color: #f6f7f8;
     --bg-color-secondary: #38485e;
     --white: #ffffff;
+    --mobile-header-height: 80px;
+    --mobile-footer-height: 80px;
 }
 
 body {
@@ -260,6 +262,28 @@ aside > img {
 }
 
 @media (max-width: 992px) {
+    html,
+    body {
+        height: 100%;
+    }
+
+    body {
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow: hidden;
+    }
+
+    main {
+        position: fixed;
+        top: var(--mobile-header-height);
+        right: 0;
+        bottom: var(--mobile-footer-height);
+        left: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
     #profile-menu {
         display: block;
         opacity: 0;

@@ -555,6 +555,31 @@ function isMobileContactsLayout() {
 }
 
 /**
+ * Updates desktop details panel scrollability based on real overflow.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+function syncContactDetailsSectionScrollability() {
+	const detailsSection = document.querySelector('.contact-details-section');
+	if (!detailsSection) return;
+	if (isMobileContactsLayout()) {
+		detailsSection.classList.remove('is-scrollable');
+		return;
+	}
+	const hasOverflow = detailsSection.scrollHeight - detailsSection.clientHeight > 1;
+	detailsSection.classList.toggle('is-scrollable', hasOverflow);
+}
+
+/**
+ * Schedules a scrollability sync after current layout updates.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+function scheduleContactDetailsSectionScrollabilitySync() {
+	window.requestAnimationFrame(syncContactDetailsSectionScrollability);
+}
+
+/**
  * Toggles mobile contact details view.
  * @param {boolean} isOpen - Whether the details panel should be visible.
  * @category Contacts
@@ -567,6 +592,7 @@ function setMobileContactDetailsState(isOpen) {
 	if (!shouldShowDetails) {
 		setMobileContactActionMenuState(false);
 	}
+	scheduleContactDetailsSectionScrollabilitySync();
 }
 
 /**
@@ -652,6 +678,7 @@ function initMobileContactDetailsControls() {
 			setMobileContactDetailsState(false);
 			setMobileContactActionMenuState(false);
 		}
+		scheduleContactDetailsSectionScrollabilitySync();
 	};
 
 	if (typeof mediaQuery.addEventListener === 'function') {
@@ -772,6 +799,7 @@ function renderContactDetails(contact, options = {}) {
 		placeholder.className = 'contact-details-placeholder';
 		placeholder.textContent = 'Select a contact to view details.';
 		detailsRef.appendChild(placeholder);
+		scheduleContactDetailsSectionScrollabilitySync();
 		return;
 	}
 
@@ -856,6 +884,7 @@ function renderContactDetails(contact, options = {}) {
 	if (options.animate) {
 		animateContactDetails(detailsRef);
 	}
+	scheduleContactDetailsSectionScrollabilitySync();
 }
 
 /**
@@ -1031,5 +1060,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	initContactOverlay();
 	initContactForm();
 	initMobileContactDetailsControls();
+	window.addEventListener('resize', scheduleContactDetailsSectionScrollabilitySync);
+	window.addEventListener('load', scheduleContactDetailsSectionScrollabilitySync);
 	loadContacts();
 });

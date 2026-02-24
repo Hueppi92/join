@@ -1,13 +1,20 @@
 /* =========================================================
    HEADER
 ========================================================= */
+body {
+    display: block;
+    justify-content: initial;
+    align-items: initial;
+    background-color: var(--bg-color);
+    overflow: hidden;
+}
+
 .task_header h1 {
     font-family: Inter, sans-serif;
     font-weight: 700;
     font-size: 61px;
     line-height: 120%;
-
-    margin: 0;
+    margin-bottom: 48px;
 
     color: black;
 }
@@ -17,16 +24,17 @@
 ========================================================= */
 .addTask-container {
     position: relative;
-    top: 0px;
-
-    width: 100%;
-    max-width: 1200px;
-    min-height: calc(100vh - 240px);
-    margin-top: 200px;
-    margin-left: 300px;
-    padding: 0 40px 40px 40px;
-
+    top: 0;
+    width: auto;
+    max-width: none;
+    min-height: 0;
+    height: calc(100vh - 96px);
+    margin-top: 96px;
+    margin-left: 328px;
+    padding: 104px 40px 40px;
+    overflow-y: auto;
     overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
 }
 
 .editor_wrapper {
@@ -875,17 +883,45 @@ input:focus-visible {
     }
 }
 
+@media (max-width: 992px) {
+    .addTask-container {
+        position: fixed;
+        top: var(--mobile-header-height);
+        right: 0;
+        bottom: var(--mobile-footer-height);
+        left: 0;
+        margin-top: 0;
+        margin-right: 0;
+        margin-bottom: 0;
+        margin-left: 0;
+        width: auto;
+        min-height: auto;
+        max-width: none;
+        padding: 16px 20px 20px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .task_footer {
+        position: static;
+        bottom: auto;
+        z-index: auto;
+        padding: 0;
+        margin-top: 24px;
+        border-top: none;
+    }
+}
+
 @media (max-width: 740px) {
     .addTask-container {
-        margin-left: 230px;
+        padding: 16px 16px 20px;
     }
 }
 
 @media (max-width: 576px) {
     .addTask-container {
-        margin-top: 120px;
-        margin-left: 0px;
-        margin-bottom: 64px;
+        padding: 12px 12px 16px;
     }
 
     .priority_row {
