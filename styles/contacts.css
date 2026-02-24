@@ -766,7 +766,7 @@ body main {
   }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 768px) {
   html,
   body {
     height: 100vh;

@@ -542,7 +542,7 @@ async function openEditContactOverlay(contactId, contact) {
 
 let contactsState = [];
 let selectedContactId = '';
-const MOBILE_CONTACTS_BREAKPOINT_QUERY = '(max-width: 576px)';
+const MOBILE_CONTACTS_BREAKPOINT_QUERY = '(max-width: 768px)';
 
 /**
  * Returns whether contacts mobile layout is active.
