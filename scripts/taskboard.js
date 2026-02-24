@@ -10,6 +10,9 @@ let boardTaskCache = {};
 let currentEditSubtasks = [];
 let currentEditContacts = [];
 
+// Status der aktuell ausgewählten Spalte beim Öffnen des Add-Task-Modals
+let currentSelectedStatus = 'todo';
+
 /* ==========================================================================
    2. UTILS & HELPER-FUNKTIONEN
    ========================================================================== */
@@ -63,7 +66,6 @@ function normalizeSubtasks(subtasks) {
     const subtasksRaw = subtasks || [];
     const subtasksArray = Array.isArray(subtasksRaw) ? subtasksRaw : Object.values(subtasksRaw);
     
-    // Sicherstellen, dass jeder Subtask ein Objekt mit title und completed ist
     return subtasksArray.map(st => {
         if (typeof st === 'string') return { title: st, completed: false };
         return {
@@ -171,7 +173,10 @@ function renderColumnHTML(columns) {
    ========================================================================== */
 
 function openAddTaskModalBoard(status = 'todo') {
-    currentSelectedStatus = status; 
+    // FIX 1: Status korrekt setzen damit taskeditor.js ihn beim Speichern lesen kann
+    currentSelectedStatus = status;
+    window.currentSelectedStatus = status; // Auch global verfügbar machen
+
     const modal = document.getElementById('addTaskModal');
     
     if (modal) {
@@ -184,7 +189,7 @@ function openAddTaskModalBoard(status = 'todo') {
         modal.setAttribute('aria-hidden', 'false');
         
         if (typeof initTaskEditor === 'function') {
-            initTaskEditor(); 
+            initTaskEditor();
         }
     }
 }
@@ -203,6 +208,9 @@ function closeAddTaskModal() {
         const form = document.querySelector('.new_task');
         if (form) form.reset();
     }
+
+    // FIX 2: Board nach Schließen neu rendern damit neuer Task sofort sichtbar ist
+    renderBoard();
 }
 
 async function openTaskDetail(taskId) {
@@ -252,53 +260,34 @@ async function editTask(taskId) {
     const task = boardTaskCache[taskId];
     if (!task) return;
 
-    // Buffer initialisieren
     currentEditSubtasks = task.subtasks ? [...task.subtasks] : [];
     currentEditContacts = task.assignedTo ? [...task.assignedTo] : [];
 
     const allUsers = await getUsersMap();
     const overlayCard = document.querySelector('#task-overlay .overlay-card');
     
-    // Template laden
     overlayCard.innerHTML = getEditTaskTemplate(task, taskId);
 
-    // Dropdown mit allen Usern füllen
     fillContactDropdown(allUsers);
-    
-    // Lokale Listen rendern
     refreshEditSubtaskUI();
     renderEditContactBadges();
 }
+
 function editTaskAssigned() {
     const select = document.getElementById('edit-assigned');
     if (!select) return;
     
     const userId = select.value;
-    if (!userId) return; // Nichts ausgewählt
+    if (!userId) return;
 
     const user = boardUsersCache[userId];
     
-    // Prüfen, ob User existiert und noch nicht im lokalen Buffer (currentEditContacts) ist
     if (user && !currentEditContacts.some(c => c.id === userId)) {
         currentEditContacts.push(mapUserToBadge(userId, user));
         renderEditContactBadges();
     }
     
-    select.value = ""; // Dropdown wieder auf "Select contacts" zurücksetzen
-}
-
-function fillContactDropdown(allUsers) {
-    const select = document.getElementById('edit-assigned');
-    if (!select) return;
-    
-    // Wir bauen die Optionen als einen langen String zusammen
-    let optionsHtml = '<option value="" disabled selected>Select contacts to assign</option>';
-    
-    Object.entries(allUsers).forEach(([userId, user]) => {
-        optionsHtml += `<option value="${userId}">${user.name}</option>`;
-    });
-    
-    select.innerHTML = optionsHtml;
+    select.value = "";
 }
 
 function addContactToEdit() {
@@ -308,27 +297,21 @@ function addContactToEdit() {
     const userId = select.value;
     if (!userId) return;
 
-    // Den User aus dem globalen Cache holen
     const user = boardUsersCache[userId];
-    
-    // Prüfen, ob der User bereits zugewiesen ist (Duplikate verhindern)
     const alreadyAssigned = currentEditContacts.some(c => c.id === userId);
     
     if (user && !alreadyAssigned) {
-        // Wir nutzen die bestehende Helper-Funktion für das Format
         currentEditContacts.push(mapUserToBadge(userId, user));
         renderEditContactBadges();
     }
     
-    // WICHTIG: Dropdown zurücksetzen, damit man denselben User 
-    // theoretisch nach Löschen wieder wählen kann
     select.value = ""; 
 }
+
 function toggleEditContactList() {
     const list = document.getElementById('edit-contact-list');
     const arrow = document.getElementById('dropdown-arrow');
     list.classList.toggle('hidden');
-    // Optional: Pfeil drehen, falls CSS vorhanden
     arrow.style.transform = list.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
 }
 
@@ -338,7 +321,6 @@ function fillContactDropdown(allUsers) {
 
     let html = '';
     Object.entries(allUsers).forEach(([userId, user]) => {
-        // Prüfen, ob User bereits im Buffer ist
         const isAssigned = currentEditContacts.some(c => c.id === userId);
         const badge = mapUserToBadge(userId, user);
 
@@ -354,19 +336,16 @@ function fillContactDropdown(allUsers) {
     });
     listContainer.innerHTML = html;
 }
+
 // Event Listener für die Suche
 document.getElementById('task-search')?.addEventListener('input', (event) => {
     const searchTerm = event.target.value.toLowerCase();
     
-    // Filtern erst ab 3 Buchstaben (oder wenn das Feld geleert wird)
     if (searchTerm.length >= 3 || searchTerm.length === 0) {
         filterTasks(searchTerm);
     }
 });
 
-/**
- * Filtert die Tasks basierend auf Titel, Beschreibung oder Datum
- */
 async function filterTasks(term) {
     const allTasks = boardTaskCache;
     const filteredColumns = { 'todo': '', 'in-progress': '', 'await-feedback': '', 'done': '' };
@@ -375,9 +354,8 @@ async function filterTasks(term) {
         const title = (task.title || "").toLowerCase();
         const description = (task.description || "").toLowerCase();
         
-        // Datum für die Suche vorbereiten (sowohl ISO als auch EU Format)
         const rawDate = task.dueDate || "";
-        const euDate = rawDate.split("-").reverse().join("."); // Macht aus 2026-02-18 -> 18.02.2026
+        const euDate = rawDate.split("-").reverse().join(".");
         
         if (title.includes(term) || description.includes(term) || euDate.includes(term)) {
             if (filteredColumns[task.status] !== undefined) {
@@ -393,22 +371,18 @@ function toggleUserSelection(userId) {
     const userIndex = currentEditContacts.findIndex(c => c.id === userId);
     
     if (userIndex > -1) {
-        // Entfernen, wenn schon da
         currentEditContacts.splice(userIndex, 1);
     } else {
-        // Hinzufügen, wenn neu
         const user = boardUsersCache[userId];
         currentEditContacts.push(mapUserToBadge(userId, user));
     }
 
-    // UI-Refresh ohne createElement
     fillContactDropdown(boardUsersCache);
     renderEditContactBadges();
 }
+
 function removeContactFromEdit(index) {
-    // Entfernt den User aus dem temporären Buffer
     currentEditContacts.splice(index, 1);
-    // UI neu zeichnen
     renderEditContactBadges();
 }
 
@@ -416,7 +390,6 @@ function renderEditContactBadges() {
     const container = document.getElementById('edit-assigned-badges');
     if (!container) return;
 
-    // Wir bauen den HTML-String komplett neu
     container.innerHTML = currentEditContacts.map((u, index) => `
         <div class="user-badge" 
              style="background-color: ${u.color}" 
@@ -476,13 +449,9 @@ async function saveTaskEdit(taskId) {
     try {
         await firebase.database().ref('tasks/' + taskId).update(updatedData);
         
-        // Cache lokal aktualisieren
         boardTaskCache[taskId] = { ...boardTaskCache[taskId], ...updatedData };
         
-        // Zurück zur Detailansicht
         openTaskDetail(taskId);
-        
-        // Board im Hintergrund neu zeichnen
         renderBoard();
     } catch (e) {
         console.error("Fehler beim Speichern:", e);
@@ -517,7 +486,6 @@ async function updateSubtaskStatus(taskId, index, completed) {
 
     await subtaskRef.set(updatedSubtask);
     
-    // Nach Status-Update Board und Detail-View auffrischen
     await renderBoard();
     openTaskDetail(taskId);
 }
@@ -530,6 +498,43 @@ function onDrop(taskId, newStatus) {
 
 function handleOverlayClick(event) {
     if (event.target.id === 'task-overlay') closeTaskDetail();
+}
+
+// ==========================================================================
+// OVERRIDES für taskeditor.js-Funktionen
+// (taskeditor.js wird nicht verändert — Fixes hier im Board-Kontext)
+// ==========================================================================
+
+/**
+ * Überschreibt buildTaskObject() aus taskeditor.js:
+ * Verwendet currentSelectedStatus statt hardcoded "todo"
+ */
+function buildTaskObject() {
+    const status = (typeof currentSelectedStatus !== 'undefined' && currentSelectedStatus)
+        ? currentSelectedStatus
+        : 'todo';
+
+    return {
+        title: document.getElementById("titleInput").value.trim(),
+        description: document.querySelector("textarea").value.trim(),
+        dueDate: document.getElementById("dateInput").value.trim(),
+        priority: getActivePriority(),
+        category: document.getElementById("categoryInput")?.dataset.value || "",
+        assignedTo: getAssignedUsers(),
+        subtasks: getSubtasks(),
+        status: status,
+        createdAt: Date.now()
+    };
+}
+
+/**
+ * Überschreibt handleTaskCreatedSuccess() aus taskeditor.js:
+ * Kein Redirect — stattdessen Modal schließen + Board neu rendern
+ */
+function handleTaskCreatedSuccess() {
+    closeAddTaskModal();
+    resetTaskForm();
+    renderBoard();
 }
 
 // Initialer Start beim Laden der Seite

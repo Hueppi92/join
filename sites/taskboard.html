@@ -64,6 +64,10 @@
         <div class="search-add">
           <div class="search-container">
             <input type="text" placeholder="Find Task" id="task-search" aria-label="Search for tasks" />
+            <div class="search-divider"></div>
+            <button type="button" class="search-icon-btn" aria-label="Search">
+              <img src="../assets/icons/search.svg" alt="Search" class="search-icon">
+            </button>
           </div>
 
           <button type="button" class="add-task" onclick="openAddTaskModalBoard()">
@@ -73,37 +77,42 @@
       </div>
 
       <div class="board">
+
+        <!-- TO DO: MIT + Button -->
         <div class="column" id="todo">
           <div class="column-header">
             <h2>To do</h2>
-            <button type="button" class="add-column-btn" onclick="openAddTaskModalBoard('todo')"></button>
+            <button class="add-column-btn" onclick="openAddTaskModalBoard('todo')" title="Add task">+</button>
           </div>
-          <div class="task-list" id="todo-list"></div>
+          <div class="task-list"></div>
         </div>
 
+        <!-- IN PROGRESS: MIT + Button -->
         <div class="column" id="in-progress">
           <div class="column-header">
             <h2>In progress</h2>
-            <button type="button" class="add-column-btn" onclick="openAddTaskModalBoard('in-progress')"></button>
+            <button class="add-column-btn" onclick="openAddTaskModalBoard('in-progress')" title="Add task">+</button>
           </div>
-          <div class="task-list" id="inprogress-list"></div>
+          <div class="task-list"></div>
         </div>
 
+        <!-- AWAIT FEEDBACK: MIT + Button -->
         <div class="column" id="await-feedback">
           <div class="column-header">
             <h2>Await feedback</h2>
-            <button type="button" class="add-column-btn" onclick="openAddTaskModalBoard('await-feedback')"></button>
+            <button class="add-column-btn" onclick="openAddTaskModalBoard('await-feedback')" title="Add task">+</button>
           </div>
-          <div class="task-list" id="feedback-list"></div>
+          <div class="task-list"></div>
         </div>
 
+        <!-- DONE: KEIN + Button -->
         <div class="column" id="done">
           <div class="column-header">
             <h2>Done</h2>
-            
           </div>
-          <div class="task-list" id="done-list"></div>
+          <div class="task-list"></div>
         </div>
+
       </div>
     </div>
   </main>
@@ -223,7 +232,6 @@
           </div>
         </div>
 
-
         <div class="settings_block subtasks_block">
           <label for="subtaskInput">Subtasks</label>
 
@@ -287,8 +295,8 @@
   <script src="../script.js"></script>
   <script src="../scripts/avatar-utils.js"></script>
   <script src="../scripts/taskboardTemplate.js"></script>
-  <script src="../scripts/taskboard.js"></script>
   <script src="../scripts/taskeditor.js"></script>
+  <script src="../scripts/taskboard.js"></script>
 
 </body>
 
