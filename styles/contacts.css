@@ -37,6 +37,7 @@ body {
   justify-content: center;
   color: #ffffff;
   margin-right: 35px;
+  flex-shrink: 0;
 }
 
 /* CONTACTS SECTION */
@@ -61,10 +62,22 @@ body {
   display: block;
   font-size: 20px;
   font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .contact-email {
   color: #007cee;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contact-info {
+  min-width: 0;
+  flex: 1;
 }
 .contact-box {
   padding: 12px;

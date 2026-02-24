@@ -963,6 +963,7 @@ function renderContacts(contacts) {
 			avatar.textContent = initials;
 
 			const info = document.createElement('div');
+			info.className = 'contact-info';
 			const name = document.createElement('span');
 			name.className = 'contact-name';
 			name.textContent = contact.name || 'Unknown Contact';
