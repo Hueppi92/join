@@ -77,6 +77,84 @@ function getSelectedContact() {
 	return contactsState.find((contact) => contact.id === selectedContactId) || null;
 }
 
+
+function bindMobileBackButton(backButton) {
+	if (!backButton) return;
+	backButton.addEventListener('click', () => {
+		setMobileContactActionMenuState(false);
+		setMobileContactDetailsState(false);
+	});
+}
+
+
+function bindMobileMenuToggle(menuButton, actionMenu) {
+	if (!menuButton || !actionMenu) return;
+	menuButton.addEventListener('click', () => {
+		const isOpen = actionMenu.classList.contains('is-open');
+		setMobileContactActionMenuState(!isOpen);
+	});
+}
+
+
+function bindMobileMenuOutsideClose(menuButton, actionMenu) {
+	if (!menuButton || !actionMenu) return;
+	document.addEventListener('click', (event) => {
+		if (!actionMenu.classList.contains('is-open')) return;
+		if (actionMenu.contains(event.target) || menuButton.contains(event.target)) return;
+		setMobileContactActionMenuState(false);
+	});
+}
+
+
+function bindMobileEditButton(editButton) {
+	if (!editButton) return;
+	editButton.addEventListener('click', () => {
+		const selectedContact = getSelectedContact();
+		if (!selectedContact) return;
+		setMobileContactActionMenuState(false);
+		openEditContactOverlay(selectedContact.id, selectedContact);
+	});
+}
+
+
+function bindMobileDeleteButton(deleteButton) {
+	if (!deleteButton) return;
+	deleteButton.addEventListener('click', async () => {
+		const selectedContact = getSelectedContact();
+		if (!selectedContact) return;
+		setMobileContactActionMenuState(false);
+		await deleteContact(selectedContact.id);
+		await refreshContactsList();
+	});
+}
+
+
+function createMobileViewportChangeHandler(mediaQuery) {
+	return () => {
+		if (!mediaQuery.matches) {
+			setMobileContactDetailsState(false);
+			setMobileContactActionMenuState(false);
+		}
+		scheduleContactDetailsSectionScrollabilitySync();
+	};
+}
+
+
+function bindMobileViewportChangeListener() {
+	const mediaQuery = window.matchMedia(MOBILE_CONTACTS_BREAKPOINT_QUERY);
+	const onViewportChange = createMobileViewportChangeHandler(mediaQuery);
+	if (typeof mediaQuery.addEventListener === 'function') mediaQuery.addEventListener('change', onViewportChange);
+	if (typeof mediaQuery.addListener === 'function') mediaQuery.addListener(onViewportChange);
+}
+
+
+function bindMobileEscapeHandler() {
+	window.addEventListener('keydown', (event) => {
+		if (event.key !== 'Escape') return;
+		setMobileContactActionMenuState(false);
+	});
+}
+
 /**
  * Initializes mobile-only controls for switching between list and details.
  * @category Contacts
@@ -84,67 +162,16 @@ function getSelectedContact() {
  */
 function initMobileContactDetailsControls() {
 	const backButton = document.getElementById('mobile-contact-back-btn');
-	if (backButton) {
-		backButton.addEventListener('click', () => {
-			setMobileContactActionMenuState(false);
-			setMobileContactDetailsState(false);
-		});
-	}
-
 	const menuButton = document.getElementById('mobile-contact-detail-menu-btn');
 	const actionMenu = document.getElementById('mobile-contact-detail-menu');
 	const editButton = document.getElementById('mobile-contact-menu-edit');
 	const deleteButton = document.getElementById('mobile-contact-menu-delete');
 
-	if (menuButton && actionMenu) {
-		menuButton.addEventListener('click', () => {
-			const isOpen = actionMenu.classList.contains('is-open');
-			setMobileContactActionMenuState(!isOpen);
-		});
-
-		document.addEventListener('click', (event) => {
-			if (!actionMenu.classList.contains('is-open')) return;
-			if (actionMenu.contains(event.target) || menuButton.contains(event.target)) return;
-			setMobileContactActionMenuState(false);
-		});
-	}
-
-	if (editButton) {
-		editButton.addEventListener('click', () => {
-			const selectedContact = getSelectedContact();
-			if (!selectedContact) return;
-			setMobileContactActionMenuState(false);
-			openEditContactOverlay(selectedContact.id, selectedContact);
-		});
-	}
-
-	if (deleteButton) {
-		deleteButton.addEventListener('click', async () => {
-			const selectedContact = getSelectedContact();
-			if (!selectedContact) return;
-			setMobileContactActionMenuState(false);
-			await deleteContact(selectedContact.id);
-			await refreshContactsList();
-		});
-	}
-
-	const mediaQuery = window.matchMedia(MOBILE_CONTACTS_BREAKPOINT_QUERY);
-	const onViewportChange = () => {
-		if (!mediaQuery.matches) {
-			setMobileContactDetailsState(false);
-			setMobileContactActionMenuState(false);
-		}
-		scheduleContactDetailsSectionScrollabilitySync();
-	};
-
-	if (typeof mediaQuery.addEventListener === 'function') {
-		mediaQuery.addEventListener('change', onViewportChange);
-	} else if (typeof mediaQuery.addListener === 'function') {
-		mediaQuery.addListener(onViewportChange);
-	}
-
-	window.addEventListener('keydown', (event) => {
-		if (event.key !== 'Escape') return;
-		setMobileContactActionMenuState(false);
-	});
+	bindMobileBackButton(backButton);
+	bindMobileMenuToggle(menuButton, actionMenu);
+	bindMobileMenuOutsideClose(menuButton, actionMenu);
+	bindMobileEditButton(editButton);
+	bindMobileDeleteButton(deleteButton);
+	bindMobileViewportChangeListener();
+	bindMobileEscapeHandler();
 }

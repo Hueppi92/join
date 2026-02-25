@@ -42,6 +42,29 @@ function writeLocalContactsMap(contactsMap) {
 	}
 }
 
+
+function normalizeCachedContact(item) {
+	return {
+		id: item.id,
+		name: item.name || '',
+		email: item.email || '',
+		phone: item.phone || '',
+		createdAt: item.createdAt || 0,
+	};
+}
+
+
+function isValidCachedContact(item) {
+	return item && typeof item === 'object' && typeof item.id === 'string';
+}
+
+
+function parseContactsCache(rawValue) {
+	const parsed = JSON.parse(rawValue);
+	if (!Array.isArray(parsed)) return [];
+	return parsed.filter(isValidCachedContact).map(normalizeCachedContact);
+}
+
 /**
  * Reads cached contact list from localStorage.
  * @returns {Array<{id: string, name: string, email: string, phone: string, createdAt?: number}>} Cached contacts.
@@ -52,17 +75,7 @@ function readContactsCache() {
 	try {
 		const raw = localStorage.getItem(CONTACTS_CACHE_KEY);
 		if (!raw) return [];
-		const parsed = JSON.parse(raw);
-		if (!Array.isArray(parsed)) return [];
-		return parsed
-			.filter((item) => item && typeof item === 'object' && typeof item.id === 'string')
-			.map((item) => ({
-				id: item.id,
-				name: item.name || '',
-				email: item.email || '',
-				phone: item.phone || '',
-				createdAt: item.createdAt || 0,
-			}));
+		return parseContactsCache(raw);
 	} catch (error) {
 		return [];
 	}
@@ -193,6 +206,33 @@ function sortContactsByName(contacts) {
 	);
 }
 
+
+function toNormalizedContact(id, value) {
+	return {
+		id,
+		name: value?.name || '',
+		email: value?.email || '',
+		phone: value?.phone || '',
+		createdAt: value?.createdAt || 0,
+	};
+}
+
+
+function mapContactsObjectToList(contactsMap) {
+	return Object.entries(contactsMap || {}).map(([id, value]) => toNormalizedContact(id, value));
+}
+
+
+async function readContactsSource() {
+	if (!hasDb()) return readLocalContactsMap();
+	try {
+		const snapshot = await db.ref('contacts').get();
+		return snapshot.val() || {};
+	} catch (error) {
+		return readLocalContactsMap();
+	}
+}
+
 /**
  * Fetches all contacts from Firebase.
  * @returns {Promise<Array<{id: string, name: string, email: string, phone: string, createdAt?: number}>>} Contact list.
@@ -200,28 +240,21 @@ function sortContactsByName(contacts) {
  * @subcategory Firebase Logic
  */
 async function fetchContacts() {
-	let contacts = {};
-	if (hasDb()) {
-		try {
-			const snapshot = await db.ref('contacts').get();
-			contacts = snapshot.val() || {};
-		} catch (error) {
-			contacts = readLocalContactsMap();
-		}
-	} else {
-		contacts = readLocalContactsMap();
-	}
-	const normalizedContacts = Object.entries(contacts)
-		.map(([id, value]) => ({
-			id,
-			name: value?.name || '',
-			email: value?.email || '',
-			phone: value?.phone || '',
-			createdAt: value?.createdAt || 0,
-		}));
+	const contacts = await readContactsSource();
+	const normalizedContacts = mapContactsObjectToList(contacts);
 	const sortedContacts = sortContactsByName(normalizedContacts);
 	writeContactsCache(sortedContacts);
 	return sortedContacts;
+}
+
+
+function areContactsEqualByFields(leftContact, rightContact) {
+	if (!leftContact || !rightContact) return false;
+	if (leftContact.id !== rightContact.id) return false;
+	if (leftContact.name !== rightContact.name) return false;
+	if (leftContact.email !== rightContact.email) return false;
+	if (leftContact.phone !== rightContact.phone) return false;
+	return (leftContact.createdAt || 0) === (rightContact.createdAt || 0);
 }
 
 /**
@@ -235,14 +268,7 @@ async function fetchContacts() {
 function areContactListsEqual(left, right) {
 	if (left.length !== right.length) return false;
 	for (let index = 0; index < left.length; index += 1) {
-		const a = left[index];
-		const b = right[index];
-		if (!a || !b) return false;
-		if (a.id !== b.id) return false;
-		if (a.name !== b.name) return false;
-		if (a.email !== b.email) return false;
-		if (a.phone !== b.phone) return false;
-		if ((a.createdAt || 0) !== (b.createdAt || 0)) return false;
+		if (!areContactsEqualByFields(left[index], right[index])) return false;
 	}
 	return true;
 }

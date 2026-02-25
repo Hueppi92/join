@@ -45,6 +45,109 @@ function animateContactDetails(detailsRef) {
 	detailsRef.classList.add('is-entering');
 }
 
+
+function createContactDetailsPlaceholder() {
+	const placeholder = document.createElement('p');
+	placeholder.className = 'contact-details-placeholder';
+	placeholder.textContent = 'Select a contact to view details.';
+	return placeholder;
+}
+
+
+function createContactDetailsAction(label, iconPath, onClick) {
+	const button = document.createElement('button');
+	button.type = 'button';
+	button.className = 'contact-details-action';
+	button.innerHTML = `<img src="${iconPath}" alt="" aria-hidden="true"><span>${label}</span>`;
+	button.addEventListener('click', onClick);
+	return button;
+}
+
+
+function createContactDetailsActions(contact) {
+	const actions = document.createElement('div');
+	actions.className = 'contact-details-actions';
+	actions.appendChild(createContactDetailsAction('Edit', '../assets/icons/edit.svg', () => openEditContactOverlay(contact.id, contact)));
+	actions.appendChild(createContactDetailsAction('Delete', '../assets/icons/delete.svg', async () => {
+		await deleteContact(contact.id);
+		await refreshContactsList();
+	}));
+	return actions;
+}
+
+
+function createContactDetailsProfile(contact) {
+	const profile = document.createElement('div');
+	profile.className = 'contact-details-profile';
+	const avatar = document.createElement('div');
+	avatar.className = 'contact-details-avatar';
+	avatar.style.background = getContactAvatarColor(contact.name);
+	avatar.textContent = getContactInitials(contact.name);
+	profile.appendChild(avatar);
+	profile.appendChild(createContactDetailsProfileInfo(contact));
+	return profile;
+}
+
+
+function createContactDetailsProfileInfo(contact) {
+	const profileInfo = document.createElement('div');
+	profileInfo.className = 'contact-details-profile-info';
+	const name = document.createElement('h2');
+	name.className = 'contact-details-name';
+	name.textContent = contact.name || 'Unknown Contact';
+	profileInfo.appendChild(name);
+	profileInfo.appendChild(createContactDetailsActions(contact));
+	return profileInfo;
+}
+
+
+function createContactDetailsEmailNode(emailValue) {
+	const emailNode = document.createElement(emailValue ? 'a' : 'p');
+	emailNode.className = 'contact-details-email';
+	emailNode.textContent = emailValue || '-';
+	if (emailValue) emailNode.href = `mailto:${emailValue}`;
+	return emailNode;
+}
+
+
+function createContactDetailsLabel(text, className = 'contact-details-label') {
+	const label = document.createElement('p');
+	label.className = className;
+	label.textContent = text;
+	return label;
+}
+
+
+function createContactDetailsInfo(contact) {
+	const info = document.createElement('div');
+	info.className = 'contact-details-info';
+	appendContactDetailsInfoContent(info, contact);
+	return info;
+}
+
+
+function appendContactDetailsInfoContent(info, contact) {
+	const emailValue = String(contact.email || '').trim();
+	const phone = createContactDetailsLabel(contact.phone || '-', 'contact-details-phone');
+	info.appendChild(createContactDetailsLabel('Contact Information', 'contact-details-info-title'));
+	info.appendChild(createContactDetailsLabel('Email'));
+	info.appendChild(createContactDetailsEmailNode(emailValue));
+	info.appendChild(createContactDetailsLabel('Phone'));
+	info.appendChild(phone);
+}
+
+
+function renderContactDetailsPlaceholder(detailsRef) {
+	detailsRef.appendChild(createContactDetailsPlaceholder());
+	scheduleContactDetailsSectionScrollabilitySync();
+}
+
+
+function renderContactDetailsContent(detailsRef, contact) {
+	detailsRef.appendChild(createContactDetailsProfile(contact));
+	detailsRef.appendChild(createContactDetailsInfo(contact));
+}
+
 /**
  * Renders selected contact details on the right side.
  * @param {{id: string, name: string, email: string, phone: string} | null} contact - Contact to render.
@@ -59,96 +162,104 @@ function renderContactDetails(contact, options = {}) {
 	detailsRef.classList.remove('is-entering');
 
 	if (!contact) {
-		const placeholder = document.createElement('p');
-		placeholder.className = 'contact-details-placeholder';
-		placeholder.textContent = 'Select a contact to view details.';
-		detailsRef.appendChild(placeholder);
-		scheduleContactDetailsSectionScrollabilitySync();
+		renderContactDetailsPlaceholder(detailsRef);
 		return;
 	}
 
-	const initials = getContactInitials(contact.name);
-	const color = getContactAvatarColor(contact.name);
-	const profile = document.createElement('div');
-	profile.className = 'contact-details-profile';
-
-	const avatar = document.createElement('div');
-	avatar.className = 'contact-details-avatar';
-	avatar.style.background = color;
-	avatar.textContent = initials;
-
-	const profileInfo = document.createElement('div');
-	profileInfo.className = 'contact-details-profile-info';
-
-	const name = document.createElement('h2');
-	name.className = 'contact-details-name';
-	name.textContent = contact.name || 'Unknown Contact';
-
-	const actions = document.createElement('div');
-	actions.className = 'contact-details-actions';
-
-	const editButton = document.createElement('button');
-	editButton.type = 'button';
-	editButton.className = 'contact-details-action';
-	editButton.innerHTML = '<img src="../assets/icons/edit.svg" alt="" aria-hidden="true"><span>Edit</span>';
-	editButton.addEventListener('click', () => openEditContactOverlay(contact.id, contact));
-
-	const deleteButton = document.createElement('button');
-	deleteButton.type = 'button';
-	deleteButton.className = 'contact-details-action';
-	deleteButton.innerHTML = '<img src="../assets/icons/delete.svg" alt="" aria-hidden="true"><span>Delete</span>';
-	deleteButton.addEventListener('click', async () => {
-		await deleteContact(contact.id);
-		await refreshContactsList();
-	});
-
-	actions.appendChild(editButton);
-	actions.appendChild(deleteButton);
-	profileInfo.appendChild(name);
-	profileInfo.appendChild(actions);
-	profile.appendChild(avatar);
-	profile.appendChild(profileInfo);
-
-	const info = document.createElement('div');
-	info.className = 'contact-details-info';
-
-	const infoTitle = document.createElement('h3');
-	infoTitle.className = 'contact-details-info-title';
-	infoTitle.textContent = 'Contact Information';
-
-	const emailLabel = document.createElement('p');
-	emailLabel.className = 'contact-details-label';
-	emailLabel.textContent = 'Email';
-
-	const emailValue = String(contact.email || '').trim();
-	const email = document.createElement(emailValue ? 'a' : 'p');
-	email.className = 'contact-details-email';
-	email.textContent = emailValue || '-';
-	if (emailValue) {
-		email.href = `mailto:${emailValue}`;
-	}
-
-	const phoneLabel = document.createElement('p');
-	phoneLabel.className = 'contact-details-label';
-	phoneLabel.textContent = 'Phone';
-
-	const phone = document.createElement('p');
-	phone.className = 'contact-details-phone';
-	phone.textContent = contact.phone || '-';
-
-	info.appendChild(infoTitle);
-	info.appendChild(emailLabel);
-	info.appendChild(email);
-	info.appendChild(phoneLabel);
-	info.appendChild(phone);
-
-	detailsRef.appendChild(profile);
-	detailsRef.appendChild(info);
+	renderContactDetailsContent(detailsRef, contact);
 
 	if (options.animate) {
 		animateContactDetails(detailsRef);
 	}
 	scheduleContactDetailsSectionScrollabilitySync();
+}
+
+
+function createEmptyContactsListItem() {
+	const empty = document.createElement('p');
+	empty.className = 'contact-item';
+	empty.textContent = 'No contacts yet.';
+	return empty;
+}
+
+
+function groupContactsByLetter(contacts) {
+	return contacts.reduce((groups, contact) => {
+		const groupLetter = getContactGroupLetter(contact.name);
+		if (!groups.has(groupLetter)) groups.set(groupLetter, []);
+		groups.get(groupLetter).push(contact);
+		return groups;
+	}, new Map());
+}
+
+
+function createContactListInfo(contact) {
+	const info = document.createElement('div');
+	info.className = 'contact-info';
+	const name = document.createElement('span');
+	name.className = 'contact-name';
+	name.textContent = contact.name || 'Unknown Contact';
+	const email = document.createElement('span');
+	email.className = 'contact-email';
+	email.textContent = contact.email || '';
+	info.appendChild(name);
+	info.appendChild(email);
+	return info;
+}
+
+
+function bindContactSelection(box, contactId) {
+	box.addEventListener('click', () => selectContact(contactId));
+	box.addEventListener('keydown', (event) => {
+		if (event.key !== 'Enter' && event.key !== ' ') return;
+		event.preventDefault();
+		selectContact(contactId);
+	});
+}
+
+
+function createContactAvatarNode(contact) {
+	const avatar = document.createElement('div');
+	avatar.className = 'contact-logo';
+	avatar.style.background = getContactAvatarColor(contact.name);
+	avatar.textContent = getContactInitials(contact.name);
+	return avatar;
+}
+
+
+function createContactBox(contact) {
+	const box = document.createElement('div');
+	box.className = 'contact-box';
+	box.setAttribute('role', 'button');
+	box.setAttribute('tabindex', '0');
+	box.setAttribute('aria-label', `Open ${contact.name || 'contact'}`);
+	if (selectedContactId === contact.id) box.classList.add('is-selected');
+	box.appendChild(createContactAvatarNode(contact));
+	box.appendChild(createContactListInfo(contact));
+	bindContactSelection(box, contact.id);
+	return box;
+}
+
+
+function createContactListItem(contact) {
+	const item = document.createElement('div');
+	item.className = 'contact-item';
+	item.appendChild(createContactBox(contact));
+	return item;
+}
+
+
+function getSortedContactsInput(contacts) {
+	return sortContactsByName(Array.isArray(contacts) ? contacts : []);
+}
+
+
+function appendContactGroup(fragment, groupLetter, groupContacts) {
+	const title = document.createElement('h3');
+	title.className = 'contact-group-title';
+	title.textContent = groupLetter;
+	fragment.appendChild(title);
+	groupContacts.forEach((contact) => fragment.appendChild(createContactListItem(contact)));
 }
 
 /**
@@ -178,78 +289,16 @@ function renderContacts(contacts) {
 	const listRef = document.getElementById('contact-list');
 	if (!listRef) return;
 	listRef.replaceChildren();
-
-	const sortedContacts = sortContactsByName(Array.isArray(contacts) ? contacts : []);
+	const sortedContacts = getSortedContactsInput(contacts);
 
 	if (!sortedContacts.length) {
-		const empty = document.createElement('p');
-		empty.className = 'contact-item';
-		empty.textContent = 'No contacts yet.';
-		listRef.appendChild(empty);
+		listRef.appendChild(createEmptyContactsListItem());
 		return;
 	}
 
 	const fragment = document.createDocumentFragment();
-	const groupedContacts = sortedContacts.reduce((groups, contact) => {
-		const groupLetter = getContactGroupLetter(contact.name);
-		if (!groups.has(groupLetter)) {
-			groups.set(groupLetter, []);
-		}
-		groups.get(groupLetter).push(contact);
-		return groups;
-	}, new Map());
-
-	groupedContacts.forEach((group, groupLetter) => {
-		const title = document.createElement('h3');
-		title.className = 'contact-group-title';
-		title.textContent = groupLetter;
-		fragment.appendChild(title);
-
-		group.forEach((contact) => {
-			const initials = getContactInitials(contact.name);
-			const color = getContactAvatarColor(contact.name);
-			const isSelected = selectedContactId === contact.id;
-			const item = document.createElement('div');
-			item.className = 'contact-item';
-
-			const box = document.createElement('div');
-			box.className = 'contact-box';
-			box.setAttribute('role', 'button');
-			box.setAttribute('tabindex', '0');
-			box.setAttribute('aria-label', `Open ${contact.name || 'contact'}`);
-			if (isSelected) {
-				box.classList.add('is-selected');
-			}
-
-			const avatar = document.createElement('div');
-			avatar.className = 'contact-logo';
-			avatar.style.background = color;
-			avatar.textContent = initials;
-
-			const info = document.createElement('div');
-			info.className = 'contact-info';
-			const name = document.createElement('span');
-			name.className = 'contact-name';
-			name.textContent = contact.name || 'Unknown Contact';
-			const email = document.createElement('span');
-			email.className = 'contact-email';
-			email.textContent = contact.email || '';
-
-			info.appendChild(name);
-			info.appendChild(email);
-			box.appendChild(avatar);
-			box.appendChild(info);
-			box.addEventListener('click', () => selectContact(contact.id));
-			box.addEventListener('keydown', (event) => {
-				if (event.key !== 'Enter' && event.key !== ' ') return;
-				event.preventDefault();
-				selectContact(contact.id);
-			});
-
-			item.appendChild(box);
-			fragment.appendChild(item);
-		});
-	});
+	const groupedContacts = groupContactsByLetter(sortedContacts);
+	groupedContacts.forEach((group, groupLetter) => appendContactGroup(fragment, groupLetter, group));
 
 	listRef.appendChild(fragment);
 }
