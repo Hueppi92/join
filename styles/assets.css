@@ -17,6 +17,14 @@
 	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
+.btn:disabled,
+.btn[disabled] {
+	opacity: 0.8;
+	cursor: not-allowed;
+	pointer-events: none;
+	box-shadow: none;
+}
+
 .btn-dark {
 	background: var(--primary);
 	color: #ffffff;
@@ -25,6 +33,11 @@
 
 .btn-dark:hover {
 	background: var(--primary-hover);
+}
+
+.btn-dark:disabled,
+.btn-dark[disabled] {
+	background: var(--primary);
 }
 
 .btn-light {
@@ -37,6 +50,12 @@
 .btn-light:hover {
 	color: var(--primary-hover);
 	border-color: var(--primary-hover);
+}
+
+.btn-light:disabled,
+.btn-light[disabled] {
+	color: var(--primary);
+	border-color: var(--primary);
 }
 
 /* Contacts overlay buttons (Create / Save / Cancel / Delete) */
