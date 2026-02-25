@@ -6,7 +6,7 @@
     --white: #ffffff;
 }
 
-body {
+.summary-page {
     font-family: "Inter", sans-serif;
     background-color: var(--bg-color);
     margin: 0;
@@ -14,19 +14,19 @@ body {
     justify-content: initial;
     align-items: initial;
     min-height: 100vh;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .content-container {
     position: relative;
-    width: 100%;
-    max-width: 1200px;
-    height: 100vh;
+    width: auto;
+    max-width: none;
+    min-height: 100vh;
+    height: auto;
     margin-left: 328px;
     padding: 0 40px 40px 40px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
+    overflow: visible;
 }
 
 /* Header */
@@ -200,35 +200,45 @@ body {
 }
 
 @media (max-width: 992px) {
-    body {
+    .summary-page {
         display: block;
         align-items: stretch;
+        overflow: hidden;
     }
 
-    .content-container {
+    .summary-page .content-container {
+        position: fixed;
+        top: var(--mobile-header-height);
+        right: 0;
+        bottom: var(--mobile-footer-height);
+        left: 0;
         max-width: none;
         margin-left: 0;
-        min-height: 100%;
+        margin-top: 0;
+        min-height: 0;
         height: auto;
-        padding: 0 20px 20px;
-        overflow: visible;
+        padding: 24px 20px calc(20px + env(safe-area-inset-bottom));
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
     }
 
     .summary-header {
-        padding-top: 24px;
+        padding-top: 0;
     }
 }
 
 @media (max-width: 430px) {
-    body {
+    .summary-page {
         display: block;
         align-items: stretch;
     }
 
-    .content-container {
+    .summary-page .content-container {
         max-width: none;
         margin-left: 0;
-        padding: 0 20px 20px;
+        padding: 20px 20px calc(16px + env(safe-area-inset-bottom));
         box-sizing: border-box;
     }
 
@@ -337,8 +347,8 @@ body {
 }
 
 @media (max-width: 320px) {
-    .content-container {
-        padding: 0 12px 16px;
+    .summary-page .content-container {
+        padding: 16px 12px calc(12px + env(safe-area-inset-bottom));
     }
 
     .summary-header {

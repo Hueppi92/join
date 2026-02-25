@@ -1,23 +1,33 @@
 
 .privacy-policy-content {
-    margin-top: 96px;
-    margin-left: 232px;
-    height: calc(100vh - 96px);
+    position: fixed;
+    top: 96px;
+    right: 0;
+    bottom: 0;
+    left: 232px;
+    margin: 0;
+    height: auto;
     padding: 24px 40px 40px;
+    box-sizing: border-box;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
 }
 
 @media (max-width: 992px) {
+    main {
+        overflow: hidden !important;
+    }
+
     .privacy-policy-content {
         position: fixed;
-        top: 80px;
+        top: var(--mobile-header-height);
         right: 0;
-        bottom: 80px;
+        bottom: var(--mobile-footer-height);
         left: 0;
         margin: 0;
-        padding: 20px 16px;
+        padding: 20px 16px calc(16px + env(safe-area-inset-bottom));
         overflow-y: auto;
         overflow-x: hidden;
         -webkit-overflow-scrolling: touch;

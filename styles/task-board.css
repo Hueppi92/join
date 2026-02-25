@@ -278,12 +278,15 @@
     left: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
+    height: 100dvh !important;
     background: rgba(0,0,0,0.5) !important;
     align-items: center !important;
     justify-content: center !important;
     z-index: 9999 !important;
     padding: 16px !important;
     box-sizing: border-box !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
 }
 
 /* ==========================================================================
@@ -411,6 +414,7 @@
     width: 100%;
     max-width: 900px;
     max-height: 92vh;
+    max-height: calc(100dvh - 32px);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -443,6 +447,7 @@
     display: flex;
     gap: 40px;
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
     padding-right: 4px;
 }
@@ -897,7 +902,7 @@
     .board { grid-template-columns: 1fr; gap: 20px; }
     .column-header h2 { font-size: 22px; }
 
-    #addTaskModal .modal-content { padding: 28px 20px 20px; border-radius: 20px; max-height: 95vh; }
+    #addTaskModal .modal-content { padding: 28px 20px 20px; border-radius: 20px; max-height: 95vh; max-height: calc(100dvh - 32px); }
     .modal-title { font-size: 28px; margin-bottom: 16px; }
 
     .editor_wrapper { flex-direction: column; gap: 0; }
@@ -924,7 +929,7 @@
     .card { padding: 14px; border-radius: 16px; }
     .badge { font-size: 13px; padding: 3px 10px; }
 
-    #addTaskModal .modal-content { padding: 24px 14px; border-radius: 16px; max-height: 96vh; }
+    #addTaskModal .modal-content { padding: 24px 14px; border-radius: 16px; max-height: 96vh; max-height: calc(100dvh - 32px); }
     .overlay-card { padding: 24px 14px; }
     .detail-title { font-size: 24px; }
 

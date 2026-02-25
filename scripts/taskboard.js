@@ -187,6 +187,9 @@ function openAddTaskModalBoard(status = 'todo') {
         modal.classList.remove('hidden');
         requestAnimationFrame(() => modal.classList.add('is-open'));
         modal.setAttribute('aria-hidden', 'false');
+        modal.scrollTop = 0;
+        modal.querySelector('.modal-content')?.scrollTo(0, 0);
+        modal.querySelector('.editor_wrapper')?.scrollTo(0, 0);
         
         if (typeof initTaskEditor === 'function') {
             initTaskEditor();
