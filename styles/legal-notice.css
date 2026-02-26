@@ -33,3 +33,36 @@
         -webkit-overflow-scrolling: touch;
     }
 }
+
+.paragraph {
+    margin-top: 65px;
+}
+.paragraph_Imprint {
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+.paragraph_Contact {
+    margin-top: 20px;   
+}
+.paragraph_EditoriallyResponsible {
+    margin-top: 20px;   
+}
+.paragraph_Scope {
+    margin-top: 30px;   
+}
+.paragraph_ProprietaryRights {
+    margin-top: 30px;   
+}
+.paragraph_UseOfTheProduct {
+    margin-top: 30px;   
+}
+.paragraph_Disclaimer {
+    margin-top: 30px;   
+}
+.paragraph_Terms {
+    margin-top: 30px;   
+}
+.paragraph_Indemnity {
+    margin-top: 30px;   
+}
+
