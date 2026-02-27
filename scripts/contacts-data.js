@@ -10,6 +10,98 @@ function hasDb() {
 
 const LOCAL_CONTACTS_KEY = 'join_contacts_local';
 const CONTACTS_CACHE_KEY = 'join_contacts_cache_v1';
+const SELF_CONTACT_PREFIX = 'self_';
+
+
+function createSelfContactId(userId) {
+	return `${SELF_CONTACT_PREFIX}${userId}`;
+}
+
+
+function isSelfContactId(contactId) {
+	return typeof contactId === 'string' && contactId.startsWith(SELF_CONTACT_PREFIX);
+}
+
+
+function extractSelfUserId(contactId) {
+	if (!isSelfContactId(contactId)) return '';
+	return contactId.slice(SELF_CONTACT_PREFIX.length);
+}
+
+
+async function resolveCurrentUserIdForContacts() {
+	if (window?.userContext?.resolveUserId) {
+		try {
+			return await window.userContext.resolveUserId();
+		} catch (error) {
+			// Fall back to session storage.
+		}
+	}
+	return sessionStorage.getItem('userId');
+}
+
+
+function toOwnAccountContact(userId, userProfile) {
+	return {
+		id: createSelfContactId(userId),
+		name: userProfile?.name || '',
+		email: userProfile?.email || '',
+		phone: userProfile?.phone || '',
+		createdAt: userProfile?.createdAt || 0,
+	};
+}
+
+
+async function fetchOwnAccountContact() {
+	if (!hasDb()) return null;
+	const userId = await resolveCurrentUserIdForContacts();
+	if (!userId) return null;
+	try {
+		const snapshot = await db.ref(`users/${userId}`).get();
+		const userProfile = snapshot.val();
+		if (!userProfile) return null;
+		return toOwnAccountContact(userId, userProfile);
+	} catch (error) {
+		return null;
+	}
+}
+
+
+function mergeOwnAccountContact(contacts, ownAccountContact) {
+	if (!ownAccountContact) return contacts;
+	if (contacts.some((contact) => contact.id === ownAccountContact.id)) return contacts;
+	return [...contacts, ownAccountContact];
+}
+
+
+async function updateOwnAccountContact(contactId, contact) {
+	const userId = extractSelfUserId(contactId);
+	if (!userId || !hasDb()) return;
+	const payload = {
+		name: contact?.name || '',
+		email: contact?.email || '',
+		phone: contact?.phone || '',
+	};
+	await db.ref(`users/${userId}`).update(payload);
+}
+
+
+async function fetchOwnAccountContactById(contactId) {
+	const userId = extractSelfUserId(contactId);
+	if (!userId || !hasDb()) return null;
+	try {
+		const snapshot = await db.ref(`users/${userId}`).get();
+		const userProfile = snapshot.val();
+		if (!userProfile) return null;
+		return {
+			name: userProfile.name || '',
+			email: userProfile.email || '',
+			phone: userProfile.phone || '',
+		};
+	} catch (error) {
+		return null;
+	}
+}
 
 /**
  * Reads local contacts map from localStorage.
@@ -136,6 +228,10 @@ async function saveContact(contact) {
  */
 async function updateContact(contactId, contact) {
 	if (!contactId) return;
+	if (isSelfContactId(contactId)) {
+		await updateOwnAccountContact(contactId, contact);
+		return;
+	}
 	if (hasDb()) {
 		try {
 			await db.ref(`contacts/${contactId}`).update(contact);
@@ -159,6 +255,7 @@ async function updateContact(contactId, contact) {
  */
 async function deleteContact(contactId) {
 	if (!contactId) return;
+	if (isSelfContactId(contactId)) return;
 	if (hasDb()) {
 		try {
 			await db.ref(`contacts/${contactId}`).remove();
@@ -181,6 +278,9 @@ async function deleteContact(contactId) {
  */
 async function fetchContact(contactId) {
 	if (!contactId) return null;
+	if (isSelfContactId(contactId)) {
+		return fetchOwnAccountContactById(contactId);
+	}
 	if (hasDb()) {
 		try {
 			const snapshot = await db.ref(`contacts/${contactId}`).get();
@@ -242,7 +342,9 @@ async function readContactsSource() {
 async function fetchContacts() {
 	const contacts = await readContactsSource();
 	const normalizedContacts = mapContactsObjectToList(contacts);
-	const sortedContacts = sortContactsByName(normalizedContacts);
+	const ownAccountContact = await fetchOwnAccountContact();
+	const mergedContacts = mergeOwnAccountContact(normalizedContacts, ownAccountContact);
+	const sortedContacts = sortContactsByName(mergedContacts);
 	writeContactsCache(sortedContacts);
 	return sortedContacts;
 }

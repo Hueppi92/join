@@ -1,5 +1,29 @@
 let contactsState = [];
 let selectedContactId = "";
+const SELF_CONTACT_ID_PREFIX = "self_";
+
+
+function isOwnAccountContact(contact) {
+  return contact?.id?.startsWith(SELF_CONTACT_ID_PREFIX);
+}
+
+
+function createYouBadgeNode() {
+  const badge = document.createElement("span");
+  badge.className = "contact-you-badge";
+  badge.textContent = "(You)";
+  badge.setAttribute("aria-label", "This is your account");
+  return badge;
+}
+
+
+function createContactNameNode(contact) {
+  const name = document.createElement("span");
+  name.className = "contact-name";
+  name.textContent = contact.name || "Unknown Contact";
+  if (isOwnAccountContact(contact)) name.appendChild(createYouBadgeNode());
+  return name;
+}
 
 /**
  * Returns initials for a contact name.
@@ -100,6 +124,7 @@ function createContactDetailsProfileInfo(contact) {
   const name = document.createElement("h2");
   name.className = "contact-details-name";
   name.textContent = contact.name || "Unknown Contact";
+  if (isOwnAccountContact(contact)) name.appendChild(createYouBadgeNode());
   profileInfo.appendChild(name);
   profileInfo.appendChild(createContactDetailsActions(contact));
   return profileInfo;
@@ -197,9 +222,7 @@ function groupContactsByLetter(contacts) {
 function createContactListInfo(contact) {
   const info = document.createElement("div");
   info.className = "contact-info";
-  const name = document.createElement("span");
-  name.className = "contact-name";
-  name.textContent = contact.name || "Unknown Contact";
+  const name = createContactNameNode(contact);
   const email = document.createElement("span");
   email.className = "contact-email";
   email.textContent = contact.email || "";

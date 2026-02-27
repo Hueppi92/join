@@ -338,29 +338,29 @@ function initContactForm() {
 	if (elements?.deleteButton) {
 		elements.deleteButton.addEventListener('click', () => handleDeleteContactFromOverlay(fields));
 	}
-
-	initializeContactFormSubmit();
+	initializeContactFormSubmit(fields);
 }
 
-async function initializeContactFormSubmit() {
-		fields.form.addEventListener('submit', async (event) => {
-			event.preventDefault();
-			clearContactErrors(fields);
-			setContactFormMessage('');
-			if (!validateContactFields(fields)) return;
+function initializeContactFormSubmit(fields) {
+	if (!fields) return;
+	fields.form.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		clearContactErrors(fields);
+		setContactFormMessage('');
+		if (!validateContactFields(fields)) return;
 
-			fields.submitButton.disabled = true;
-			try {
-				const isSubmitted = await submitContactForm(fields);
-				if (!isSubmitted) {
-					setContactFormMessage('Contact cannot be saved without an id.');
-					return;
-				}
-			} finally {
-				fields.submitButton.disabled = false;
+		fields.submitButton.disabled = true;
+		try {
+			const isSubmitted = await submitContactForm(fields);
+			if (!isSubmitted) {
+				setContactFormMessage('Contact cannot be saved without an id.');
+				return;
 			}
-		});
-	}
+		} finally {
+			fields.submitButton.disabled = false;
+		}
+	});
+}
 
 /**
  * Opens the overlay in edit mode with contact data.
@@ -384,7 +384,6 @@ async function openEditContactOverlay(contactId, contact) {
 	}
 	openContactOverlay();
 }
-
 window.contactsOverlay = {
 	openEditContactOverlay,
 };
