@@ -167,24 +167,21 @@ function initMobileHelpLink(profileMenu) {
 	const list = profileMenu.querySelector('.flex-container');
 	if (!list || list.querySelector('[data-mobile-help="1"]')) return;
 
-	const helpItem = document.createElement('div');
-	helpItem.className = 'hover-container mobile-help-link';
-
 	const helpLi = document.createElement('li');
+	helpLi.className = 'hover-container mobile-help-link';
 	const helpAnchor = document.createElement('a');
 	helpAnchor.href = window.location.pathname.includes('/sites/') ? './help.html' : './sites/help.html';
 	helpAnchor.textContent = 'Help';
 	helpAnchor.setAttribute('data-mobile-help', '1');
 
 	helpLi.appendChild(helpAnchor);
-	helpItem.appendChild(helpLi);
 
 	const firstItem = list.firstElementChild;
 	if (firstItem) {
-		list.insertBefore(helpItem, firstItem);
+		list.insertBefore(helpLi, firstItem);
 		return;
 	}
-	list.appendChild(helpItem);
+	list.appendChild(helpLi);
 }
 
 /**
@@ -193,8 +190,9 @@ function initMobileHelpLink(profileMenu) {
  * @subcategory UI & Init
  */
 document.addEventListener('DOMContentLoaded', () => {
-	const profileBtn = document.querySelector('#profile-btn');
-	const profileMenu = document.querySelector('#profile-menu');
+	const profileBtn = document.getElementById('profile-btn');
+	const profileMenus = document.querySelectorAll('#profile-menu');
+	const profileMenu = profileMenus[profileMenus.length - 1] || null;
 
 	if (profileBtn && profileMenu) {
 		initMobileHelpLink(profileMenu);
@@ -204,7 +202,12 @@ document.addEventListener('DOMContentLoaded', () => {
 			profileMenu.classList.toggle('is-open');
 		});
 
-		document.addEventListener('click', () => {
+		profileMenu.addEventListener('click', (event) => {
+			event.stopPropagation();
+		});
+
+		document.addEventListener('click', (event) => {
+			if (profileMenu.contains(event.target) || profileBtn.contains(event.target)) return;
 			profileMenu.classList.remove('is-open');
 		});
 	}

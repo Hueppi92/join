@@ -5,12 +5,30 @@
 /* ==========================================================================
    1. BOARD LAYOUT
    ========================================================================== */
+html,
+body {
+    height: 100%;
+}
+
+body {
+    overflow: hidden;
+}
+
+main {
+    height: 100vh;
+}
+
 .board-container {
     margin-left: 232px;
     width: calc(100% - 232px);
     padding: 116px 40px 40px 40px;
     box-sizing: border-box;
     min-height: 100vh;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
 }
 
 .board-header {
@@ -874,10 +892,20 @@
 }
 
 @media (max-width: 992px) {
+    main {
+        height: auto;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
     .board-container {
         margin-left: 0;
         width: 100%;
+        height: auto;
         min-height: 100%;
+        overflow-y: visible;
+        overscroll-behavior: auto;
         padding: 16px 20px 20px;
     }
 }

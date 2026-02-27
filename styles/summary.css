@@ -14,7 +14,7 @@
     justify-content: initial;
     align-items: initial;
     min-height: 100vh;
-    overflow-y: auto;
+    overflow-y: hidden;
     overflow-x: hidden;
 }
 
@@ -23,10 +23,13 @@
     width: auto;
     max-width: none;
     min-height: 100vh;
-    height: auto;
+    height: 100vh;
     margin-left: 328px;
     padding: 0 40px 40px 40px;
-    overflow: visible;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Header */
