@@ -1,21 +1,33 @@
-/**
- * Redirects unauthenticated users away from protected pages.
- * @category Auth Guard
- * @subcategory Firebase Logic
- */
-(function enforceAuthGuard() {
-	const loginPath = '../index.html';
-	const hasFirebase = typeof firebase !== 'undefined' && typeof firebase.auth === 'function';
+function getAuthGuardLoginPath() {
+	return '../index.html';
+}
 
-	if (!hasFirebase) {
-		window.location.href = loginPath;
+
+function isFirebaseAuthAvailable() {
+	return typeof firebase !== 'undefined' && typeof firebase.auth === 'function';
+}
+
+
+function isGuestSessionActive() {
+	return sessionStorage.getItem('guestLogin') === '1';
+}
+
+
+function redirectToAuthGuardLogin() {
+	window.location.href = getAuthGuardLoginPath();
+}
+
+
+function enforceAuthGuard() {
+	if (!isFirebaseAuthAvailable()) {
+		redirectToAuthGuardLogin();
 		return;
 	}
-
-	const isGuest = () => sessionStorage.getItem('guestLogin') === '1';
-
 	firebase.auth().onAuthStateChanged((user) => {
-		if (user || isGuest()) return;
-		window.location.href = loginPath;
+		if (user || isGuestSessionActive()) return;
+		redirectToAuthGuardLogin();
 	});
-})();
+}
+
+
+enforceAuthGuard();

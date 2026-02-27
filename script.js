@@ -58,28 +58,39 @@ function setupPasswordToggle(input) {
 	const iconBox = wrapper ? wrapper.querySelector('.input-icon') : null;
 	const icon = iconBox ? iconBox.querySelector('img') : null;
 	if (!iconBox || !icon) return;
-
+	const iconSources = getPasswordIconSources(icon);
 	iconBox.classList.add('password-toggle');
+	bindPasswordToggleEvents(iconBox, input, icon, iconSources);
+	updatePasswordIcon(input, icon, iconSources);
+}
+
+
+function getPasswordIconSources(icon) {
 	const lockSrc = icon.getAttribute('src') || '';
-	const offSrc = lockSrc.replace(/[^/]+$/, 'visibility_off.svg');
-	const onSrc = lockSrc.replace(/[^/]+$/, 'visibility.svg');
-
-	const updateIcon = () => {
-		if (!input.value) {
-			icon.src = lockSrc;
-			return;
-		}
-		icon.src = input.type === 'password' ? offSrc : onSrc;
+	return {
+		lockSrc,
+		offSrc: lockSrc.replace(/[^/]+$/, 'visibility_off.svg'),
+		onSrc: lockSrc.replace(/[^/]+$/, 'visibility.svg'),
 	};
+}
 
+
+function updatePasswordIcon(input, icon, iconSources) {
+	if (!input.value) {
+		icon.src = iconSources.lockSrc;
+		return;
+	}
+	icon.src = input.type === 'password' ? iconSources.offSrc : iconSources.onSrc;
+}
+
+
+function bindPasswordToggleEvents(iconBox, input, icon, iconSources) {
 	iconBox.addEventListener('click', () => {
 		if (!input.value) return;
 		input.type = input.type === 'password' ? 'text' : 'password';
-		updateIcon();
+		updatePasswordIcon(input, icon, iconSources);
 	});
-
-	input.addEventListener('input', updateIcon);
-	updateIcon();
+	input.addEventListener('input', () => updatePasswordIcon(input, icon, iconSources));
 }
 
 /**
@@ -166,22 +177,29 @@ function initMobileHelpLink(profileMenu) {
 	if (!profileMenu) return;
 	const list = profileMenu.querySelector('.flex-container');
 	if (!list || list.querySelector('[data-mobile-help="1"]')) return;
+	insertMobileHelpLink(list, buildMobileHelpItem());
+}
 
+
+function buildMobileHelpItem() {
 	const helpLi = document.createElement('li');
 	helpLi.className = 'hover-container mobile-help-link';
 	const helpAnchor = document.createElement('a');
 	helpAnchor.href = window.location.pathname.includes('/sites/') ? './help.html' : './sites/help.html';
 	helpAnchor.textContent = 'Help';
 	helpAnchor.setAttribute('data-mobile-help', '1');
-
 	helpLi.appendChild(helpAnchor);
+	return helpLi;
+}
 
+
+function insertMobileHelpLink(list, helpItem) {
 	const firstItem = list.firstElementChild;
 	if (firstItem) {
-		list.insertBefore(helpLi, firstItem);
+		list.insertBefore(helpItem, firstItem);
 		return;
 	}
-	list.appendChild(helpLi);
+	list.appendChild(helpItem);
 }
 
 /**

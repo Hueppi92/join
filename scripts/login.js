@@ -17,25 +17,48 @@ function runSplashAnimation() {
 	const elements = getSplashElements();
 	if (!elements) return;
 	setSplashTheme(elements);
+	if (handleSkippedSplash(elements)) return;
+	playSplashAnimation(elements);
+}
 
-	if (shouldSkipSplash()) {
-		clearSkipSplash();
-		showFinalSplashState(elements);
-		return;
-	}
 
+function handleSkippedSplash(elements) {
+	if (!shouldSkipSplash()) return false;
+	clearSkipSplash();
+	showFinalSplashState(elements);
+	return true;
+}
+
+
+function playSplashAnimation(elements) {
+	const context = getSplashAnimationContext(elements);
+	const animations = startSplashLogoAnimations(elements, context);
+	const overlayAnimation = fadeOutOverlay(elements.splashBg, 500, 1000);
+	syncAnimationEnd(animations, overlayAnimation, elements);
+}
+
+
+function getSplashAnimationContext(elements) {
 	const endRect = elements.headerLogo.getBoundingClientRect();
 	const startScale = getResponsiveSplashStartScale(getSplashStartScale(endRect.height));
+	prepareSplashElementsForAnimation(elements, startScale);
+	const delta = getCenterDelta(elements.splashLogo, endRect);
+	const endScale = getSplashEndScale(elements.splashLogo, endRect);
+	return { delta, endScale, startScale };
+}
+
+
+function prepareSplashElementsForAnimation(elements, startScale) {
 	prepareSplashLogo(elements.splashLogo, startScale);
 	prepareSplashLogo(elements.splashLogoEnd, startScale);
 	setHeaderLogoVisibility(elements.headerLogo, false);
+}
 
-	const delta = getCenterDelta(elements.splashLogo, endRect);
-	const endScale = getSplashEndScale(elements.splashLogo, endRect);
-	const logoAnimation = animateSplashLogo(elements.splashLogo, startScale, endScale, delta, 1, 0.2);
-	const endLogoAnimation = animateSplashLogo(elements.splashLogoEnd, startScale, endScale, delta, 0, 1);
-	const overlayAnimation = fadeOutOverlay(elements.splashBg, 500, 1000);
-	syncAnimationEnd([logoAnimation, endLogoAnimation], overlayAnimation, elements);
+
+function startSplashLogoAnimations(elements, context) {
+	const logoAnimation = animateSplashLogo(elements.splashLogo, context.startScale, context.endScale, context.delta, 1, 0.2);
+	const endLogoAnimation = animateSplashLogo(elements.splashLogoEnd, context.startScale, context.endScale, context.delta, 0, 1);
+	return [logoAnimation, endLogoAnimation];
 }
 
 /**
@@ -111,24 +134,32 @@ function getCenterDelta(splashLogo, endRect) {
  * @subcategory UI & Init
  */
 function animateSplashLogo(splashLogo, startScale, endScale, delta, fromOpacity = 1, toOpacity = 1) {
-	return splashLogo.animate(
-		[
-			{
-				transform: `translate(-50%, -50%) translate(0px, 0px) scale(${startScale})`,
-				opacity: fromOpacity,
-			},
-			{
-				transform: `translate(-50%, -50%) translate(${delta.x}px, ${delta.y}px) scale(${endScale})`,
-				opacity: toOpacity,
-			},
-		],
+	const keyframes = buildSplashAnimationKeyframes(startScale, endScale, delta, fromOpacity, toOpacity);
+	return splashLogo.animate(keyframes, getSplashAnimationOptions());
+}
+
+
+function buildSplashAnimationKeyframes(startScale, endScale, delta, fromOpacity, toOpacity) {
+	return [
 		{
-			duration: 500,
-			easing: 'ease-in-out',
-			delay: 500,
-			fill: 'forwards',
-		}
-	);
+			transform: `translate(-50%, -50%) translate(0px, 0px) scale(${startScale})`,
+			opacity: fromOpacity,
+		},
+		{
+			transform: `translate(-50%, -50%) translate(${delta.x}px, ${delta.y}px) scale(${endScale})`,
+			opacity: toOpacity,
+		},
+	];
+}
+
+
+function getSplashAnimationOptions() {
+	return {
+		duration: 500,
+		easing: 'ease-in-out',
+		delay: 500,
+		fill: 'forwards',
+	};
 }
 
 /**

@@ -11,218 +11,194 @@
  * @category User Context
  * @subcategory UI & Init
  */
-(function initUserContext() {
+function initUserContext() {
 	if (typeof window === 'undefined') return;
-
-	/**
-	 * Checks whether the current session is a guest login.
-	 * @returns {boolean} True if the current session is a guest login.
-	 * @category User Context
-	 * @subcategory Firebase Logic
-	 */
-	const isGuest = () => sessionStorage.getItem('guestLogin') === '1';
-
-	/**
-	 * Returns whether Firebase auth is available.
-	 * @returns {boolean} True if Firebase auth is available.
-	 * @category User Context
-	 * @subcategory Firebase Logic
-	 */
-	const hasAuth = () => typeof firebase !== 'undefined' && typeof firebase.auth === 'function';
-
-	/**
-	 * Returns whether the database API is available.
-	 * @returns {boolean} True if the database API is available.
-	 * @category User Context
-	 * @subcategory Firebase Logic
-	 */
-	const hasDb = () => typeof db !== 'undefined' && db && typeof db.ref === 'function';
-
-	/**
-	 * Stores the user id in session storage.
-	 * @param {string | undefined | null} userId - User id to store.
-	 * @category User Context
-	 * @subcategory Firebase Logic
-	 */
-	const setStoredUserId = (userId) => {
-		if (!userId) return;
-		sessionStorage.setItem('userId', userId);
-	};
-
-	/**
-	 * Gets the stored user id from session storage.
-	 * @returns {string | null} Stored user id or null if missing.
-	 * @category User Context
-	 * @subcategory Firebase Logic
-	 */
-	const getStoredUserId = () => sessionStorage.getItem('userId');
-
-	/**
-	 * Resolves the active user id from storage or Firebase auth.
-	 * @returns {Promise<string | null>} Resolved user id or null.
-	 * @category User Context
-	 * @subcategory Firebase Logic
-	 */
-	const resolveUserId = async () => {
-		if (isGuest()) return null;
-		const storedId = getStoredUserId();
-		if (storedId) return storedId;
-		if (!hasAuth()) return null;
-
-		const currentUser = firebase.auth().currentUser;
-		if (currentUser && currentUser.uid) {
-			setStoredUserId(currentUser.uid);
-			return currentUser.uid;
-		}
-
-		return new Promise((resolve) => {
-			firebase.auth().onAuthStateChanged((user) => {
-				setStoredUserId(user?.uid);
-				resolve(user?.uid || null);
-			});
-		});
-	};
-
-	/**
-	 * Derives the display name from the current Firebase auth user.
-	 * @returns {string} Derived display name fallback.
-	 * @category User Context
-	 * @subcategory Firebase Logic
-	 */
-	const deriveNameFromAuth = () => {
-		if (!hasAuth()) return '';
-		const user = firebase.auth().currentUser;
-		return user?.displayName || user?.email?.split('@')[0] || '';
-	};
-
-	/**
-	 * Fetches the user profile from the database or creates a fallback.
-	 * @param {string} userId - User id to fetch.
-	 * @returns {Promise<UserProfile | null>} User profile data.
-	 * @category User Context
-	 * @subcategory Firebase Logic
-	 */
-	const fetchUserProfile = async (userId) => {
-		if (!userId || !hasDb()) return null;
-		const snapshot = await db.ref(`users/${userId}`).get();
-		const data = snapshot.val();
-		if (data) return { id: userId, ...data };
-
-		const name = deriveNameFromAuth() || 'User';
-		const email = hasAuth() ? firebase.auth().currentUser?.email || '' : '';
-		const fallbackProfile = { name, email, createdAt: Date.now() };
-		await db.ref(`users/${userId}`).update(fallbackProfile);
-		return { id: userId, ...fallbackProfile };
-	};
-
-	/**
-	 * Resolves the active user profile.
-	 * @returns {Promise<UserProfile | null>} Active user profile or null.
-	 * @category User Context
-	 * @subcategory Firebase Logic
-	 */
-	const getActiveUserProfile = async () => {
-		const userId = await resolveUserId();
-		if (!userId) return null;
-		return fetchUserProfile(userId);
-	};
-
-	/**
-	 * Computes initials for the profile button.
-	 * @param {string} name - User display name.
-	 * @param {string} email - User email address.
-	 * @returns {string} Computed initials string.
-	 * @category User Context
-	 * @subcategory Validation
-	 */
-	const computeInitials = (name, email) => {
-		const source = (name || '').trim() || (email || '').trim();
-		if (!source) return 'G';
-		const parts = source.split(/\s+/).filter(Boolean);
-		if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-		return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-	};
-
-	/**
-	 * Updates the profile button initials in the header.
-	 * @param {UserProfile | null} profile - User profile data.
-	 * @category User Context
-	 * @subcategory UI & Init
-	 */
-	const updateHeaderProfile = (profile) => {
-		const btn = document.querySelector('.profile-btn');
-		if (!btn) return;
-		const initials = computeInitials(profile?.name, profile?.email);
-		btn.textContent = initials;
-		btn.setAttribute('aria-label', profile?.name || 'Guest');
-	};
-
-	/**
-	 * Updates the greeting name on summary pages.
-	 * @param {UserProfile | null} profile - User profile data.
-	 * @category User Context
-	 * @subcategory UI & Init
-	 */
-	const updateGreetingName = (profile) => {
-		const nameEl = document.getElementById('user-name');
-		if (!nameEl) return;
-		nameEl.textContent = profile?.name || 'Guest';
-	};
-
-	/**
-	 * Escapes text for safe HTML rendering.
-	 * @param {string} text - Raw text to escape.
-	 * @returns {string} Escaped HTML string.
-	 * @category User Context
-	 * @subcategory Validation
-	 */
-	const escapeHtml = (text = '') =>
-		String(text)
-			.replace(/&/g, '&amp;')
-			.replace(/</g, '&lt;')
-			.replace(/>/g, '&gt;')
-			.replace(/"/g, '&quot;')
-			.replace(/'/g, '&#39;');
-
-	/**
-	 * Populates the "assigned to" select with user options.
-	 * @returns {Promise<void>} Resolves after options are rendered.
-	 * @category User Context
-	 * @subcategory UI & Init
-	 */
-	const populateAssignedToSelect = async () => {
-		const select = document.querySelector('select[data-role="assigned-to"]');
-		if (!select || !hasDb()) return;
-
-		const snapshot = await db.ref('users').get();
-		const users = snapshot.val() || {};
-
-		let optionsHtml = '<option disabled selected data-placeholder="1">Select contacts to assign</option>';
-		Object.entries(users).forEach(([id, user]) => {
-			const safeId = escapeHtml(id);
-			const name = escapeHtml(user?.name || user?.email || 'User');
-			optionsHtml += `<option value="${safeId}">${name}</option>`;
-		});
-		select.innerHTML = optionsHtml;
-	};
-
-	/**
-	 * Hydrates user context into the UI.
-	 * @returns {Promise<void>} Resolves after UI hydration completes.
-	 * @category User Context
-	 * @subcategory UI & Init
-	 */
-	const hydrateUserContext = async () => {
-		const profile = await getActiveUserProfile();
-		updateHeaderProfile(profile);
-		updateGreetingName(profile);
-		populateAssignedToSelect();
-	};
-
-	window.userContext = {
-		resolveUserId,
-		getActiveUserProfile,
-	};
-
+	window.userContext = { resolveUserId, getActiveUserProfile };
 	document.addEventListener('DOMContentLoaded', hydrateUserContext);
-})();
+}
+
+
+function isGuestSessionActive() {
+	return sessionStorage.getItem('guestLogin') === '1';
+}
+
+
+function hasFirebaseAuth() {
+	return typeof firebase !== 'undefined' && typeof firebase.auth === 'function';
+}
+
+
+function hasDatabaseRef() {
+	return typeof db !== 'undefined' && db && typeof db.ref === 'function';
+}
+
+
+function setStoredUserId(userId) {
+	if (!userId) return;
+	sessionStorage.setItem('userId', userId);
+}
+
+
+function getStoredUserId() {
+	return sessionStorage.getItem('userId');
+}
+
+
+function getCurrentAuthUser() {
+	if (!hasFirebaseAuth()) return null;
+	return firebase.auth().currentUser;
+}
+
+
+function getCurrentAuthUserId() {
+	return getCurrentAuthUser()?.uid || null;
+}
+
+
+function getAuthUserEmail() {
+	return getCurrentAuthUser()?.email || '';
+}
+
+
+function deriveNameFromAuth() {
+	const user = getCurrentAuthUser();
+	return user?.displayName || user?.email?.split('@')[0] || '';
+}
+
+
+async function resolveUserId() {
+	if (isGuestSessionActive()) return null;
+	const storedId = getStoredUserId();
+	if (storedId) return storedId;
+	const authUserId = getCurrentAuthUserId();
+	if (authUserId) return cacheAndReturnUserId(authUserId);
+	if (!hasFirebaseAuth()) return null;
+	return waitForAuthUserId();
+}
+
+
+function cacheAndReturnUserId(userId) {
+	setStoredUserId(userId);
+	return userId;
+}
+
+
+function waitForAuthUserId() {
+	return new Promise((resolve) => {
+		firebase.auth().onAuthStateChanged((user) => {
+			setStoredUserId(user?.uid);
+			resolve(user?.uid || null);
+		});
+	});
+}
+
+
+async function getActiveUserProfile() {
+	const userId = await resolveUserId();
+	if (!userId) return null;
+	return fetchUserProfile(userId);
+}
+
+
+async function fetchUserProfile(userId) {
+	if (!userId || !hasDatabaseRef()) return null;
+	const snapshot = await db.ref(`users/${userId}`).get();
+	const data = snapshot.val();
+	if (data) return { id: userId, ...data };
+	return createFallbackUserProfile(userId);
+}
+
+
+async function createFallbackUserProfile(userId) {
+	const fallbackProfile = buildFallbackProfile();
+	await db.ref(`users/${userId}`).update(fallbackProfile);
+	return { id: userId, ...fallbackProfile };
+}
+
+
+function buildFallbackProfile() {
+	return {
+		name: deriveNameFromAuth() || 'User',
+		email: getAuthUserEmail(),
+		createdAt: Date.now(),
+	};
+}
+
+
+function computeInitials(name, email) {
+	const source = (name || '').trim() || (email || '').trim();
+	if (!source) return 'G';
+	const parts = source.split(/\s+/).filter(Boolean);
+	if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+	return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+
+function updateHeaderProfile(profile) {
+	const button = document.querySelector('.profile-btn');
+	if (!button) return;
+	button.textContent = computeInitials(profile?.name, profile?.email);
+	button.setAttribute('aria-label', profile?.name || 'Guest');
+}
+
+
+function updateGreetingName(profile) {
+	const nameElement = document.getElementById('user-name');
+	if (!nameElement) return;
+	nameElement.textContent = profile?.name || 'Guest';
+}
+
+
+function escapeHtml(text = '') {
+	return String(text)
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#39;');
+}
+
+
+function getAssignedToSelect() {
+	return document.querySelector('select[data-role="assigned-to"]');
+}
+
+
+function getAssignedToPlaceholderOption() {
+	return '<option disabled selected data-placeholder="1">Select contacts to assign</option>';
+}
+
+
+function buildAssignedToOption(id, user) {
+	const safeId = escapeHtml(id);
+	const name = escapeHtml(user?.name || user?.email || 'User');
+	return `<option value="${safeId}">${name}</option>`;
+}
+
+
+function buildAssignedToOptions(users) {
+	let optionsHtml = getAssignedToPlaceholderOption();
+	Object.entries(users).forEach(([id, user]) => {
+		optionsHtml += buildAssignedToOption(id, user);
+	});
+	return optionsHtml;
+}
+
+
+async function populateAssignedToSelect() {
+	const select = getAssignedToSelect();
+	if (!select || !hasDatabaseRef()) return;
+	const snapshot = await db.ref('users').get();
+	select.innerHTML = buildAssignedToOptions(snapshot.val() || {});
+}
+
+
+async function hydrateUserContext() {
+	const profile = await getActiveUserProfile();
+	updateHeaderProfile(profile);
+	updateGreetingName(profile);
+	populateAssignedToSelect();
+}
+
+
+initUserContext();
