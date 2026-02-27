@@ -22,8 +22,8 @@
     <header>
       <h2>Kanban Project Management Tool</h2>
       <div class="header-btn">
-        <a href="./help.html" class="help-btn"
-          ><img src="../assets/icons/help_icon.svg" alt="Help Icon"
+        <a href="./help.html" class="help-btn" aria-label="Open help"
+          ><img src="../assets/icons/help_icon.svg" alt="" aria-hidden="true"
         /></a>
         <button id="profile-btn" class="profile-btn" type="button" aria-label="Profile menu"></button>
       </div>
@@ -31,7 +31,7 @@
     <main>
       <aside>
         <img src="../assets/img/join_logo.svg" alt="Join Logo" />
-        <nav class="sidebar-navigation">
+        <nav class="sidebar-navigation" aria-label="Main navigation">
           <div class="sidebar-navigation-item">
             <a href="./summary.html"
               ><img
@@ -89,7 +89,6 @@
             </button>
           </div>
           <div id="contact-list" class="contacts-list">
-            <!--Contacts will be rendered here-->
           </div>
         </div>
       </section>
@@ -154,7 +153,7 @@
               </div>
               <form class="contact-overlay__form" novalidate>
                 <label class="contact-overlay__field">
-                  <input type="text" name="name" placeholder="Name" />
+                  <input type="text" name="name" placeholder="Name" aria-label="Contact name" />
                   <img
                     src="../assets/icons/person.svg"
                     alt=""
@@ -163,7 +162,7 @@
                   <p class="field-message contact-overlay__message" data-field="name"></p>
                 </label>
                 <label class="contact-overlay__field">
-                  <input type="email" name="email" placeholder="Email" />
+                  <input type="email" name="email" placeholder="Email" aria-label="Contact email" />
                   <img
                     src="../assets/icons/mail.svg"
                     alt=""
@@ -172,7 +171,7 @@
                   <p class="field-message contact-overlay__message" data-field="email"></p>
                 </label>
                 <label class="contact-overlay__field">
-                  <input type="tel" name="phone" placeholder="Phone" />
+                  <input type="tel" name="phone" placeholder="Phone" aria-label="Contact phone" />
                   <img
                     src="../assets/icons/call.svg"
                     alt=""
@@ -233,7 +232,7 @@
         Contact successfully created
       </div>
       <div id="profile-menu" class="profile-overlay">
-        <nav class="profile-menu">
+        <nav class="profile-menu" aria-label="Profile menu links">
           <ul class="flex-container">
             <li class="hover-container"><a href="./legal-notice.html">Legal Notice</a></li>
             <li class="hover-container"><a href="./privacy-policy.html">Privacy Policy</a></li>
