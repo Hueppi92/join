@@ -1,0 +1,31 @@
+{
+    "source": {
+        "include": [
+            "scripts/taskboard.js",
+            "scripts/taskboardTemplate.js",
+            "scripts/summary.js"
+        ]
+    },
+    "plugins": ["node_modules/better-docs/category"],
+    "opts": {
+        "destination": "./out/",
+        "template": "node_modules/better-docs",
+        "recurse": false
+    },
+    "templates": {
+        "better-docs": {
+            "name": "Join Project - Andi's Docs",
+            "hideGenerator": true,
+            "navigation": [
+                {
+                    "label": "Board",
+                    "href": "category-Board.html"
+                },
+                {
+                    "label": "Summary",
+                    "href": "category-Summary.html"
+                }
+            ]
+        }
+    }
+}

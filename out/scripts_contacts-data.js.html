@@ -7,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> scripts/taskboardTemplate.js</title>
+  <title> scripts/contacts-data.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -80,7 +80,7 @@
             <div class="content">
                 <header class="page-title">
                     <p>Source</p>
-                    <h1>scripts/taskboardTemplate.js</h1>
+                    <h1>scripts/contacts-data.js</h1>
                 </header>
                 
 
@@ -90,296 +90,382 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * @category Board
+ * Returns whether the database API is available.
+ * @returns {boolean} True if the database API is available.
+ * @category Contacts
+ * @subcategory Firebase Logic
  */
+function hasDb() {
+	return typeof db !== 'undefined' &amp;&amp; db &amp;&amp; typeof db.ref === 'function';
+}
 
-/**
- * Erzeugt das HTML-Template für eine Task-Karte.
- * @param {Object} task - Das Task-Objekt.
- * @returns {string} HTML-String.
- */
-/**
- * Ensures that a value is returned as an array.
- * Automatically converts Firebase objects (key-value) into an array.
- *
- * @param {Array|Object|null} data - The value to normalize.
- * @returns {Array} Array containing the values from data.
- */
-function ensureArray(data) {
-  return Array.isArray(data) ? data : Object.values(data || {});
+const LOCAL_CONTACTS_KEY = 'join_contacts_local';
+const CONTACTS_CACHE_KEY = 'join_contacts_cache_v1';
+const SELF_CONTACT_PREFIX = 'self_';
+
+
+function createSelfContactId(userId) {
+	return `${SELF_CONTACT_PREFIX}${userId}`;
+}
+
+
+function isSelfContactId(contactId) {
+	return typeof contactId === 'string' &amp;&amp; contactId.startsWith(SELF_CONTACT_PREFIX);
+}
+
+
+function extractSelfUserId(contactId) {
+	if (!isSelfContactId(contactId)) return '';
+	return contactId.slice(SELF_CONTACT_PREFIX.length);
+}
+
+
+async function resolveCurrentUserIdForContacts() {
+	if (window?.userContext?.resolveUserId) {
+		try {
+			return await window.userContext.resolveUserId();
+		} catch (error) {
+			// Fall back to session storage.
+		}
+	}
+	return sessionStorage.getItem('userId');
+}
+
+
+function toOwnAccountContact(userId, userProfile) {
+	return {
+		id: createSelfContactId(userId),
+		name: userProfile?.name || '',
+		email: userProfile?.email || '',
+		phone: userProfile?.phone || '',
+		createdAt: userProfile?.createdAt || 0,
+	};
+}
+
+
+async function fetchOwnAccountContact() {
+	if (!hasDb()) return null;
+	const userId = await resolveCurrentUserIdForContacts();
+	if (!userId) return null;
+	try {
+		const snapshot = await db.ref(`users/${userId}`).get();
+		const userProfile = snapshot.val();
+		if (!userProfile) return null;
+		return toOwnAccountContact(userId, userProfile);
+	} catch (error) {
+		return null;
+	}
+}
+
+
+function mergeOwnAccountContact(contacts, ownAccountContact) {
+	if (!ownAccountContact) return contacts;
+	if (contacts.some((contact) => contact.id === ownAccountContact.id)) return contacts;
+	return [...contacts, ownAccountContact];
+}
+
+
+async function updateOwnAccountContact(contactId, contact) {
+	const userId = extractSelfUserId(contactId);
+	if (!userId || !hasDb()) return;
+	const payload = {
+		name: contact?.name || '',
+		email: contact?.email || '',
+		phone: contact?.phone || '',
+	};
+	await db.ref(`users/${userId}`).update(payload);
+}
+
+
+async function fetchOwnAccountContactById(contactId) {
+	const userId = extractSelfUserId(contactId);
+	if (!userId || !hasDb()) return null;
+	try {
+		const snapshot = await db.ref(`users/${userId}`).get();
+		const userProfile = snapshot.val();
+		if (!userProfile) return null;
+		return {
+			name: userProfile.name || '',
+			email: userProfile.email || '',
+			phone: userProfile.phone || '',
+		};
+	} catch (error) {
+		return null;
+	}
 }
 
 /**
- * Calculates the completion progress of a task's subtasks.
- *
- * @param {Array|Object|null} subtasksRaw - Raw subtask data.
- * @returns {{done: number, total: number, percent: number}} Progress data.
+ * Reads local contacts map from localStorage.
+ * @returns {Record&lt;string, {name?: string, email?: string, phone?: string, createdAt?: number}>} Local contacts map.
+ * @category Contacts
+ * @subcategory Data Handling
  */
-function getProgressData(subtasksRaw) {
-  const st = ensureArray(subtasksRaw);
-  const done = st.filter((s) => s?.completed || s?.done).length;
-  const percent = st.length > 0 ? (done / st.length) * 100 : 0;
-  return { done, total: st.length, percent };
+function readLocalContactsMap() {
+	try {
+		const raw = localStorage.getItem(LOCAL_CONTACTS_KEY);
+		if (!raw) return {};
+		const parsed = JSON.parse(raw);
+		return parsed &amp;&amp; typeof parsed === 'object' ? parsed : {};
+	} catch (error) {
+		return {};
+	}
 }
 
 /**
- * Formats an ISO date string (YYYY-MM-DD) into European format (DD.MM.YYYY).
- * Returns a placeholder if no date is provided.
- *
- * @param {string} [dueDate=""] - The date string to format in ISO format.
- * @returns {string} Date in DD.MM.YYYY format or "--.--.----".
+ * Writes local contacts map into localStorage.
+ * @param {Record&lt;string, {name?: string, email?: string, phone?: string, createdAt?: number}>} contactsMap - Contacts map to persist.
+ * @category Contacts
+ * @subcategory Data Handling
  */
-function formatDate(dueDate = "") {
-  if (!dueDate) return "--.--.----";
-  return dueDate.includes("-") ? dueDate.split("-").reverse().join(".") : dueDate;
+function writeLocalContactsMap(contactsMap) {
+	try {
+		localStorage.setItem(LOCAL_CONTACTS_KEY, JSON.stringify(contactsMap || {}));
+	} catch (error) {
+		return;
+	}
+}
+
+
+function normalizeCachedContact(item) {
+	return {
+		id: item.id,
+		name: item.name || '',
+		email: item.email || '',
+		phone: item.phone || '',
+		createdAt: item.createdAt || 0,
+	};
+}
+
+
+function isValidCachedContact(item) {
+	return item &amp;&amp; typeof item === 'object' &amp;&amp; typeof item.id === 'string';
+}
+
+
+function parseContactsCache(rawValue) {
+	const parsed = JSON.parse(rawValue);
+	if (!Array.isArray(parsed)) return [];
+	return parsed.filter(isValidCachedContact).map(normalizeCachedContact);
 }
 
 /**
- * Generates a CSS-compatible class name from a category text string.
- *
- * @param {string} [category=""] - The category text of the task.
- * @returns {string} Lowercase CSS class name with hyphens.
+ * Reads cached contact list from localStorage.
+ * @returns {Array&lt;{id: string, name: string, email: string, phone: string, createdAt?: number}>} Cached contacts.
+ * @category Contacts
+ * @subcategory Data Handling
  */
-function buildCategoryClass(category = "") {
-  return (category || "User Story").toLowerCase().replace(/\s+/g, "-");
-}
-
-/** --- USER BADGE HELPERS --- **/
-
-/**
- * Resolves the initials to display for a user.
- * Prefers existing initials; otherwise calculates them from the name.
- *
- * @param {Object} u - User badge object with optional name and initials properties.
- * @returns {string} Initials of the user.
- */
-function resolveUserInitials(u) {
-  const name = u.name || "";
-  return u.initials || getInitials(name);
+function readContactsCache() {
+	try {
+		const raw = localStorage.getItem(CONTACTS_CACHE_KEY);
+		if (!raw) return [];
+		return parseContactsCache(raw);
+	} catch (error) {
+		return [];
+	}
 }
 
 /**
- * Generates the HTML string for a single user badge on a task card.
- * Badges are displayed overlapping side by side.
- *
- * @param {Object} u - User badge object with name, initials, and color properties.
- * @param {number} index - Position of the badge in the list (determines z-index and offset).
- * @returns {string} HTML string for the badge.
+ * Writes contact list cache to localStorage.
+ * @param {Array&lt;{id: string, name: string, email: string, phone: string, createdAt?: number}>} contacts - Contact list to cache.
+ * @category Contacts
+ * @subcategory Data Handling
  */
-function renderCardBadge(u, index) {
-  const ml = index === 0 ? "0" : "-12px";
-  return `&lt;div class="user-badge" style="background-color:${u.color || "#2A3647"};z-index:${10 - index};margin-left:${ml};">
-    ${resolveUserInitials(u)}
-  &lt;/div>`;
+function writeContactsCache(contacts) {
+	try {
+		localStorage.setItem(CONTACTS_CACHE_KEY, JSON.stringify(Array.isArray(contacts) ? contacts : []));
+	} catch (error) {
+		return;
+	}
 }
 
 /**
- * Generates the HTML string for a user badge in the task detail view,
- * including the full name of the user.
- *
- * @param {Object} u - User badge object with name, initials, and color properties.
- * @returns {string} HTML string for the detail badge with name.
+ * Generates a local contact id.
+ * @returns {string} Local contact id.
+ * @category Contacts
+ * @subcategory Data Handling
  */
-function renderDetailBadge(u) {
-  const name = u.name || "Unknown";
-  const initials = resolveUserInitials(u);
-  return `&lt;div class="assigned-user-badge-container">
-    &lt;div class="user-badge" style="background-color:${u.color || "#2A3647"};">${initials}&lt;/div>
-    &lt;span>${name}&lt;/span>
-  &lt;/div>`;
+function createLocalContactId() {
+	return `local_${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
 }
 
 /**
- * Renders a list of user badges for a task card or the detail view.
- *
- * @param {Array|Object} users - List of assigned user objects.
- * @param {number} [limit=3] - Maximum number of badges to display (card view only).
- * @param {boolean} [isDetail=false] - True for detail view (with name), false for card view.
- * @returns {string} HTML string with all badge elements.
+ * Saves a new contact to the database.
+ * @param {{name: string, email: string, phone: string}} contact - Contact data.
+ * @returns {Promise&lt;void>} Resolves after saving completes.
+ * @category Contacts
+ * @subcategory Firebase Logic
  */
-function renderUserBadges(users, limit = 3, isDetail = false) {
-  const list = ensureArray(users).filter((u) => u &amp;&amp; typeof u === "object");
-  if (isDetail) return list.map(renderDetailBadge).join("");
-  return list.slice(0, limit).map(renderCardBadge).join("");
-}
-
-/** --- SUBTASK HELPERS --- **/
-
-/**
- * Resolves the display title of a subtask, regardless of its storage format.
- *
- * @param {string|Object|null} s - Raw subtask entry (string or object with title property).
- * @param {number} i - Index of the subtask (used for fallback label).
- * @returns {string} Display title of the subtask.
- */
-function resolveSubtaskTitle(s, i) {
-  return typeof s === "object" ? s.title || `Subtask ${i + 1}` : s;
+async function saveContact(contact) {
+	if (hasDb()) {
+		try {
+			await db.ref('contacts').push(contact);
+			return;
+		} catch (error) {
+			// Fall through to local fallback.
+		}
+	}
+	const contactsMap = readLocalContactsMap();
+	contactsMap[createLocalContactId()] = contact;
+	writeLocalContactsMap(contactsMap);
 }
 
 /**
- * Renders the subtask list for the task detail view as an HTML string.
- * Each subtask is clickable and toggles its completed status.
- *
- * @param {Array|Object|null} subtasksRaw - Raw subtask data.
- * @param {string} taskId - The Firebase ID of the task.
- * @returns {string} HTML string of the subtask list or "No subtasks".
+ * Updates an existing contact in the database.
+ * @param {string} contactId - Contact id.
+ * @param {{name: string, email: string, phone: string}} contact - Contact data.
+ * @returns {Promise&lt;void>} Resolves after update completes.
+ * @category Contacts
+ * @subcategory Firebase Logic
  */
-function renderSubtaskItems(subtasksRaw, taskId) {
-  const st = ensureArray(subtasksRaw);
-  if (st.length === 0) return "No subtasks";
-  return st.map((s, i) => {
-    const done = s?.completed || s?.done;
-    const title = resolveSubtaskTitle(s, i);
-    const icon = done ? "checked" : "empty";
-    return `&lt;div class="subtask-row" onclick="updateSubtaskStatus('${taskId}', ${i}, ${!done})">
-      &lt;img src="../assets/icons/checkbox_${icon}.svg">&lt;span>${title}&lt;/span>
-    &lt;/div>`;
-  }).join("");
-}
-
-/** --- PROGRESS BAR HTML --- **/
-
-/**
- * Generates the HTML string for the progress indicator on a task card.
- * Returns an empty string if no subtasks are present.
- *
- * @param {Array|Object|null} subtasksRaw - Raw subtask data.
- * @returns {string} HTML string of the progress bar or empty string.
- */
-function renderProgressBar(subtasksRaw) {
-  const { done, total, percent } = getProgressData(subtasksRaw);
-  if (total === 0) return "";
-  return `&lt;div class="progress-container">
-    &lt;div class="progress-bar">&lt;div class="progress-fill" style="width:${percent}%">&lt;/div>&lt;/div>
-    &lt;span class="subtask-text">${done}/${total} Subtasks&lt;/span>
-  &lt;/div>`;
-}
-
-/** --- PRIORITY BUTTONS HTML --- **/
-
-/**
- * Generates the HTML string for the three priority buttons in the edit form.
- * The currently active button receives the corresponding CSS class.
- *
- * @param {string} currentPrio - The currently set priority ('urgent', 'medium', or 'low').
- * @returns {string} HTML string with all three priority buttons.
- */
-function renderPrioButtons(currentPrio) {
-  return ["urgent", "medium", "low"].map((p) => {
-    const active = currentPrio === p ? `active-${p}` : "";
-    const label = p.charAt(0).toUpperCase() + p.slice(1);
-    return `&lt;button class="prio-btn-edit ${active}" onclick="setEditPriority('${p}')" id="prio-${p}">
-      ${label}&lt;img src="../assets/icons/prio-${p}.svg">
-    &lt;/button>`;
-  }).join("");
-}
-
-/** --- MAIN TEMPLATES --- **/
-
-/**
- * Generates the HTML for a task card on the board.
- * The card is drag-and-drop enabled and opens the detail view on click.
- *
- * @param {Object} task - The normalized task object from Firebase.
- * @param {string} id - The Firebase ID of the task.
- * @returns {string} HTML string of the task card.
- */
-function getCardTemplate(task, id) {
-  const prio = (task.priority || "low").toLowerCase();
-  const catClass = buildCategoryClass(task.category);
-  const catText = task.category || "User Story";
-  return `&lt;div class="card" draggable="true" onclick="event.stopPropagation();openTaskDetail('${id}')" ondragstart="event.dataTransfer.setData('text/plain','${id}')">
-    &lt;div class="badge ${catClass}">${catText}&lt;/div>
-    &lt;div class="card-content">
-      &lt;h2 class="card-title">${task.title || "No Title"}&lt;/h2>
-      &lt;p class="card-description">${task.description || ""}&lt;/p>
-    &lt;/div>
-    ${renderProgressBar(task.subtasks)}
-    &lt;div class="card-footer">
-      &lt;div class="assigned-to-container">${renderUserBadges(task.assignedTo)}&lt;/div>
-      &lt;div class="prio-icon">&lt;img src="../assets/icons/prio-${prio}.svg" alt="${prio}" onerror="this.style.display='none'">&lt;/div>
-    &lt;/div>
-  &lt;/div>`;
+async function updateContact(contactId, contact) {
+	if (!contactId) return;
+	if (isSelfContactId(contactId)) {
+		await updateOwnAccountContact(contactId, contact);
+		return;
+	}
+	if (hasDb()) {
+		try {
+			await db.ref(`contacts/${contactId}`).update(contact);
+			return;
+		} catch (error) {
+			// Fall through to local fallback.
+		}
+	}
+	const contactsMap = readLocalContactsMap();
+	if (!contactsMap[contactId]) return;
+	contactsMap[contactId] = { ...contactsMap[contactId], ...contact };
+	writeLocalContactsMap(contactsMap);
 }
 
 /**
- * Generates the HTML for the task detail view in the overlay.
- * Contains all task information as well as action buttons for delete and edit.
- *
- * @param {Object} task - The normalized task object from Firebase.
- * @param {string} id - The Firebase ID of the task.
- * @returns {string} HTML string of the detail view.
+ * Deletes a contact from the database.
+ * @param {string} contactId - Contact id.
+ * @returns {Promise&lt;void>} Resolves after delete completes.
+ * @category Contacts
+ * @subcategory Firebase Logic
  */
-function getTaskDetailTemplate(task, id) {
-  const prio = (task.priority || "low").toLowerCase();
-  const prioLabel = prio.charAt(0).toUpperCase() + prio.slice(1);
-  const catClass = buildCategoryClass(task.category);
-  const catText = task.category || "User Story";
-  return `&lt;div class="task-detail-card">
-    &lt;div class="detail-header">
-      &lt;div class="badge ${catClass}">${catText}&lt;/div>
-      &lt;button class="close-btn-overlay" onclick="closeTaskDetail()">&lt;img src="../assets/icons/close.svg" alt="Close">&lt;/button>
-    &lt;/div>
-    &lt;h1 class="detail-title">${task.title || "No Title"}&lt;/h1>
-    &lt;p class="detail-description">${task.description || ""}&lt;/p>
-    &lt;div class="detail-info-row">&lt;span class="info-label">Due date:&lt;/span>&lt;span class="info-value">${formatDate(task.dueDate)}&lt;/span>&lt;/div>
-    &lt;div class="detail-prio-row">&lt;span class="info-label">Priority:&lt;/span>
-      &lt;div class="info-value-prio">&lt;span>${prioLabel}&lt;/span>&lt;img src="../assets/icons/prio-${prio}.svg" alt="${prioLabel}">&lt;/div>
-    &lt;/div>
-    &lt;div class="detail-section">&lt;h3 class="section-title">Assigned To:&lt;/h3>
-      &lt;div class="assigned-list">${renderUserBadges(task.assignedTo, 100, true)}&lt;/div>
-    &lt;/div>
-    &lt;div class="detail-section">&lt;h3 class="section-title">Subtasks&lt;/h3>
-      &lt;div class="subtask-list">${renderSubtaskItems(task.subtasks, id)}&lt;/div>
-    &lt;/div>
-    &lt;div class="detail-actions">
-      &lt;button class="action-btn" onclick="deleteTask('${id}')">&lt;img src="../assets/icons/delete_text.svg" alt="Delete">&lt;/button>
-      &lt;div class="action-divider">&lt;/div>
-      &lt;button class="action-btn" onclick="editTask('${id}')">&lt;img src="../assets/icons/edit_text.svg" alt="Edit">&lt;/button>
-    &lt;/div>
-  &lt;/div>`;
+async function deleteContact(contactId) {
+	if (!contactId) return;
+	if (isSelfContactId(contactId)) return;
+	if (hasDb()) {
+		try {
+			await db.ref(`contacts/${contactId}`).remove();
+			return;
+		} catch (error) {
+			// Fall through to local fallback.
+		}
+	}
+	const contactsMap = readLocalContactsMap();
+	delete contactsMap[contactId];
+	writeLocalContactsMap(contactsMap);
 }
 
 /**
- * Generates the HTML for the task edit form in the overlay.
- * Contains input fields for all editable task properties.
- *
- * @param {Object} task - The normalized task object from Firebase.
- * @param {string} id - The Firebase ID of the task.
- * @returns {string} HTML string of the edit form.
+ * Fetches a contact by id.
+ * @param {string} contactId - Contact id.
+ * @returns {Promise&lt;{name?: string, email?: string, phone?: string} | null>} Contact data.
+ * @category Contacts
+ * @subcategory Firebase Logic
  */
-function getEditTaskTemplate(task, id) {
-  const curr = (task.priority || "low").toLowerCase();
-  return `&lt;div class="card-inner">
-    &lt;button class="close-btn-overlay" onclick="closeTaskDetail()">&lt;img src="../assets/icons/close.svg" alt="Close">&lt;/button>
-    &lt;div class="task-edit-container">&lt;div class="edit-scroll-area">
-      &lt;label class="edit-label">Title&lt;/label>
-      &lt;input type="text" id="edit-title" class="edit-input" value="${task.title || ""}">
-      &lt;label class="edit-label">Description&lt;/label>
-      &lt;textarea id="edit-description" class="edit-textarea">${task.description || ""}&lt;/textarea>
-      &lt;label class="edit-label">Due date&lt;/label>
-      &lt;input type="date" id="edit-date" class="edit-input" value="${task.dueDate || ""}">
-      &lt;label class="edit-label edit-label-priority">Priority&lt;/label>
-      &lt;div class="priority-row-edit">${renderPrioButtons(curr)}&lt;/div>
-      &lt;label class="edit-label">Assigned to&lt;/label>
-      &lt;div class="custom-select-container">
-        &lt;div class="edit-input custom-select-header" onclick="toggleEditContactList()">
-          &lt;span>Select contacts to assign&lt;/span>
-          &lt;img src="../assets/icons/arrow_drop_down.png" id="dropdown-arrow">
-        &lt;/div>
-        &lt;div id="edit-contact-list" class="custom-contact-list hidden">&lt;/div>
-      &lt;/div>
-      &lt;div id="edit-assigned-badges" class="edit-assigned-row">&lt;/div>
-      &lt;label class="edit-label">Subtasks&lt;/label>
-      &lt;div class="subtask-input-container">
-        &lt;input type="text" id="edit-subtask-input" class="edit-input" placeholder="Add new subtask">
-        &lt;img src="../assets/icons/plus-button.svg" onclick="addSubtaskInEdit()">
-      &lt;/div>
-      &lt;ul id="edit-subtask-list" class="edit-subtask-list">&lt;/ul>
-    &lt;/div>&lt;/div>
-    &lt;button class="save-btn" onclick="saveTaskEdit('${id}')">Ok &lt;img src="../assets/icons/check.svg">&lt;/button>
-  &lt;/div>`;
-}</code></pre>
+async function fetchContact(contactId) {
+	if (!contactId) return null;
+	if (isSelfContactId(contactId)) {
+		return fetchOwnAccountContactById(contactId);
+	}
+	if (hasDb()) {
+		try {
+			const snapshot = await db.ref(`contacts/${contactId}`).get();
+			return snapshot.val();
+		} catch (error) {
+			// Fall through to local fallback.
+		}
+	}
+	const contactsMap = readLocalContactsMap();
+	return contactsMap[contactId] || null;
+}
+
+/**
+ * Sorts contacts by name for stable list rendering.
+ * @param {Array&lt;{id: string, name: string, email: string, phone: string, createdAt?: number}>} contacts - Contact list.
+ * @returns {Array&lt;{id: string, name: string, email: string, phone: string, createdAt?: number}>} Sorted contacts.
+ * @category Contacts
+ * @subcategory UI &amp; Init
+ */
+function sortContactsByName(contacts) {
+	return [...contacts].sort((a, b) =>
+		String(a?.name || '').localeCompare(String(b?.name || ''), 'de', { sensitivity: 'base' })
+	);
+}
+
+
+function toNormalizedContact(id, value) {
+	return {
+		id,
+		name: value?.name || '',
+		email: value?.email || '',
+		phone: value?.phone || '',
+		createdAt: value?.createdAt || 0,
+	};
+}
+
+
+function mapContactsObjectToList(contactsMap) {
+	return Object.entries(contactsMap || {}).map(([id, value]) => toNormalizedContact(id, value));
+}
+
+
+async function readContactsSource() {
+	if (!hasDb()) return readLocalContactsMap();
+	try {
+		const snapshot = await db.ref('contacts').get();
+		return snapshot.val() || {};
+	} catch (error) {
+		return readLocalContactsMap();
+	}
+}
+
+/**
+ * Fetches all contacts from Firebase.
+ * @returns {Promise&lt;Array&lt;{id: string, name: string, email: string, phone: string, createdAt?: number}>>} Contact list.
+ * @category Contacts
+ * @subcategory Firebase Logic
+ */
+async function fetchContacts() {
+	const contacts = await readContactsSource();
+	const normalizedContacts = mapContactsObjectToList(contacts);
+	const ownAccountContact = await fetchOwnAccountContact();
+	const mergedContacts = mergeOwnAccountContact(normalizedContacts, ownAccountContact);
+	const sortedContacts = sortContactsByName(mergedContacts);
+	writeContactsCache(sortedContacts);
+	return sortedContacts;
+}
+
+
+function areContactsEqualByFields(leftContact, rightContact) {
+	if (!leftContact || !rightContact) return false;
+	if (leftContact.id !== rightContact.id) return false;
+	if (leftContact.name !== rightContact.name) return false;
+	if (leftContact.email !== rightContact.email) return false;
+	if (leftContact.phone !== rightContact.phone) return false;
+	return (leftContact.createdAt || 0) === (rightContact.createdAt || 0);
+}
+
+/**
+ * Compares two contact lists by relevant rendered fields.
+ * @param {Array&lt;{id: string, name: string, email: string, phone: string, createdAt?: number}>} left - First list.
+ * @param {Array&lt;{id: string, name: string, email: string, phone: string, createdAt?: number}>} right - Second list.
+ * @returns {boolean} True when both lists are equivalent for rendering.
+ * @category Contacts
+ * @subcategory Validation
+ */
+function areContactListsEqual(left, right) {
+	if (left.length !== right.length) return false;
+	for (let index = 0; index &lt; left.length; index += 1) {
+		if (!areContactsEqualByFields(left[index], right[index])) return false;
+	}
+	return true;
+}
+</code></pre>
         </article>
     </section>
 

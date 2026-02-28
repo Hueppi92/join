@@ -7,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> scripts/taskboardTemplate.js</title>
+  <title> scripts/login-auth.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -80,7 +80,7 @@
             <div class="content">
                 <header class="page-title">
                     <p>Source</p>
-                    <h1>scripts/taskboardTemplate.js</h1>
+                    <h1>scripts/login-auth.js</h1>
                 </header>
                 
 
@@ -90,296 +90,239 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * @category Board
+ * @typedef {Object} LoginFields
+ * @property {HTMLFormElement} form - The login form element.
+ * @property {HTMLInputElement} emailInput - The email input field.
+ * @property {HTMLInputElement} passwordInput - The password input field.
+ * @property {HTMLButtonElement} submitButton - The submit button.
+ * @property {HTMLElement} message - The login error message element.
  */
 
 /**
- * Erzeugt das HTML-Template für eine Task-Karte.
- * @param {Object} task - Das Task-Objekt.
- * @returns {string} HTML-String.
+ * Initializes Firebase login handling for the login form.
+ * @category Login
+ * @subcategory UI &amp; Init
  */
-/**
- * Ensures that a value is returned as an array.
- * Automatically converts Firebase objects (key-value) into an array.
- *
- * @param {Array|Object|null} data - The value to normalize.
- * @returns {Array} Array containing the values from data.
- */
-function ensureArray(data) {
-  return Array.isArray(data) ? data : Object.values(data || {});
+function initLoginForm() {
+	const form = document.querySelector('.login-form');
+	if (!form) return;
+
+	const fields = getLoginFields(form);
+	if (!fields) return;
+
+	bindLoginFieldEvents(fields);
+	form.addEventListener('submit', (event) => handleLoginSubmit(event, fields));
 }
 
 /**
- * Calculates the completion progress of a task's subtasks.
- *
- * @param {Array|Object|null} subtasksRaw - Raw subtask data.
- * @returns {{done: number, total: number, percent: number}} Progress data.
+ * Collects login form fields.
+ * @param {HTMLFormElement} form - The login form element.
+ * @returns {LoginFields | null} Collected form fields or null if missing.
+ * @category Login
+ * @subcategory UI &amp; Init
  */
-function getProgressData(subtasksRaw) {
-  const st = ensureArray(subtasksRaw);
-  const done = st.filter((s) => s?.completed || s?.done).length;
-  const percent = st.length > 0 ? (done / st.length) * 100 : 0;
-  return { done, total: st.length, percent };
+function getLoginFields(form) {
+	const emailInput = form.querySelector('input[name="email"]');
+	const passwordInput = form.querySelector('input[name="password"]');
+	const submitButton = form.querySelector('button[type="submit"]');
+	const message = document.getElementById('login-error-message');
+	if (!emailInput || !passwordInput || !submitButton || !message) return null;
+
+	return { form, emailInput, passwordInput, submitButton, message };
 }
 
 /**
- * Formats an ISO date string (YYYY-MM-DD) into European format (DD.MM.YYYY).
- * Returns a placeholder if no date is provided.
- *
- * @param {string} [dueDate=""] - The date string to format in ISO format.
- * @returns {string} Date in DD.MM.YYYY format or "--.--.----".
+ * Binds events to update login form button state.
+ * @param {LoginFields} fields - Collected login form fields.
+ * @category Login
+ * @subcategory UI &amp; Init
  */
-function formatDate(dueDate = "") {
-  if (!dueDate) return "--.--.----";
-  return dueDate.includes("-") ? dueDate.split("-").reverse().join(".") : dueDate;
+function bindLoginFieldEvents(fields) {
+	const updateState = () => updateLoginButtonState(fields);
+	bindLoginInputListener(fields.emailInput, fields, updateState);
+	bindLoginInputListener(fields.passwordInput, fields, updateState);
+	updateLoginButtonState(fields);
+}
+
+
+function bindLoginInputListener(input, fields, updateState) {
+	input.addEventListener('input', () => {
+		clearLoginFeedback(fields);
+		updateState();
+	});
+}
+
+
+function clearLoginFeedback(fields) {
+	setLoginFieldErrorState(fields, false);
+	setFormMessage(fields.message, '');
 }
 
 /**
- * Generates a CSS-compatible class name from a category text string.
- *
- * @param {string} [category=""] - The category text of the task.
- * @returns {string} Lowercase CSS class name with hyphens.
+ * Enables/disables the login button based on form validity.
+ * @param {LoginFields} fields - Collected login form fields.
+ * @category Login
+ * @subcategory UI &amp; Init
  */
-function buildCategoryClass(category = "") {
-  return (category || "User Story").toLowerCase().replace(/\s+/g, "-");
-}
-
-/** --- USER BADGE HELPERS --- **/
-
-/**
- * Resolves the initials to display for a user.
- * Prefers existing initials; otherwise calculates them from the name.
- *
- * @param {Object} u - User badge object with optional name and initials properties.
- * @returns {string} Initials of the user.
- */
-function resolveUserInitials(u) {
-  const name = u.name || "";
-  return u.initials || getInitials(name);
+function updateLoginButtonState(fields) {
+	const isValid = isLoginInputValid(fields);
+	const isLoading = fields.submitButton.dataset.loading === '1';
+	fields.submitButton.disabled = isLoading || !isValid;
 }
 
 /**
- * Generates the HTML string for a single user badge on a task card.
- * Badges are displayed overlapping side by side.
- *
- * @param {Object} u - User badge object with name, initials, and color properties.
- * @param {number} index - Position of the badge in the list (determines z-index and offset).
- * @returns {string} HTML string for the badge.
+ * Validates login inputs.
+ * @param {LoginFields} fields - Collected login form fields.
+ * @returns {boolean} True if the login inputs are valid.
+ * @category Login
+ * @subcategory Validation
  */
-function renderCardBadge(u, index) {
-  const ml = index === 0 ? "0" : "-12px";
-  return `&lt;div class="user-badge" style="background-color:${u.color || "#2A3647"};z-index:${10 - index};margin-left:${ml};">
-    ${resolveUserInitials(u)}
-  &lt;/div>`;
+function isLoginInputValid(fields) {
+	return isEmailValid(fields.emailInput.value) &amp;&amp; fields.passwordInput.value.trim().length > 0;
 }
 
 /**
- * Generates the HTML string for a user badge in the task detail view,
- * including the full name of the user.
- *
- * @param {Object} u - User badge object with name, initials, and color properties.
- * @returns {string} HTML string for the detail badge with name.
+ * Handles Firebase login submission.
+ * @param {SubmitEvent} event - The form submit event.
+ * @param {LoginFields} fields - Collected login form fields.
+ * @category Login
+ * @subcategory Firebase Logic
  */
-function renderDetailBadge(u) {
-  const name = u.name || "Unknown";
-  const initials = resolveUserInitials(u);
-  return `&lt;div class="assigned-user-badge-container">
-    &lt;div class="user-badge" style="background-color:${u.color || "#2A3647"};">${initials}&lt;/div>
-    &lt;span>${name}&lt;/span>
-  &lt;/div>`;
+async function handleLoginSubmit(event, fields) {
+	event.preventDefault();
+	clearLoginFeedback(fields);
+	if (!validateLoginBeforeSubmit(fields)) return;
+	setLoadingState(fields, true);
+	try {
+		const credential = await signInWithCredentials(fields);
+		handleSuccessfulLogin(credential);
+	} catch (error) {
+		handleFailedLogin(fields, error);
+	} finally {
+		setLoadingState(fields, false);
+	}
+}
+
+
+function validateLoginBeforeSubmit(fields) {
+	if (isLoginInputValid(fields)) return true;
+	setFormMessage(fields.message, 'Please enter valid credentials.');
+	setLoginFieldErrorState(fields, true);
+	return false;
+}
+
+
+async function signInWithCredentials(fields) {
+	const email = fields.emailInput.value.trim();
+	const password = fields.passwordInput.value;
+	return firebase.auth().signInWithEmailAndPassword(email, password);
+}
+
+
+function handleSuccessfulLogin(credential) {
+	sessionStorage.setItem('userId', credential.user.uid);
+	sessionStorage.removeItem('guestLogin');
+	sessionStorage.setItem('skipSplash', '1');
+	window.location.href = './sites/summary.html';
+}
+
+
+function handleFailedLogin(fields, error) {
+	setFormMessage(fields.message, getAuthErrorMessage(error));
+	setLoginFieldErrorState(fields, true);
 }
 
 /**
- * Renders a list of user badges for a task card or the detail view.
- *
- * @param {Array|Object} users - List of assigned user objects.
- * @param {number} [limit=3] - Maximum number of badges to display (card view only).
- * @param {boolean} [isDetail=false] - True for detail view (with name), false for card view.
- * @returns {string} HTML string with all badge elements.
+ * Sets error state on login inputs.
+ * @param {LoginFields} fields - Collected login form fields.
+ * @param {boolean} hasError - Whether inputs should be marked as invalid.
+ * @category Login
+ * @subcategory UI &amp; Init
  */
-function renderUserBadges(users, limit = 3, isDetail = false) {
-  const list = ensureArray(users).filter((u) => u &amp;&amp; typeof u === "object");
-  if (isDetail) return list.map(renderDetailBadge).join("");
-  return list.slice(0, limit).map(renderCardBadge).join("");
-}
-
-/** --- SUBTASK HELPERS --- **/
-
-/**
- * Resolves the display title of a subtask, regardless of its storage format.
- *
- * @param {string|Object|null} s - Raw subtask entry (string or object with title property).
- * @param {number} i - Index of the subtask (used for fallback label).
- * @returns {string} Display title of the subtask.
- */
-function resolveSubtaskTitle(s, i) {
-  return typeof s === "object" ? s.title || `Subtask ${i + 1}` : s;
+function setLoginFieldErrorState(fields, hasError) {
+	fields.emailInput.classList.toggle('input-error', hasError);
+	fields.passwordInput.classList.toggle('input-error', hasError);
 }
 
 /**
- * Renders the subtask list for the task detail view as an HTML string.
- * Each subtask is clickable and toggles its completed status.
- *
- * @param {Array|Object|null} subtasksRaw - Raw subtask data.
- * @param {string} taskId - The Firebase ID of the task.
- * @returns {string} HTML string of the subtask list or "No subtasks".
+ * Sets the loading state for the login form.
+ * @param {LoginFields} fields - Collected login form fields.
+ * @param {boolean} isLoading - Whether the submit action is in progress.
+ * @category Login
+ * @subcategory UI &amp; Init
  */
-function renderSubtaskItems(subtasksRaw, taskId) {
-  const st = ensureArray(subtasksRaw);
-  if (st.length === 0) return "No subtasks";
-  return st.map((s, i) => {
-    const done = s?.completed || s?.done;
-    const title = resolveSubtaskTitle(s, i);
-    const icon = done ? "checked" : "empty";
-    return `&lt;div class="subtask-row" onclick="updateSubtaskStatus('${taskId}', ${i}, ${!done})">
-      &lt;img src="../assets/icons/checkbox_${icon}.svg">&lt;span>${title}&lt;/span>
-    &lt;/div>`;
-  }).join("");
-}
-
-/** --- PROGRESS BAR HTML --- **/
-
-/**
- * Generates the HTML string for the progress indicator on a task card.
- * Returns an empty string if no subtasks are present.
- *
- * @param {Array|Object|null} subtasksRaw - Raw subtask data.
- * @returns {string} HTML string of the progress bar or empty string.
- */
-function renderProgressBar(subtasksRaw) {
-  const { done, total, percent } = getProgressData(subtasksRaw);
-  if (total === 0) return "";
-  return `&lt;div class="progress-container">
-    &lt;div class="progress-bar">&lt;div class="progress-fill" style="width:${percent}%">&lt;/div>&lt;/div>
-    &lt;span class="subtask-text">${done}/${total} Subtasks&lt;/span>
-  &lt;/div>`;
-}
-
-/** --- PRIORITY BUTTONS HTML --- **/
-
-/**
- * Generates the HTML string for the three priority buttons in the edit form.
- * The currently active button receives the corresponding CSS class.
- *
- * @param {string} currentPrio - The currently set priority ('urgent', 'medium', or 'low').
- * @returns {string} HTML string with all three priority buttons.
- */
-function renderPrioButtons(currentPrio) {
-  return ["urgent", "medium", "low"].map((p) => {
-    const active = currentPrio === p ? `active-${p}` : "";
-    const label = p.charAt(0).toUpperCase() + p.slice(1);
-    return `&lt;button class="prio-btn-edit ${active}" onclick="setEditPriority('${p}')" id="prio-${p}">
-      ${label}&lt;img src="../assets/icons/prio-${p}.svg">
-    &lt;/button>`;
-  }).join("");
-}
-
-/** --- MAIN TEMPLATES --- **/
-
-/**
- * Generates the HTML for a task card on the board.
- * The card is drag-and-drop enabled and opens the detail view on click.
- *
- * @param {Object} task - The normalized task object from Firebase.
- * @param {string} id - The Firebase ID of the task.
- * @returns {string} HTML string of the task card.
- */
-function getCardTemplate(task, id) {
-  const prio = (task.priority || "low").toLowerCase();
-  const catClass = buildCategoryClass(task.category);
-  const catText = task.category || "User Story";
-  return `&lt;div class="card" draggable="true" onclick="event.stopPropagation();openTaskDetail('${id}')" ondragstart="event.dataTransfer.setData('text/plain','${id}')">
-    &lt;div class="badge ${catClass}">${catText}&lt;/div>
-    &lt;div class="card-content">
-      &lt;h2 class="card-title">${task.title || "No Title"}&lt;/h2>
-      &lt;p class="card-description">${task.description || ""}&lt;/p>
-    &lt;/div>
-    ${renderProgressBar(task.subtasks)}
-    &lt;div class="card-footer">
-      &lt;div class="assigned-to-container">${renderUserBadges(task.assignedTo)}&lt;/div>
-      &lt;div class="prio-icon">&lt;img src="../assets/icons/prio-${prio}.svg" alt="${prio}" onerror="this.style.display='none'">&lt;/div>
-    &lt;/div>
-  &lt;/div>`;
+function setLoadingState(fields, isLoading) {
+	fields.submitButton.dataset.loading = isLoading ? '1' : '0';
+	updateLoginButtonState(fields);
 }
 
 /**
- * Generates the HTML for the task detail view in the overlay.
- * Contains all task information as well as action buttons for delete and edit.
- *
- * @param {Object} task - The normalized task object from Firebase.
- * @param {string} id - The Firebase ID of the task.
- * @returns {string} HTML string of the detail view.
+ * Updates the form message.
+ * @param {HTMLElement} message - Message element to update.
+ * @param {string} text - Message content to display.
+ * @category Login
+ * @subcategory UI &amp; Init
  */
-function getTaskDetailTemplate(task, id) {
-  const prio = (task.priority || "low").toLowerCase();
-  const prioLabel = prio.charAt(0).toUpperCase() + prio.slice(1);
-  const catClass = buildCategoryClass(task.category);
-  const catText = task.category || "User Story";
-  return `&lt;div class="task-detail-card">
-    &lt;div class="detail-header">
-      &lt;div class="badge ${catClass}">${catText}&lt;/div>
-      &lt;button class="close-btn-overlay" onclick="closeTaskDetail()">&lt;img src="../assets/icons/close.svg" alt="Close">&lt;/button>
-    &lt;/div>
-    &lt;h1 class="detail-title">${task.title || "No Title"}&lt;/h1>
-    &lt;p class="detail-description">${task.description || ""}&lt;/p>
-    &lt;div class="detail-info-row">&lt;span class="info-label">Due date:&lt;/span>&lt;span class="info-value">${formatDate(task.dueDate)}&lt;/span>&lt;/div>
-    &lt;div class="detail-prio-row">&lt;span class="info-label">Priority:&lt;/span>
-      &lt;div class="info-value-prio">&lt;span>${prioLabel}&lt;/span>&lt;img src="../assets/icons/prio-${prio}.svg" alt="${prioLabel}">&lt;/div>
-    &lt;/div>
-    &lt;div class="detail-section">&lt;h3 class="section-title">Assigned To:&lt;/h3>
-      &lt;div class="assigned-list">${renderUserBadges(task.assignedTo, 100, true)}&lt;/div>
-    &lt;/div>
-    &lt;div class="detail-section">&lt;h3 class="section-title">Subtasks&lt;/h3>
-      &lt;div class="subtask-list">${renderSubtaskItems(task.subtasks, id)}&lt;/div>
-    &lt;/div>
-    &lt;div class="detail-actions">
-      &lt;button class="action-btn" onclick="deleteTask('${id}')">&lt;img src="../assets/icons/delete_text.svg" alt="Delete">&lt;/button>
-      &lt;div class="action-divider">&lt;/div>
-      &lt;button class="action-btn" onclick="editTask('${id}')">&lt;img src="../assets/icons/edit_text.svg" alt="Edit">&lt;/button>
-    &lt;/div>
-  &lt;/div>`;
+function setFormMessage(message, text) {
+	message.textContent = text;
+	message.classList.toggle('is-hidden', !text);
 }
 
 /**
- * Generates the HTML for the task edit form in the overlay.
- * Contains input fields for all editable task properties.
- *
- * @param {Object} task - The normalized task object from Firebase.
- * @param {string} id - The Firebase ID of the task.
- * @returns {string} HTML string of the edit form.
+ * Maps Firebase auth errors to readable messages.
+ * @param {unknown} error - Firebase auth error.
+ * @returns {string} User-facing error message.
+ * @category Login
+ * @subcategory Firebase Logic
  */
-function getEditTaskTemplate(task, id) {
-  const curr = (task.priority || "low").toLowerCase();
-  return `&lt;div class="card-inner">
-    &lt;button class="close-btn-overlay" onclick="closeTaskDetail()">&lt;img src="../assets/icons/close.svg" alt="Close">&lt;/button>
-    &lt;div class="task-edit-container">&lt;div class="edit-scroll-area">
-      &lt;label class="edit-label">Title&lt;/label>
-      &lt;input type="text" id="edit-title" class="edit-input" value="${task.title || ""}">
-      &lt;label class="edit-label">Description&lt;/label>
-      &lt;textarea id="edit-description" class="edit-textarea">${task.description || ""}&lt;/textarea>
-      &lt;label class="edit-label">Due date&lt;/label>
-      &lt;input type="date" id="edit-date" class="edit-input" value="${task.dueDate || ""}">
-      &lt;label class="edit-label edit-label-priority">Priority&lt;/label>
-      &lt;div class="priority-row-edit">${renderPrioButtons(curr)}&lt;/div>
-      &lt;label class="edit-label">Assigned to&lt;/label>
-      &lt;div class="custom-select-container">
-        &lt;div class="edit-input custom-select-header" onclick="toggleEditContactList()">
-          &lt;span>Select contacts to assign&lt;/span>
-          &lt;img src="../assets/icons/arrow_drop_down.png" id="dropdown-arrow">
-        &lt;/div>
-        &lt;div id="edit-contact-list" class="custom-contact-list hidden">&lt;/div>
-      &lt;/div>
-      &lt;div id="edit-assigned-badges" class="edit-assigned-row">&lt;/div>
-      &lt;label class="edit-label">Subtasks&lt;/label>
-      &lt;div class="subtask-input-container">
-        &lt;input type="text" id="edit-subtask-input" class="edit-input" placeholder="Add new subtask">
-        &lt;img src="../assets/icons/plus-button.svg" onclick="addSubtaskInEdit()">
-      &lt;/div>
-      &lt;ul id="edit-subtask-list" class="edit-subtask-list">&lt;/ul>
-    &lt;/div>&lt;/div>
-    &lt;button class="save-btn" onclick="saveTaskEdit('${id}')">Ok &lt;img src="../assets/icons/check.svg">&lt;/button>
-  &lt;/div>`;
-}</code></pre>
+function getAuthErrorMessage(error) {
+	const fallback = 'Login failed. Please try again.';
+	if (!error || typeof error !== 'object' || !('code' in error)) return fallback;
+	return getLoginAuthErrorMessages()[error.code] || fallback;
+}
+
+
+function getLoginAuthErrorMessages() {
+	return {
+		'auth/invalid-credential': 'Check your email and password. Please try again.',
+		'auth/invalid-login-credentials': 'Check your email and password. Please try again.',
+		'auth/invalid-email': 'Please enter a valid email address.',
+		'auth/user-not-found': 'Check your email and password. Please try again.',
+		'auth/wrong-password': 'Check your email and password. Please try again.',
+		'auth/user-disabled': 'This user is disabled.',
+		'auth/too-many-requests': 'Too many attempts. Please try again later.',
+	};
+}
+
+/**
+ * Wires the guest login button to open the summary page.
+ * @category Login
+ * @subcategory UI &amp; Init
+ */
+function initGuestLogin() {
+	const guestButton = document.querySelector('.guest-login');
+	if (!guestButton) return;
+
+	guestButton.addEventListener('click', handleGuestLogin);
+}
+
+/**
+ * Navigates to the summary page for guest access.
+ * @category Login
+ * @subcategory UI &amp; Init
+ */
+function handleGuestLogin() {
+	sessionStorage.setItem('guestLogin', '1');
+	sessionStorage.removeItem('userId');
+	window.location.href = './sites/summary.html';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+	initGuestLogin();
+	initLoginForm();
+	initPasswordToggles();
+});
+</code></pre>
         </article>
     </section>
 

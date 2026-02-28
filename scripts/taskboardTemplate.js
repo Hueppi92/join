@@ -1,7 +1,12 @@
-/** --- LOGIC HELPERS --- **/
+/**
+ * @category Board
+ */
 
-// getInitials is provided by taskeditor.js — do NOT redeclare here
-
+/**
+ * Erzeugt das HTML-Template für eine Task-Karte.
+ * @param {Object} task - Das Task-Objekt.
+ * @returns {string} HTML-String.
+ */
 /**
  * Ensures that a value is returned as an array.
  * Automatically converts Firebase objects (key-value) into an array.
@@ -54,7 +59,7 @@ function buildCategoryClass(category = "") {
  * Resolves the initials to display for a user.
  * Prefers existing initials; otherwise calculates them from the name.
  *
- * @param {{name?: string, initials?: string}} u - User badge object.
+ * @param {Object} u - User badge object with optional name and initials properties.
  * @returns {string} Initials of the user.
  */
 function resolveUserInitials(u) {
@@ -66,7 +71,7 @@ function resolveUserInitials(u) {
  * Generates the HTML string for a single user badge on a task card.
  * Badges are displayed overlapping side by side.
  *
- * @param {{name?: string, initials?: string, color?: string}} u - User badge object.
+ * @param {Object} u - User badge object with name, initials, and color properties.
  * @param {number} index - Position of the badge in the list (determines z-index and offset).
  * @returns {string} HTML string for the badge.
  */
@@ -81,7 +86,7 @@ function renderCardBadge(u, index) {
  * Generates the HTML string for a user badge in the task detail view,
  * including the full name of the user.
  *
- * @param {{name?: string, initials?: string, color?: string}} u - User badge object.
+ * @param {Object} u - User badge object with name, initials, and color properties.
  * @returns {string} HTML string for the detail badge with name.
  */
 function renderDetailBadge(u) {
@@ -112,7 +117,7 @@ function renderUserBadges(users, limit = 3, isDetail = false) {
 /**
  * Resolves the display title of a subtask, regardless of its storage format.
  *
- * @param {string|{title?: string}|null} s - Raw subtask entry.
+ * @param {string|Object|null} s - Raw subtask entry (string or object with title property).
  * @param {number} i - Index of the subtask (used for fallback label).
  * @returns {string} Display title of the subtask.
  */
@@ -148,7 +153,7 @@ function renderSubtaskItems(subtasksRaw, taskId) {
  * Returns an empty string if no subtasks are present.
  *
  * @param {Array|Object|null} subtasksRaw - Raw subtask data.
- * @returns {string} HTML string of the progress bar or "".
+ * @returns {string} HTML string of the progress bar or empty string.
  */
 function renderProgressBar(subtasksRaw) {
   const { done, total, percent } = getProgressData(subtasksRaw);
@@ -165,7 +170,7 @@ function renderProgressBar(subtasksRaw) {
  * Generates the HTML string for the three priority buttons in the edit form.
  * The currently active button receives the corresponding CSS class.
  *
- * @param {string} currentPrio - The currently set priority ('urgent' | 'medium' | 'low').
+ * @param {string} currentPrio - The currently set priority ('urgent', 'medium', or 'low').
  * @returns {string} HTML string with all three priority buttons.
  */
 function renderPrioButtons(currentPrio) {

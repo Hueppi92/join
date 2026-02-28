@@ -7,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> scripts/taskboardTemplate.js</title>
+  <title> scripts/contacts.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -80,7 +80,7 @@
             <div class="content">
                 <header class="page-title">
                     <p>Source</p>
-                    <h1>scripts/taskboardTemplate.js</h1>
+                    <h1>scripts/contacts.js</h1>
                 </header>
                 
 
@@ -90,296 +90,406 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * @category Board
+ * Returns overlay elements used for add/edit states.
+ * @returns {{overlay: HTMLElement, title: HTMLElement | null, subtitle: HTMLElement | null, submitLabel: HTMLElement | null, deleteButton: HTMLButtonElement | null} | null}
+ * @category Contacts
+ * @subcategory UI &amp; Init
  */
-
-/**
- * Erzeugt das HTML-Template für eine Task-Karte.
- * @param {Object} task - Das Task-Objekt.
- * @returns {string} HTML-String.
- */
-/**
- * Ensures that a value is returned as an array.
- * Automatically converts Firebase objects (key-value) into an array.
- *
- * @param {Array|Object|null} data - The value to normalize.
- * @returns {Array} Array containing the values from data.
- */
-function ensureArray(data) {
-  return Array.isArray(data) ? data : Object.values(data || {});
+function getContactOverlayElements() {
+	const overlay = document.getElementById('contact-overlay');
+	if (!overlay) return null;
+	return {
+		overlay,
+		title: overlay.querySelector('[data-role="contact-title"]'),
+		subtitle: overlay.querySelector('[data-role="contact-subtitle"]'),
+		submitLabel: overlay.querySelector('[data-role="contact-submit-label"]'),
+		deleteButton: overlay.querySelector('[data-role="contact-delete"]'),
+		cancelButton: overlay.querySelector('[data-role="contact-cancel"]'),
+		formMessage: overlay.querySelector('[data-role="contact-form-message"]'),
+		avatar: overlay.querySelector('.contact-overlay__avatar'),
+		avatarIcon: overlay.querySelector('[data-role="contact-avatar-icon"]'),
+		avatarText: overlay.querySelector('[data-role="contact-avatar-text"]'),
+	};
 }
 
 /**
- * Calculates the completion progress of a task's subtasks.
- *
- * @param {Array|Object|null} subtasksRaw - Raw subtask data.
- * @returns {{done: number, total: number, percent: number}} Progress data.
+ * Opens the add contact overlay.
+ * @category Contacts
+ * @subcategory UI &amp; Init
  */
-function getProgressData(subtasksRaw) {
-  const st = ensureArray(subtasksRaw);
-  const done = st.filter((s) => s?.completed || s?.done).length;
-  const percent = st.length > 0 ? (done / st.length) * 100 : 0;
-  return { done, total: st.length, percent };
+function openContactOverlay() {
+	const overlay = document.getElementById('contact-overlay');
+	if (!overlay) return;
+	overlay.classList.remove('is-instant');
+	overlay.classList.add('is-open');
+	overlay.setAttribute('aria-hidden', 'false');
+	document.body.classList.add('contact-overlay-open');
 }
 
 /**
- * Formats an ISO date string (YYYY-MM-DD) into European format (DD.MM.YYYY).
- * Returns a placeholder if no date is provided.
- *
- * @param {string} [dueDate=""] - The date string to format in ISO format.
- * @returns {string} Date in DD.MM.YYYY format or "--.--.----".
+ * Closes the add contact overlay.
+ * @category Contacts
+ * @subcategory UI &amp; Init
  */
-function formatDate(dueDate = "") {
-  if (!dueDate) return "--.--.----";
-  return dueDate.includes("-") ? dueDate.split("-").reverse().join(".") : dueDate;
+function closeContactOverlay(immediate = false) {
+	const overlay = document.getElementById('contact-overlay');
+	if (!overlay) return;
+	if (immediate) {
+		overlay.classList.add('is-instant');
+	}
+	overlay.classList.remove('is-open');
+	overlay.setAttribute('aria-hidden', 'true');
+	document.body.classList.remove('contact-overlay-open');
 }
 
 /**
- * Generates a CSS-compatible class name from a category text string.
- *
- * @param {string} [category=""] - The category text of the task.
- * @returns {string} Lowercase CSS class name with hyphens.
+ * Shows a temporary success toast after creating a contact.
+ * @category Contacts
+ * @subcategory UI &amp; Init
  */
-function buildCategoryClass(category = "") {
-  return (category || "User Story").toLowerCase().replace(/\s+/g, "-");
-}
-
-/** --- USER BADGE HELPERS --- **/
-
-/**
- * Resolves the initials to display for a user.
- * Prefers existing initials; otherwise calculates them from the name.
- *
- * @param {Object} u - User badge object with optional name and initials properties.
- * @returns {string} Initials of the user.
- */
-function resolveUserInitials(u) {
-  const name = u.name || "";
-  return u.initials || getInitials(name);
+function showSuccessToast() {
+	const toast = document.getElementById('contact-success-toast');
+	if (!toast) return;
+	toast.setAttribute('aria-hidden', 'false');
+	toast.classList.add('show');
+	setTimeout(() => {
+		toast.classList.remove('show');
+		toast.setAttribute('aria-hidden', 'true');
+	}, 2000);
 }
 
 /**
- * Generates the HTML string for a single user badge on a task card.
- * Badges are displayed overlapping side by side.
- *
- * @param {Object} u - User badge object with name, initials, and color properties.
- * @param {number} index - Position of the badge in the list (determines z-index and offset).
- * @returns {string} HTML string for the badge.
+ * Collects contact form fields.
+ * @returns {{form: HTMLFormElement, nameInput: HTMLInputElement, emailInput: HTMLInputElement, phoneInput: HTMLInputElement, submitButton: HTMLButtonElement, messages: Record&lt;string, HTMLElement> } | null}
+ * @category Contacts
+ * @subcategory UI &amp; Init
  */
-function renderCardBadge(u, index) {
-  const ml = index === 0 ? "0" : "-12px";
-  return `&lt;div class="user-badge" style="background-color:${u.color || "#2A3647"};z-index:${10 - index};margin-left:${ml};">
-    ${resolveUserInitials(u)}
-  &lt;/div>`;
+function getContactFields() {
+	const form = document.querySelector('.contact-overlay__form');
+	if (!form) return null;
+	const nameInput = form.querySelector('input[name="name"]');
+	const emailInput = form.querySelector('input[name="email"]');
+	const phoneInput = form.querySelector('input[name="phone"]');
+	const submitButton = form.querySelector('button[type="submit"]');
+	const messages = {};
+	form.querySelectorAll('.contact-overlay__message').forEach((node) => {
+		const key = node.getAttribute('data-field');
+		if (key) messages[key] = node;
+	});
+	if (!nameInput || !emailInput || !phoneInput || !submitButton) return null;
+	return { form, nameInput, emailInput, phoneInput, submitButton, messages };
 }
 
 /**
- * Generates the HTML string for a user badge in the task detail view,
- * including the full name of the user.
- *
- * @param {Object} u - User badge object with name, initials, and color properties.
- * @returns {string} HTML string for the detail badge with name.
+ * Clears validation errors for contact fields.
+ * @param {ReturnType&lt;typeof getContactFields>} fields - Contact form fields.
+ * @category Contacts
+ * @subcategory UI &amp; Init
  */
-function renderDetailBadge(u) {
-  const name = u.name || "Unknown";
-  const initials = resolveUserInitials(u);
-  return `&lt;div class="assigned-user-badge-container">
-    &lt;div class="user-badge" style="background-color:${u.color || "#2A3647"};">${initials}&lt;/div>
-    &lt;span>${name}&lt;/span>
-  &lt;/div>`;
+function clearContactErrors(fields) {
+	if (!fields) return;
+	clearFieldError(fields.nameInput, fields.messages.name);
+	clearFieldError(fields.emailInput, fields.messages.email);
+	clearFieldError(fields.phoneInput, fields.messages.phone);
 }
 
 /**
- * Renders a list of user badges for a task card or the detail view.
- *
- * @param {Array|Object} users - List of assigned user objects.
- * @param {number} [limit=3] - Maximum number of badges to display (card view only).
- * @param {boolean} [isDetail=false] - True for detail view (with name), false for card view.
- * @returns {string} HTML string with all badge elements.
+ * Sets the overlay form message.
+ * @param {string} text - Message text.
+ * @category Contacts
+ * @subcategory UI &amp; Init
  */
-function renderUserBadges(users, limit = 3, isDetail = false) {
-  const list = ensureArray(users).filter((u) => u &amp;&amp; typeof u === "object");
-  if (isDetail) return list.map(renderDetailBadge).join("");
-  return list.slice(0, limit).map(renderCardBadge).join("");
-}
-
-/** --- SUBTASK HELPERS --- **/
-
-/**
- * Resolves the display title of a subtask, regardless of its storage format.
- *
- * @param {string|Object|null} s - Raw subtask entry (string or object with title property).
- * @param {number} i - Index of the subtask (used for fallback label).
- * @returns {string} Display title of the subtask.
- */
-function resolveSubtaskTitle(s, i) {
-  return typeof s === "object" ? s.title || `Subtask ${i + 1}` : s;
+function setContactFormMessage(text) {
+	const elements = getContactOverlayElements();
+	if (!elements?.formMessage) return;
+	elements.formMessage.textContent = text;
+	elements.formMessage.classList.toggle('is-hidden', !text);
 }
 
 /**
- * Renders the subtask list for the task detail view as an HTML string.
- * Each subtask is clickable and toggles its completed status.
- *
- * @param {Array|Object|null} subtasksRaw - Raw subtask data.
- * @param {string} taskId - The Firebase ID of the task.
- * @returns {string} HTML string of the subtask list or "No subtasks".
+ * Computes a stable avatar color for a contact name.
+ * @param {string} name - Contact name.
+ * @returns {string} Hex color string.
+ * @category Contacts
+ * @subcategory UI &amp; Init
  */
-function renderSubtaskItems(subtasksRaw, taskId) {
-  const st = ensureArray(subtasksRaw);
-  if (st.length === 0) return "No subtasks";
-  return st.map((s, i) => {
-    const done = s?.completed || s?.done;
-    const title = resolveSubtaskTitle(s, i);
-    const icon = done ? "checked" : "empty";
-    return `&lt;div class="subtask-row" onclick="updateSubtaskStatus('${taskId}', ${i}, ${!done})">
-      &lt;img src="../assets/icons/checkbox_${icon}.svg">&lt;span>${title}&lt;/span>
-    &lt;/div>`;
-  }).join("");
-}
-
-/** --- PROGRESS BAR HTML --- **/
-
-/**
- * Generates the HTML string for the progress indicator on a task card.
- * Returns an empty string if no subtasks are present.
- *
- * @param {Array|Object|null} subtasksRaw - Raw subtask data.
- * @returns {string} HTML string of the progress bar or empty string.
- */
-function renderProgressBar(subtasksRaw) {
-  const { done, total, percent } = getProgressData(subtasksRaw);
-  if (total === 0) return "";
-  return `&lt;div class="progress-container">
-    &lt;div class="progress-bar">&lt;div class="progress-fill" style="width:${percent}%">&lt;/div>&lt;/div>
-    &lt;span class="subtask-text">${done}/${total} Subtasks&lt;/span>
-  &lt;/div>`;
-}
-
-/** --- PRIORITY BUTTONS HTML --- **/
-
-/**
- * Generates the HTML string for the three priority buttons in the edit form.
- * The currently active button receives the corresponding CSS class.
- *
- * @param {string} currentPrio - The currently set priority ('urgent', 'medium', or 'low').
- * @returns {string} HTML string with all three priority buttons.
- */
-function renderPrioButtons(currentPrio) {
-  return ["urgent", "medium", "low"].map((p) => {
-    const active = currentPrio === p ? `active-${p}` : "";
-    const label = p.charAt(0).toUpperCase() + p.slice(1);
-    return `&lt;button class="prio-btn-edit ${active}" onclick="setEditPriority('${p}')" id="prio-${p}">
-      ${label}&lt;img src="../assets/icons/prio-${p}.svg">
-    &lt;/button>`;
-  }).join("");
-}
-
-/** --- MAIN TEMPLATES --- **/
-
-/**
- * Generates the HTML for a task card on the board.
- * The card is drag-and-drop enabled and opens the detail view on click.
- *
- * @param {Object} task - The normalized task object from Firebase.
- * @param {string} id - The Firebase ID of the task.
- * @returns {string} HTML string of the task card.
- */
-function getCardTemplate(task, id) {
-  const prio = (task.priority || "low").toLowerCase();
-  const catClass = buildCategoryClass(task.category);
-  const catText = task.category || "User Story";
-  return `&lt;div class="card" draggable="true" onclick="event.stopPropagation();openTaskDetail('${id}')" ondragstart="event.dataTransfer.setData('text/plain','${id}')">
-    &lt;div class="badge ${catClass}">${catText}&lt;/div>
-    &lt;div class="card-content">
-      &lt;h2 class="card-title">${task.title || "No Title"}&lt;/h2>
-      &lt;p class="card-description">${task.description || ""}&lt;/p>
-    &lt;/div>
-    ${renderProgressBar(task.subtasks)}
-    &lt;div class="card-footer">
-      &lt;div class="assigned-to-container">${renderUserBadges(task.assignedTo)}&lt;/div>
-      &lt;div class="prio-icon">&lt;img src="../assets/icons/prio-${prio}.svg" alt="${prio}" onerror="this.style.display='none'">&lt;/div>
-    &lt;/div>
-  &lt;/div>`;
+function getContactAvatarColor(name) {
+	return getAvatarColorFromName(name);
 }
 
 /**
- * Generates the HTML for the task detail view in the overlay.
- * Contains all task information as well as action buttons for delete and edit.
- *
- * @param {Object} task - The normalized task object from Firebase.
- * @param {string} id - The Firebase ID of the task.
- * @returns {string} HTML string of the detail view.
+ * Updates the avatar for add/edit modes.
+ * @param {{avatar: HTMLElement | null, avatarText: HTMLElement | null} | null} elements - Overlay elements.
+ * @param {string} name - Contact name.
+ * @param {boolean} useInitials - Whether to show initials.
+ * @category Contacts
+ * @subcategory UI &amp; Init
  */
-function getTaskDetailTemplate(task, id) {
-  const prio = (task.priority || "low").toLowerCase();
-  const prioLabel = prio.charAt(0).toUpperCase() + prio.slice(1);
-  const catClass = buildCategoryClass(task.category);
-  const catText = task.category || "User Story";
-  return `&lt;div class="task-detail-card">
-    &lt;div class="detail-header">
-      &lt;div class="badge ${catClass}">${catText}&lt;/div>
-      &lt;button class="close-btn-overlay" onclick="closeTaskDetail()">&lt;img src="../assets/icons/close.svg" alt="Close">&lt;/button>
-    &lt;/div>
-    &lt;h1 class="detail-title">${task.title || "No Title"}&lt;/h1>
-    &lt;p class="detail-description">${task.description || ""}&lt;/p>
-    &lt;div class="detail-info-row">&lt;span class="info-label">Due date:&lt;/span>&lt;span class="info-value">${formatDate(task.dueDate)}&lt;/span>&lt;/div>
-    &lt;div class="detail-prio-row">&lt;span class="info-label">Priority:&lt;/span>
-      &lt;div class="info-value-prio">&lt;span>${prioLabel}&lt;/span>&lt;img src="../assets/icons/prio-${prio}.svg" alt="${prioLabel}">&lt;/div>
-    &lt;/div>
-    &lt;div class="detail-section">&lt;h3 class="section-title">Assigned To:&lt;/h3>
-      &lt;div class="assigned-list">${renderUserBadges(task.assignedTo, 100, true)}&lt;/div>
-    &lt;/div>
-    &lt;div class="detail-section">&lt;h3 class="section-title">Subtasks&lt;/h3>
-      &lt;div class="subtask-list">${renderSubtaskItems(task.subtasks, id)}&lt;/div>
-    &lt;/div>
-    &lt;div class="detail-actions">
-      &lt;button class="action-btn" onclick="deleteTask('${id}')">&lt;img src="../assets/icons/delete_text.svg" alt="Delete">&lt;/button>
-      &lt;div class="action-divider">&lt;/div>
-      &lt;button class="action-btn" onclick="editTask('${id}')">&lt;img src="../assets/icons/edit_text.svg" alt="Edit">&lt;/button>
-    &lt;/div>
-  &lt;/div>`;
+function updateContactAvatar(elements, name, useInitials) {
+	if (!elements?.avatar || !elements.avatarText) return;
+	if (!useInitials) {
+		elements.avatar.classList.remove('has-initials');
+		elements.avatarText.textContent = '';
+		elements.avatar.style.backgroundColor = '#d1d1d1';
+		return;
+	}
+	const parts = name.trim().split(/\s+/).filter(Boolean);
+	let initials = '';
+	if (parts.length === 1) initials = parts[0].slice(0, 2);
+	if (parts.length > 1) initials = `${parts[0][0]}${parts[parts.length - 1][0]}`;
+	initials = initials.toUpperCase();
+	elements.avatarText.textContent = initials || 'U';
+	elements.avatar.classList.add('has-initials');
+	elements.avatar.style.backgroundColor = getContactAvatarColor(name);
 }
 
 /**
- * Generates the HTML for the task edit form in the overlay.
- * Contains input fields for all editable task properties.
- *
- * @param {Object} task - The normalized task object from Firebase.
- * @param {string} id - The Firebase ID of the task.
- * @returns {string} HTML string of the edit form.
+ * Updates overlay copy and actions for add/edit modes.
+ * @param {'add' | 'edit'} mode - Overlay mode.
+ * @category Contacts
+ * @subcategory UI &amp; Init
  */
-function getEditTaskTemplate(task, id) {
-  const curr = (task.priority || "low").toLowerCase();
-  return `&lt;div class="card-inner">
-    &lt;button class="close-btn-overlay" onclick="closeTaskDetail()">&lt;img src="../assets/icons/close.svg" alt="Close">&lt;/button>
-    &lt;div class="task-edit-container">&lt;div class="edit-scroll-area">
-      &lt;label class="edit-label">Title&lt;/label>
-      &lt;input type="text" id="edit-title" class="edit-input" value="${task.title || ""}">
-      &lt;label class="edit-label">Description&lt;/label>
-      &lt;textarea id="edit-description" class="edit-textarea">${task.description || ""}&lt;/textarea>
-      &lt;label class="edit-label">Due date&lt;/label>
-      &lt;input type="date" id="edit-date" class="edit-input" value="${task.dueDate || ""}">
-      &lt;label class="edit-label edit-label-priority">Priority&lt;/label>
-      &lt;div class="priority-row-edit">${renderPrioButtons(curr)}&lt;/div>
-      &lt;label class="edit-label">Assigned to&lt;/label>
-      &lt;div class="custom-select-container">
-        &lt;div class="edit-input custom-select-header" onclick="toggleEditContactList()">
-          &lt;span>Select contacts to assign&lt;/span>
-          &lt;img src="../assets/icons/arrow_drop_down.png" id="dropdown-arrow">
-        &lt;/div>
-        &lt;div id="edit-contact-list" class="custom-contact-list hidden">&lt;/div>
-      &lt;/div>
-      &lt;div id="edit-assigned-badges" class="edit-assigned-row">&lt;/div>
-      &lt;label class="edit-label">Subtasks&lt;/label>
-      &lt;div class="subtask-input-container">
-        &lt;input type="text" id="edit-subtask-input" class="edit-input" placeholder="Add new subtask">
-        &lt;img src="../assets/icons/plus-button.svg" onclick="addSubtaskInEdit()">
-      &lt;/div>
-      &lt;ul id="edit-subtask-list" class="edit-subtask-list">&lt;/ul>
-    &lt;/div>&lt;/div>
-    &lt;button class="save-btn" onclick="saveTaskEdit('${id}')">Ok &lt;img src="../assets/icons/check.svg">&lt;/button>
-  &lt;/div>`;
-}</code></pre>
+function setContactOverlayMode(mode) {
+	const elements = getContactOverlayElements();
+	if (!elements) return;
+	const isEdit = mode === 'edit';
+	if (elements.title) elements.title.textContent = isEdit ? 'Edit contact' : 'Add contact';
+	if (elements.subtitle) {
+		elements.subtitle.textContent = 'Tasks are better with a team!';
+		elements.subtitle.classList.toggle('is-hidden', isEdit);
+	}
+	if (elements.submitLabel) elements.submitLabel.textContent = isEdit ? 'Save' : 'Create contact';
+	if (elements.deleteButton) {
+		elements.deleteButton.classList.toggle('is-hidden', !isEdit);
+	}
+	if (elements.cancelButton) {
+		elements.cancelButton.classList.toggle('is-hidden', isEdit);
+	}
+}
+
+/**
+ * Applies contact data to the form fields.
+ * @param {ReturnType&lt;typeof getContactFields>} fields - Contact form fields.
+ * @param {{name?: string, email?: string, phone?: string} | null} contact - Contact data.
+ * @category Contacts
+ * @subcategory UI &amp; Init
+ */
+function applyContactToForm(fields, contact) {
+	if (!fields) return;
+	fields.nameInput.value = contact?.name || '';
+	fields.emailInput.value = contact?.email || '';
+	fields.phoneInput.value = contact?.phone || '';
+}
+
+/**
+ * Validates contact form fields and shows errors.
+ * @param {ReturnType&lt;typeof getContactFields>} fields - Contact form fields.
+ * @returns {boolean} True if valid.
+ * @category Contacts
+ * @subcategory Validation
+ */
+function validateContactFields(fields) {
+	if (!fields) return false;
+	let isValid = true;
+	if (!fields.nameInput.value.trim()) {
+		setFieldError(fields.nameInput, fields.messages.name, 'Please enter a name.');
+		isValid = false;
+	}
+	if (!isEmailValid(fields.emailInput.value.trim())) {
+		setFieldError(fields.emailInput, fields.messages.email, 'Please enter a valid email.');
+		isValid = false;
+	}
+	if (!fields.phoneInput.value.trim()) {
+		setFieldError(fields.phoneInput, fields.messages.phone, 'Please enter a phone number.');
+		isValid = false;
+	}
+	return isValid;
+}
+
+/**
+ * Binds field events to clear validation messages.
+ * @param {ReturnType&lt;typeof getContactFields>} fields - Contact form fields.
+ * @category Contacts
+ * @subcategory UI &amp; Init
+ */
+function bindContactFieldEvents(fields) {
+	if (!fields) return;
+	fields.nameInput.addEventListener('input', () => {
+		clearFieldError(fields.nameInput, fields.messages.name);
+	});
+	fields.emailInput.addEventListener('input', () => {
+		clearFieldError(fields.emailInput, fields.messages.email);
+	});
+	fields.phoneInput.addEventListener('input', () => {
+		clearFieldError(fields.phoneInput, fields.messages.phone);
+	});
+}
+
+/**
+ * Refreshes the contact list using external renderer if available.
+ * @returns {Promise&lt;void>} Resolves after refresh completes.
+ * @category Contacts
+ * @subcategory UI &amp; Init
+ */
+async function refreshContactsList() {
+	if (typeof window.loadContacts === 'function') {
+		await window.loadContacts({ preferCache: false });
+	}
+}
+
+
+function prepareAddContactForm(fields) {
+	if (!fields) return;
+	fields.form.dataset.mode = 'add';
+	fields.form.dataset.contactId = '';
+	fields.form.reset();
+	clearContactErrors(fields);
+	updateContactAvatar(getContactOverlayElements(), '', false);
+	setContactFormMessage('');
+}
+
+
+function getContactFormPayload(fields) {
+	const name = fields.nameInput.value.trim();
+	const email = fields.emailInput.value.trim();
+	const phone = fields.phoneInput.value.trim();
+	const color = getContactAvatarColor(name);
+	return { name, email, phone, color };
+}
+
+
+async function persistContactForm(mode, contactId, payload) {
+	if (mode !== 'edit') {
+		await saveContact({ ...payload, createdAt: Date.now() });
+		return true;
+	}
+	if (!contactId) return false;
+	await updateContact(contactId, payload);
+	return true;
+}
+
+
+async function handleDeleteContactFromOverlay(fields) {
+	const contactId = fields.form.dataset.contactId;
+	if (!contactId) return;
+	await deleteContact(contactId);
+	await refreshContactsList();
+	fields.form.reset();
+	closeContactOverlay(true);
+}
+
+
+async function submitContactForm(fields) {
+	const mode = fields.form.dataset.mode || 'add';
+	const payload = getContactFormPayload(fields);
+	const contactId = fields.form.dataset.contactId;
+	const isPersisted = await persistContactForm(mode, contactId, payload);
+	if (!isPersisted) return false;
+	await refreshContactsList();
+	fields.form.reset();
+	closeContactOverlay(true);
+	if (mode !== 'edit') showSuccessToast();
+	return true;
+}
+
+/**
+ * Initializes the add contact overlay interactions.
+ * @category Contacts
+ * @subcategory UI &amp; Init
+ */
+function initContactOverlay() {
+	const trigger = document.getElementById('add-contact-btn');
+	const overlay = document.getElementById('contact-overlay');
+	if (!trigger || !overlay) return;
+
+	const closeTargets = overlay.querySelectorAll('[data-contact-overlay-close]');
+
+	trigger.addEventListener('click', () => {
+		setContactOverlayMode('add');
+		prepareAddContactForm(getContactFields());
+		openContactOverlay();
+	});
+
+	closeTargets.forEach((node) => node.addEventListener('click', () => closeContactOverlay()));
+	window.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape') closeContactOverlay();
+	});
+}
+
+/**
+ * Initializes the add contact form submission.
+ * @category Contacts
+ * @subcategory UI &amp; Init
+ */
+function initContactForm() {
+	const fields = getContactFields();
+	if (!fields) return;
+	bindContactFieldEvents(fields);
+	const elements = getContactOverlayElements();
+	if (elements?.deleteButton) {
+		elements.deleteButton.addEventListener('click', () => handleDeleteContactFromOverlay(fields));
+	}
+	initializeContactFormSubmit(fields);
+}
+
+function initializeContactFormSubmit(fields) {
+	if (!fields) return;
+	fields.form.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		clearContactErrors(fields);
+		setContactFormMessage('');
+		if (!validateContactFields(fields)) return;
+
+		fields.submitButton.disabled = true;
+		try {
+			const isSubmitted = await submitContactForm(fields);
+			if (!isSubmitted) {
+				setContactFormMessage('Contact cannot be saved without an id.');
+				return;
+			}
+		} finally {
+			fields.submitButton.disabled = false;
+		}
+	});
+}
+
+/**
+ * Opens the overlay in edit mode with contact data.
+ * @param {string} contactId - Contact id.
+ * @param {{name?: string, email?: string, phone?: string} | null} contact - Contact data.
+ * @returns {Promise&lt;void>} Resolves after opening.
+ * @category Contacts
+ * @subcategory UI &amp; Init
+ */
+async function openEditContactOverlay(contactId, contact) {
+	setContactOverlayMode('edit');
+	const fields = getContactFields();
+	if (fields) {
+		fields.form.dataset.mode = 'edit';
+		fields.form.dataset.contactId = contactId || '';
+		clearContactErrors(fields);
+		setContactFormMessage('');
+		const data = contact || (await fetchContact(contactId));
+		applyContactToForm(fields, data);
+		updateContactAvatar(getContactOverlayElements(), data?.name || '', true);
+	}
+	openContactOverlay();
+}
+window.contactsOverlay = {
+	openEditContactOverlay,
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+	initContactOverlay();
+	initContactForm();
+	initMobileContactDetailsControls();
+	window.addEventListener('resize', scheduleContactDetailsSectionScrollabilitySync);
+	window.addEventListener('load', scheduleContactDetailsSectionScrollabilitySync);
+	if (typeof window.loadContacts === 'function') {
+		window.loadContacts();
+	}
+});
+</code></pre>
         </article>
     </section>
 

@@ -1,5 +1,15 @@
 /**
+ * @category Summary
+ */
+
+/**
+ * Initialisiert die Summary-Ansicht und lädt die Daten.
+ */
+
+/**
+ * 
  * Main initialization function for the summary page.
+ * Fetches user information and tasks to render the initial dashboard state.
  *
  * @async
  * @category Summary
@@ -16,7 +26,7 @@ async function loadSummary() {
         setGreeting();
         renderSummary(tasks);
     } catch (error) {
-        console.error("Fehler in loadSummary:", error);
+        console.error("Error in loadSummary:", error);
     }
 }
 
@@ -79,10 +89,11 @@ function renderUserName(name) {
 
 /**
  * Calculates and renders task statistics to the UI.
+ * Filters tasks by status and priority to update the dashboard counters.
  *
  * @category Summary
  * @subcategory UI Rendering
- * @param {Object} tasks - The task object.
+ * @param {Object} tasks - The task object containing all tasks.
  * @returns {void}
  */
 function renderSummary(tasks) {
@@ -103,7 +114,7 @@ function renderSummary(tasks) {
 }
 
 /**
- * Determines the current time of day and displays a greeting.
+ * Determines the current time of day and displays an appropriate greeting.
  *
  * @category Summary
  * @subcategory UI Rendering
@@ -117,7 +128,7 @@ function setGreeting() {
 }
 
 /**
- * Finds the closest upcoming task deadline from all tasks.
+ * Finds the closest upcoming task deadline from all available tasks.
  *
  * @param {Object} tasks - The task object from Firebase.
  * @returns {Date|null} The closest upcoming deadline date or null if none found.
@@ -140,7 +151,7 @@ function findClosestDeadline(tasks) {
 }
 
 /**
- * Finds the task object that matches a given deadline date.
+ * Finds the task object that matches a specific deadline date.
  *
  * @param {Object} tasks - The task object from Firebase.
  * @param {Date} deadline - The deadline date to match against.
@@ -156,7 +167,7 @@ function findTaskByDeadline(tasks, deadline) {
 }
 
 /**
- * Renders the next upcoming deadline into the designated HTML element.
+ * Renders the next upcoming deadline date into the designated HTML element.
  *
  * @param {Object} tasks - The task object from Firebase.
  * @returns {void}
@@ -170,7 +181,7 @@ function renderNextDeadline(tasks) {
 }
 
 /**
- * Fetches all tasks from Firebase and displays the next upcoming deadline.
+ * Fetches all tasks from Firebase and triggers the rendering of the next upcoming deadline.
  *
  * @category Summary
  * @subcategory UI Rendering
@@ -186,4 +197,5 @@ function getNextDeadline() {
     });
 }
 
+// Initial call to start the page logic
 loadSummary();

@@ -1,26 +1,41 @@
+/**
+ * @category Board
+ */
+
+/**
+ * Rendert alle Tasks auf dem Board.
+ */
+
 /* ==========================================================================
    1. GLOBAL VARIABLES & CACHE
    ========================================================================== */
 
-/** @type {string[]} All valid board status columns in display order. */
+/** @type {string[]}*/
+/**  All valid board status columns in display order.  */
 const BOARD_STATUSES = ['todo', 'in-progress', 'await-feedback', 'done'];
 
-/** @type {Object|null} Cache for all loaded user objects from Firebase. */
+/** @type {Object|null} */
+/** Cache for all loaded user objects from Firebase. */
 let boardUsersCache = null;
 
-/** @type {Object|null} Cache for legacy task-user connections from Firebase. */
+/** @type {Object|null}  */
+/** Cache for legacy task-user connections from Firebase. */
 let boardLegacyConnectionsCache = null;
 
-/** @type {Object} Cache for all normalized task objects of the current board. */
+/** @type {Object} */
+/** Cache for all normalized task objects of the current board. */
 let boardTaskCache = {};
 
-/** @type {Array<{title: string, completed: boolean}>} Temporary buffer for subtasks in edit mode. */
+/** @type {Array}  */
+/** Temporary buffer for subtasks in edit mode. */
 let currentEditSubtasks = [];
 
-/** @type {Array<{id: string, name: string, color: string, initials: string}>} Temporary buffer for assigned contacts in edit mode. */
+/** @type {Array} */
+/** Temporary buffer for assigned contacts in edit mode. */
 let currentEditContacts = [];
 
-/** @type {string} Status of the column from which the Add Task modal was opened. */
+/** @type {string}*/
+/** Status of the column from which the Add Task modal was opened. */
 let currentSelectedStatus = 'todo';
 
 /* ==========================================================================
@@ -36,7 +51,7 @@ let currentSelectedStatus = 'todo';
  * @param {Object} user - The user object from Firebase.
  * @param {string} user.name - The full name of the user.
  * @param {string} [user.color] - The avatar color of the user.
- * @returns {{id: string, name: string, color: string, initials: string}} Badge object for the UI.
+ * @returns {Object} Badge object containing id, name, color, and initials.
  */
 function mapUserToBadge(userId, user) {
     const name = user?.name || '';
@@ -54,7 +69,7 @@ function mapUserToBadge(userId, user) {
  *
  * @param {string} entry - The Firebase ID of the user.
  * @param {Object} allUsers - Map of all known user objects.
- * @returns {{id: string, name: string, color: string, initials: string}|null} Badge object or null.
+ * @returns {Object|null} Badge object or null if user not found.
  */
 function normalizeAssignedUserString(entry, allUsers) {
     const user = allUsers[entry];
@@ -64,9 +79,9 @@ function normalizeAssignedUserString(entry, allUsers) {
 /**
  * Normalizes an object-based assigned user entry using the user map.
  *
- * @param {{id?: string, name?: string, color?: string, initials?: string}} entry - Raw user object from the task.
+ * @param {Object} entry - Raw user object from the task.
  * @param {Object} allUsers - Map of all known user objects.
- * @returns {{id: string, name: string, color: string, initials: string}|null} Normalized badge object or null.
+ * @returns {Object|null} Normalized badge object or null if name is missing.
  */
 function normalizeAssignedUserObject(entry, allUsers) {
     const id = entry.id || '';
@@ -82,12 +97,11 @@ function normalizeAssignedUserObject(entry, allUsers) {
 }
 
 /**
- * Normalizes a single entry from a task's assignedTo list into a unified badge object,
- * regardless of whether it is stored as a string ID or an object.
+ * Normalizes a single entry from a task's assignedTo list into a unified badge object.
  *
- * @param {string|Object|null} entry - Raw entry from assignedTo (ID string or object).
+ * @param {string|Object|null} entry - Raw entry (ID string or object).
  * @param {Object} allUsers - Map of all known user objects.
- * @returns {{id: string, name: string, color: string, initials: string}|null} Badge object or null.
+ * @returns {Object|null} Badge object or null.
  */
 function normalizeAssignedUser(entry, allUsers) {
     if (!entry) return null;
@@ -99,8 +113,8 @@ function normalizeAssignedUser(entry, allUsers) {
 /**
  * Normalizes a single subtask entry into a unified object.
  *
- * @param {string|{title?: string, completed?: boolean}} st - Raw subtask entry.
- * @returns {{title: string, completed: boolean}} Normalized subtask object.
+ * @param {string|Object} st - Raw subtask entry.
+ * @returns {Object} Normalized subtask object with title and completed status.
  */
 function normalizeSubtask(st) {
     if (typeof st === 'string') return { title: st, completed: false };
@@ -109,10 +123,9 @@ function normalizeSubtask(st) {
 
 /**
  * Normalizes the full subtasks list of a task into a unified array.
- * Supports both array and object format as stored in Firebase.
  *
  * @param {Array|Object|null} subtasks - Raw subtask data from Firebase.
- * @returns {{title: string, completed: boolean}[]} Normalized subtask array.
+ * @returns {Array} Normalized subtask array.
  */
 function normalizeSubtasks(subtasks) {
     const raw = subtasks || [];
@@ -121,13 +134,12 @@ function normalizeSubtasks(subtasks) {
 }
 
 /**
- * Resolves assigned users via the legacy task-user connection table (taskUsers).
- * Used when a task does not have an assignedTo array.
+ * Resolves assigned users via the legacy task-user connection table.
  *
  * @param {string} taskId - The Firebase ID of the task.
  * @param {Object} allUsers - Map of all known user objects.
- * @param {Object} legacyConnections - Loaded taskUsers connections from Firebase.
- * @returns {{id: string, name: string, color: string, initials: string}[]} Array of badge objects.
+ * @param {Object} legacyConnections - Loaded taskUsers connections.
+ * @returns {Array} Array of badge objects.
  */
 function buildAssignedFromLegacy(taskId, allUsers, legacyConnections) {
     const legacyIds = legacyConnections[taskId] ? Object.keys(legacyConnections[taskId]) : [];
@@ -138,13 +150,12 @@ function buildAssignedFromLegacy(taskId, allUsers, legacyConnections) {
 
 /**
  * Resolves all assigned users of a task and returns them as a badge array.
- * Prioritizes the assignedTo array; falls back to legacy connections if necessary.
  *
  * @param {string} taskId - The Firebase ID of the task.
  * @param {Object} task - The raw task object from Firebase.
  * @param {Object} allUsers - Map of all known user objects.
- * @param {Object} legacyConnections - Loaded taskUsers connections from Firebase.
- * @returns {{id: string, name: string, color: string, initials: string}[]} Array of badge objects.
+ * @param {Object} legacyConnections - Loaded taskUsers connections.
+ * @returns {Array} Array of badge objects.
  */
 function buildAssignedUsers(taskId, task, allUsers, legacyConnections) {
     const assignedRaw = Array.isArray(task.assignedTo) ? task.assignedTo : [];
@@ -160,10 +171,10 @@ function buildAssignedUsers(taskId, task, allUsers, legacyConnections) {
    ========================================================================== */
 
 /**
- * Returns the user map from Firebase.
- * Uses an in-memory cache to avoid repeated database requests.
+ * Returns the user map from Firebase. Uses in-memory cache.
  *
- * @returns {Promise<Object>} Map of all user objects, indexed by user ID.
+ * @async
+ * @returns {Promise<Object>} Map of all user objects.
  */
 async function getUsersMap() {
     if (boardUsersCache) return boardUsersCache;
@@ -173,11 +184,10 @@ async function getUsersMap() {
 }
 
 /**
- * Loads legacy connections from the taskUsers table in Firebase,
- * only if at least one task does not have an array-based assignedTo field.
- * Uses an in-memory cache.
+ * Loads legacy connections from the taskUsers table in Firebase if needed.
  *
- * @param {Object} tasks - All tasks from Firebase, indexed by task ID.
+ * @async
+ * @param {Object} tasks - All tasks from Firebase.
  * @returns {Promise<Object>} taskUsers connections or empty object.
  */
 async function getLegacyTaskConnections(tasks) {
@@ -194,14 +204,13 @@ async function getLegacyTaskConnections(tasks) {
    ========================================================================== */
 
 /**
- * Normalizes a single task object by enriching it with resolved users,
- * normalized subtasks, and a fallback priority value.
+ * Normalizes a single task object with resolved users and subtasks.
  *
  * @param {string} taskId - The Firebase ID of the task.
- * @param {Object} task - The raw task object from Firebase.
- * @param {Object} allUsers - Map of all known user objects.
- * @param {Object} legacyConnections - Loaded taskUsers connections from Firebase.
- * @returns {Object} Normalized task object ready for UI rendering and caching.
+ * @param {Object} task - The raw task object.
+ * @param {Object} allUsers - Map of all known users.
+ * @param {Object} legacyConnections - Legacy task-user connections.
+ * @returns {Object} Normalized task object.
  */
 function normalizeTask(taskId, task, allUsers, legacyConnections) {
     return {
@@ -213,13 +222,12 @@ function normalizeTask(taskId, task, allUsers, legacyConnections) {
 }
 
 /**
- * Processes all tasks and generates HTML strings per status column
- * as well as an updated task cache.
+ * Processes all tasks and generates HTML strings per column.
  *
- * @param {Object} tasks - All tasks from Firebase, indexed by task ID.
- * @param {Object} allUsers - Map of all known user objects.
- * @param {Object} legacyConnections - Loaded taskUsers connections from Firebase.
- * @returns {{columns: Object, nextCache: Object}} Column HTML strings and new task cache.
+ * @param {Object} tasks - All tasks from Firebase.
+ * @param {Object} allUsers - Map of all known users.
+ * @param {Object} legacyConnections - Legacy connections.
+ * @returns {Object} Object containing columns HTML and nextCache.
  */
 function buildColumnsFromTasks(tasks, allUsers, legacyConnections) {
     const columns = { 'todo': '', 'in-progress': '', 'await-feedback': '', 'done': '' };
@@ -233,10 +241,10 @@ function buildColumnsFromTasks(tasks, allUsers, legacyConnections) {
 }
 
 /**
- * Fetches all data required for the board in parallel from Firebase.
+ * Fetches all required board data from Firebase in parallel.
  *
- * @returns {Promise<{tasks: Object, allUsers: Object, legacyConnections: Object}>}
- * All tasks, user map, and legacy connections.
+ * @async
+ * @returns {Promise<Object>} Object containing tasks, users, and legacy connections.
  */
 async function fetchBoardData() {
     const tasksPromise = firebase.database().ref('tasks').get();
@@ -248,9 +256,9 @@ async function fetchBoardData() {
 }
 
 /**
- * Loads all tasks and users from Firebase, normalizes the data,
- * and re-renders the entire board.
+ * Loads data, normalizes it, and re-renders the entire board UI.
  *
+ * @async
  * @returns {Promise<void>}
  */
 async function renderBoard() {
@@ -265,10 +273,9 @@ async function renderBoard() {
 }
 
 /**
- * Writes the generated HTML content into the respective column containers of the board
- * and sets drag-and-drop event attributes.
+ * Injects generated HTML into the board columns and sets drag-and-drop attributes.
  *
- * @param {Object} columns - Object with status keys and HTML string values.
+ * @param {Object} columns - Status keys and HTML string values.
  * @returns {void}
  */
 function renderColumnHTML(columns) {
@@ -286,10 +293,9 @@ function renderColumnHTML(columns) {
    ========================================================================== */
 
 /**
- * Opens the Add Task modal and sets the target status for the new task.
- * Initializes the task editor on first open.
+ * Opens the Add Task modal and sets the target column status.
  *
- * @param {string} [status='todo'] - The column status to which the new task will be assigned.
+ * @param {string} [status='todo'] - Target status for the new task.
  * @returns {void}
  */
 function openAddTaskModalBoard(status = 'todo') {
@@ -306,9 +312,9 @@ function openAddTaskModalBoard(status = 'todo') {
 }
 
 /**
- * Cancels a running close timeout on the modal and resets it.
+ * Resets any active modal close timeout.
  *
- * @param {HTMLElement} modal - The modal element with an optional _closeTimeout property.
+ * @param {HTMLElement} modal - The modal element.
  * @returns {void}
  */
 function clearModalCloseTimeout(modal) {
@@ -319,7 +325,7 @@ function clearModalCloseTimeout(modal) {
 }
 
 /**
- * Scrolls all scrollable areas of the modal back to the top.
+ * Resets scroll positions for the modal and its content wrappers.
  *
  * @param {HTMLElement} modal - The modal element.
  * @returns {void}
@@ -331,7 +337,7 @@ function scrollModalToTop(modal) {
 }
 
 /**
- * Schedules hiding the modal after the CSS close animation completes (600ms).
+ * Hides the modal after the transition duration.
  *
  * @param {HTMLElement} modal - The modal element.
  * @returns {void}
@@ -345,8 +351,7 @@ function scheduleModalHide(modal) {
 }
 
 /**
- * Closes the Add Task modal with animation, resets the form,
- * and re-renders the board.
+ * Closes the Add Task modal and refreshes the board.
  *
  * @returns {void}
  */
@@ -362,10 +367,11 @@ function closeAddTaskModal() {
 }
 
 /**
- * Loads a single task from Firebase and enriches it with user data.
+ * Loads a single task and enriches it with user data.
  *
- * @param {string} taskId - The Firebase ID of the task.
- * @returns {Promise<Object|null>} Normalized task object or null if not found.
+ * @async
+ * @param {string} taskId - Firebase task ID.
+ * @returns {Promise<Object|null>} Normalized task or null.
  */
 async function fetchTaskWithUsers(taskId) {
     const [taskSnap, allUsers] = await Promise.all([
@@ -378,10 +384,10 @@ async function fetchTaskWithUsers(taskId) {
 }
 
 /**
- * Opens the detail view of a task.
- * Uses the cache if available, otherwise loads the task from Firebase.
+ * Opens the detail view for a specific task.
  *
- * @param {string} taskId - The Firebase ID of the task.
+ * @async
+ * @param {string} taskId - Firebase task ID.
  * @returns {Promise<void>}
  */
 async function openTaskDetail(taskId) {
@@ -392,10 +398,10 @@ async function openTaskDetail(taskId) {
 }
 
 /**
- * Renders the task detail overlay with the given task object.
+ * Renders the task detail overlay content.
  *
- * @param {Object} task - The normalized task object.
- * @param {string} taskId - The Firebase ID of the task.
+ * @param {Object} task - Normalized task object.
+ * @param {string} taskId - Firebase task ID.
  * @returns {void}
  */
 function renderTaskDetail(task, taskId) {
@@ -407,7 +413,7 @@ function renderTaskDetail(task, taskId) {
 }
 
 /**
- * Closes the task detail overlay and restores page scrolling.
+ * Closes the task detail overlay and enables page scrolling.
  *
  * @returns {void}
  */
@@ -421,10 +427,10 @@ function closeTaskDetail() {
    ========================================================================== */
 
 /**
- * Opens edit mode for a task: loads current data into the buffers,
- * renders the edit template, and populates the dropdown and subtask list.
+ * Initializes the task edit mode by populating forms with current data.
  *
- * @param {string} taskId - The Firebase ID of the task to edit.
+ * @async
+ * @param {string} taskId - Firebase task ID.
  * @returns {Promise<void>}
  */
 async function editTask(taskId) {
@@ -441,8 +447,7 @@ async function editTask(taskId) {
 }
 
 /**
- * Adds the currently selected contact from the select element to the edit list.
- * Prevents duplicate entries.
+ * Adds the currently selected contact in the dropdown to the edit list.
  *
  * @returns {void}
  */
@@ -458,8 +463,7 @@ function editTaskAssigned() {
 }
 
 /**
- * Adds the selected contact from the select element to the edit contact list.
- * Prevents duplicate entries. Alias for editTaskAssigned with its own select context.
+ * Alias for editTaskAssigned to handle contact addition.
  *
  * @returns {void}
  */
@@ -475,8 +479,7 @@ function addContactToEdit() {
 }
 
 /**
- * Toggles the visibility of the contact dropdown list in edit mode
- * and rotates the dropdown arrow accordingly.
+ * Toggles the visibility of the contact list dropdown in edit mode.
  *
  * @returns {void}
  */
@@ -488,12 +491,12 @@ function toggleEditContactList() {
 }
 
 /**
- * Generates the HTML string for a single contact entry in the edit dropdown.
+ * Generates HTML for a single contact item in the dropdown list.
  *
- * @param {string} userId - The Firebase ID of the user.
- * @param {{name: string, color: string, initials: string}} badge - Badge data of the user.
- * @param {boolean} isAssigned - Whether the user is already assigned.
- * @returns {string} HTML string for the contact entry.
+ * @param {string} userId - Firebase user ID.
+ * @param {Object} badge - User badge data.
+ * @param {boolean} isAssigned - Whether the user is currently assigned.
+ * @returns {string} HTML string.
  */
 function buildContactItemHTML(userId, badge, isAssigned) {
     return `<div class="contact-item ${isAssigned ? 'selected' : ''}" onclick="toggleUserSelection('${userId}')">
@@ -506,10 +509,9 @@ function buildContactItemHTML(userId, badge, isAssigned) {
 }
 
 /**
- * Populates the contact dropdown in edit mode with all available users.
- * Already assigned contacts are marked as selected.
+ * Populates the dropdown menu with all available users for assignment.
  *
- * @param {Object} allUsers - Map of all known user objects.
+ * @param {Object} allUsers - Map of all users.
  * @returns {void}
  */
 function fillContactDropdown(allUsers) {
@@ -523,18 +525,18 @@ function fillContactDropdown(allUsers) {
     listContainer.innerHTML = html;
 }
 
+// Event listener for board search functionality
 document.getElementById('task-search')?.addEventListener('input', (event) => {
     const searchTerm = event.target.value.toLowerCase();
     if (searchTerm.length >= 3 || searchTerm.length === 0) filterTasks(searchTerm);
 });
 
 /**
- * Checks whether a task object matches the given search term.
- * Searches title, description, and due date (in European date format).
+ * Checks if a task matches the search criteria.
  *
- * @param {Object} task - The normalized task object to check.
- * @param {string} term - The search term in lowercase.
- * @returns {boolean} True if the task matches the search term.
+ * @param {Object} task - Task object.
+ * @param {string} term - Search term.
+ * @returns {boolean} True if match found.
  */
 function taskMatchesTerm(task, term) {
     const title = (task.title || "").toLowerCase();
@@ -544,10 +546,10 @@ function taskMatchesTerm(task, term) {
 }
 
 /**
- * Filters all cached tasks by the search term and renders
- * the filtered results in the board columns.
+ * Filters the board based on a search term.
  *
- * @param {string} term - The search term in lowercase.
+ * @async
+ * @param {string} term - Search term.
  * @returns {Promise<void>}
  */
 async function filterTasks(term) {
@@ -561,10 +563,9 @@ async function filterTasks(term) {
 }
 
 /**
- * Toggles the assignment status of a user in edit mode:
- * already assigned users are removed, unassigned users are added.
+ * Toggles a user's selection status in the edit buffer.
  *
- * @param {string} userId - The Firebase ID of the user.
+ * @param {string} userId - Firebase user ID.
  * @returns {void}
  */
 function toggleUserSelection(userId) {
@@ -576,9 +577,9 @@ function toggleUserSelection(userId) {
 }
 
 /**
- * Removes a contact from the edit contact list by index.
+ * Removes a contact from the edit list by its index.
  *
- * @param {number} index - The index of the contact to remove in currentEditContacts.
+ * @param {number} index - Index in currentEditContacts.
  * @returns {void}
  */
 function removeContactFromEdit(index) {
@@ -587,7 +588,7 @@ function removeContactFromEdit(index) {
 }
 
 /**
- * Updates the badge display of assigned contacts in the edit form.
+ * Updates the UI display of assigned contact badges in edit mode.
  *
  * @returns {void}
  */
@@ -603,8 +604,7 @@ function renderEditContactBadges() {
 }
 
 /**
- * Reads the value from the subtask input field and adds a new subtask
- * to the edit buffer. Updates the UI afterwards.
+ * Adds a new subtask to the edit buffer and refreshes UI.
  *
  * @returns {void}
  */
@@ -618,9 +618,9 @@ function addSubtaskInEdit() {
 }
 
 /**
- * Removes a subtask from the edit buffer by index and updates the UI.
+ * Deletes a subtask from the edit buffer and refreshes UI.
  *
- * @param {number} index - The index of the subtask to delete in currentEditSubtasks.
+ * @param {number} index - Index in currentEditSubtasks.
  * @returns {void}
  */
 function deleteSubtaskFromEdit(index) {
@@ -629,7 +629,7 @@ function deleteSubtaskFromEdit(index) {
 }
 
 /**
- * Renders the current subtask list from the edit buffer into the UI.
+ * Refreshes the subtask list displayed in the edit form.
  *
  * @returns {void}
  */
@@ -645,10 +645,9 @@ function refreshEditSubtaskUI() {
 }
 
 /**
- * Sets the active priority in the edit form and updates
- * the visual states of the priority buttons.
+ * Sets the priority selection in edit mode and updates button classes.
  *
- * @param {string} prio - The new priority value ('urgent' | 'medium' | 'low').
+ * @param {string} prio - Priority level ('urgent', 'medium', 'low').
  * @returns {void}
  */
 function setEditPriority(prio) {
@@ -658,10 +657,9 @@ function setEditPriority(prio) {
 }
 
 /**
- * Reads all current values from the edit form and returns them as a task data object.
+ * Collects all form data to build an updated task object.
  *
- * @returns {{title: string, description: string, dueDate: string, priority: string, subtasks: Array, assignedTo: Array}}
- * Object containing the updated task fields.
+ * @returns {Object} Updated task data.
  */
 function buildUpdatedTaskData() {
     const activePrioBtn = document.querySelector('.prio-btn-edit[class*="active-"]');
@@ -676,10 +674,10 @@ function buildUpdatedTaskData() {
 }
 
 /**
- * Saves the edited task data to Firebase, updates the local cache,
- * and opens the task detail view.
+ * Saves edited task changes to Firebase and updates the UI.
  *
- * @param {string} taskId - The Firebase ID of the task to save.
+ * @async
+ * @param {string} taskId - Firebase task ID.
  * @returns {Promise<void>}
  */
 async function saveTaskEdit(taskId) {
@@ -699,9 +697,9 @@ async function saveTaskEdit(taskId) {
    ========================================================================== */
 
 /**
- * Removes a task from the local task cache and the legacy connections cache.
+ * Clears a specific task from local board caches.
  *
- * @param {string} taskId - The Firebase ID of the task to remove.
+ * @param {string} taskId - Firebase task ID.
  * @returns {void}
  */
 function clearTaskFromCache(taskId) {
@@ -710,10 +708,10 @@ function clearTaskFromCache(taskId) {
 }
 
 /**
- * Deletes a task after confirmation from Firebase and the local cache,
- * closes the detail overlay, and re-renders the board.
+ * Deletes a task from the database and updates the board.
  *
- * @param {string} taskId - The Firebase ID of the task to delete.
+ * @async
+ * @param {string} taskId - Firebase task ID.
  * @returns {Promise<void>}
  */
 async function deleteTask(taskId) {
@@ -726,12 +724,12 @@ async function deleteTask(taskId) {
 }
 
 /**
- * Updates the completed status of a single subtask in Firebase,
- * re-renders the board, and opens the task detail view.
+ * Updates the completion status of a subtask in Firebase.
  *
- * @param {string} taskId - The Firebase ID of the task.
- * @param {number} index - The index of the subtask in the subtasks array.
- * @param {boolean} completed - The new completed status of the subtask.
+ * @async
+ * @param {string} taskId - Firebase task ID.
+ * @param {number} index - Index of subtask.
+ * @param {boolean} completed - New status.
  * @returns {Promise<void>}
  */
 async function updateSubtaskStatus(taskId, index, completed) {
@@ -747,11 +745,10 @@ async function updateSubtaskStatus(taskId, index, completed) {
 }
 
 /**
- * Handles dropping a task card via drag-and-drop:
- * updates the task status in Firebase and re-renders the board.
+ * Finalizes task movement via drag-and-drop.
  *
- * @param {string} taskId - The Firebase ID of the dragged task.
- * @param {string} newStatus - The new target status of the column.
+ * @param {string} taskId - Firebase task ID.
+ * @param {string} newStatus - New status column.
  * @returns {void}
  */
 function onDrop(taskId, newStatus) {
@@ -761,10 +758,9 @@ function onDrop(taskId, newStatus) {
 }
 
 /**
- * Closes the task detail overlay if the click was directly on the overlay background
- * (not on the content area).
+ * Closes task detail if the user clicks the overlay background.
  *
- * @param {MouseEvent} event - The click event on the overlay container.
+ * @param {MouseEvent} event - Click event.
  * @returns {void}
  */
 function handleOverlayClick(event) {
@@ -776,12 +772,9 @@ function handleOverlayClick(event) {
    ========================================================================== */
 
 /**
- * Overrides buildTaskObject() from taskeditor.js.
- * Uses currentSelectedStatus instead of the hardcoded "todo" value
- * so that new tasks are created in the correct column.
+ * Overrides core task building to include correct board column status.
  *
- * @returns {{title: string, description: string, dueDate: string, priority: string, category: string, assignedTo: Array, subtasks: Array, status: string, createdAt: number}}
- * The complete task object for Firebase.
+ * @returns {Object} Task object for Firebase.
  */
 function buildTaskObject() {
     const status = (typeof currentSelectedStatus !== 'undefined' && currentSelectedStatus)
@@ -800,9 +793,7 @@ function buildTaskObject() {
 }
 
 /**
- * Overrides handleTaskCreatedSuccess() from taskeditor.js.
- * Prevents the redirect to the board page — instead closes the modal
- * and re-renders the board directly.
+ * Callback for successful task creation on the board page.
  *
  * @returns {void}
  */
@@ -812,5 +803,5 @@ function handleTaskCreatedSuccess() {
     renderBoard();
 }
 
-// Initial render on page load
+// Initial board rendering on page load
 renderBoard();
