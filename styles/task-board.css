@@ -27,7 +27,7 @@ main {
     height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
-    overscroll-behavior: contain;
+  
     -webkit-overflow-scrolling: touch;
 }
 
@@ -592,7 +592,7 @@ main {
     border: 1px solid var(--separator-color);
     background: var(--white);
     cursor: pointer;
-    font-size: 14px;
+    font-size: 12px;
     font-family: inherit;
     color: var(--text-main);
     transition: all 0.15s;
@@ -619,7 +619,7 @@ main {
     border: none;
     outline: none;
     width: 100%;
-    font-size: 15px;
+    font-size: 12px;
     font-family: inherit;
     background: transparent;
     padding: 0;
@@ -957,7 +957,7 @@ main {
     .new_task, .task_settings { width: 100%; }
 
     .task_footer { flex-direction: column; gap: 10px; align-items: stretch; }
-    .footer_actions { width: 100%; }
+    .footer_actions { width: 100%; flex-direction: row;}
     .clear_btn, .create_btn { flex: 1; text-align: center; }
 
     .overlay-card { max-width: calc(100vw - 24px); padding: 28px 20px; border-radius: 20px; max-height: 88vh; }
@@ -968,6 +968,11 @@ main {
     .prio, .prio-btn-edit { font-size: 12px; padding: 9px 4px; gap: 4px; }
     .prio img, .prio-btn-edit img { width: 14px; }
 }
+@media (max-width: 576px) {
+    .footer_actions {
+        display: flex;
+        flex-direction: row !important;
+    }}
 
 @media (max-width: 480px) {
     .board-container { margin-left: 0; width: 100%; min-height: 100%; padding: 12px 12px 16px; }

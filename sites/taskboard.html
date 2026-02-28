@@ -77,7 +77,6 @@
 
       <div class="board">
 
-        <!-- TO DO: MIT + Button -->
         <div class="column" id="todo">
           <div class="column-header">
             <h2>To do</h2>
@@ -86,7 +85,6 @@
           <div class="task-list"></div>
         </div>
 
-        <!-- IN PROGRESS: MIT + Button -->
         <div class="column" id="in-progress">
           <div class="column-header">
             <h2>In progress</h2>
@@ -95,7 +93,6 @@
           <div class="task-list"></div>
         </div>
 
-        <!-- AWAIT FEEDBACK: MIT + Button -->
         <div class="column" id="await-feedback">
           <div class="column-header">
             <h2>Await feedback</h2>
@@ -104,7 +101,6 @@
           <div class="task-list"></div>
         </div>
 
-        <!-- DONE: KEIN + Button -->
         <div class="column" id="done">
           <div class="column-header">
             <h2>Done</h2>
@@ -120,7 +116,6 @@
     <div class="overlay-card" onclick="event.stopPropagation()"></div>
   </div>
 
-  <!-- FIX: modal-content schließt jetzt NACH task_footer (task_footer ist INNERHALB von modal-content) -->
   <div id="addTaskModal" class="modal hidden" aria-hidden="true">
     <div class="modal-content">
       <button type="button" class="close-btn" onclick="closeAddTaskModal()">×</button>
@@ -134,17 +129,14 @@
             <label for="titleInput">Title
               <span class="error">*</span>
             </label>
-
             <div class="left_single_row">
               <input id="titleInput" aria-describedby="titleError" type="text" placeholder="Enter a title" required>
             </div>
-
             <small class="error_text">This field is required</small>
           </div>
 
           <div class="left_row">
             <label for="descriptionBox">Description</label>
-
             <div class="left_single_row description_box">
               <textarea id="descriptionBox" placeholder="Enter a Description"></textarea>
             </div>
@@ -154,12 +146,10 @@
             <label for="dateInput">Due date
               <span class="error">*</span>
             </label>
-
             <div class="left_single_row">
               <input id="dateInput" type="date" min="2024-01-01" required>
               <img class="calendar_icon" src="../assets/icons/calendar.svg">
             </div>
-
             <small class="error_text">This field is required</small>
           </div>
         </form>
@@ -171,8 +161,8 @@
         <div class="task_settings">
 
           <div class="settings_block">
-            <label for="priorityRow">Priority</label>
-
+            <!-- FIX 1: Priority hat kein einzelnes Input → for entfernt -->
+            <label>Priority</label>
             <div class="priority_row" id="priorityRow">
               <button type="button" class="prio urgent_btn" data-prio="urgent">
                 Urgent
@@ -181,7 +171,6 @@
                   <img src="../assets/icons/arrowUp.svg" class="urgent">
                 </div>
               </button>
-
               <button type="button" class="prio medium_btn active" data-prio="medium">
                 Medium
                 <div>
@@ -189,7 +178,6 @@
                   <img src="../assets/icons/sameIcon.svg" class="medium">
                 </div>
               </button>
-
               <button type="button" class="prio low_btn" data-prio="low">
                 Low
                 <div>
@@ -201,28 +189,25 @@
           </div>
 
           <div class="settings_block">
-            <label for="assignedSelect">Assigned to</label>
-
+            <!-- FIX 2: for zeigt jetzt auf das tatsächliche Input-Element -->
+            <label for="assignedSearch">Assigned to</label>
             <div class="select_native" id="assignedSelect" role="combobox" aria-expanded="false"
               aria-controls="assignedDropdown">
               <div class="selector_input">
                 <input type="text" id="assignedSearch" placeholder="Select contacts to assign" autocomplete="off" />
               </div>
-
-              <div class="selector_dropdown" id="assignedDropdown" role="listbox">
-              </div>
+              <div class="selector_dropdown" id="assignedDropdown" role="listbox"></div>
             </div>
-
             <div id="assignedAvatars" class="assigned_avatars"></div>
           </div>
 
           <div class="settings_block">
-            <label for="categorySelectWrapper">Category</label>
+            <!-- FIX 3: for zeigt jetzt auf das tatsächliche Input-Element -->
+            <label for="categoryInput">Category</label>
             <div class="select_native category-select" id="categorySelectWrapper">
               <div class="selector_input">
                 <input type="text" id="categoryInput" placeholder="Select task category" readonly>
               </div>
-
               <div class="selector_dropdown" id="categoryDropdown">
                 <label class="dropdown_item" data-value="user-story" role="option">User Story</label>
                 <label class="dropdown_item" data-value="technical-task" role="option">Technical Task</label>
@@ -232,10 +217,8 @@
 
           <div class="settings_block subtasks_block">
             <label for="subtaskInput">Subtasks</label>
-
             <div class="subtask_input">
               <input id="subtaskInput" type="text" placeholder="Add new subtask">
-
               <div class="subtask_actions">
                 <button id="subtaskClear" aria-label="Clear subtask">
                   <img src="../assets/icons/close.svg" alt="">
@@ -246,11 +229,10 @@
                 </button>
               </div>
             </div>
-
             <ul id="subtaskList" class="subtask_list"></ul>
           </div>
-        </div>
 
+        </div>
       </div><!-- END editor_wrapper -->
 
       <div class="task_footer">
@@ -258,7 +240,6 @@
           <span class="error">*</span>
           This field is required
         </p>
-
         <div class="footer_actions">
           <button class="clear_btn">Clear ✕</button>
           <button class="create_btn">Create Task ✓</button>
@@ -269,14 +250,14 @@
   </div><!-- END addTaskModal -->
 
   <div id="profile-menu" class="profile-overlay">
-        <nav class="profile-menu">
-          <ul class="flex-container">
-            <li class="hover-container"><a href="./legal-notice.html">Legal Notice</a></li>
-            <li class="hover-container"><a href="./privacy-policy.html">Privacy Policy</a></li>
-            <li class="hover-container"><a href="../index.html" data-logout="1">Log out</a></li>
-          </ul>
-        </nav>
-      </div>
+    <nav class="profile-menu">
+      <ul class="flex-container">
+        <li class="hover-container"><a href="./legal-notice.html">Legal Notice</a></li>
+        <li class="hover-container"><a href="./privacy-policy.html">Privacy Policy</a></li>
+        <li class="hover-container"><a href="../index.html" data-logout="1">Log out</a></li>
+      </ul>
+    </nav>
+  </div>
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>

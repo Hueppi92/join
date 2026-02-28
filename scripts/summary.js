@@ -1,8 +1,10 @@
 /**
  * Main initialization function for the summary page.
- * * @async
+ *
+ * @async
  * @category Summary
  * @subcategory Lifecycle
+ * @returns {Promise<void>}
  */
 async function loadSummary() {
     try {
@@ -20,7 +22,8 @@ async function loadSummary() {
 
 /**
  * Resolves the currently active user ID from a global context or session storage.
- * * @async
+ *
+ * @async
  * @category Summary
  * @subcategory Data Handling
  * @returns {Promise<string|null>} The active user ID or null if not found.
@@ -34,7 +37,8 @@ async function resolveActiveUserId() {
 
 /**
  * Fetches all task data from the Firebase "tasks" reference.
- * * @async
+ *
+ * @async
  * @category Summary
  * @subcategory Data Handling
  * @returns {Promise<Object>} An object containing all tasks from the database.
@@ -47,7 +51,8 @@ async function getTasks() {
 
 /**
  * Retrieves the name of a specific user from Firebase by their ID.
- * * @async
+ *
+ * @async
  * @category Summary
  * @subcategory Data Handling
  * @param {string} userId - The unique ID of the user to fetch.
@@ -62,9 +67,11 @@ async function getUserName(userId) {
 
 /**
  * Displays the user's name in the designated HTML element.
- * * @category Summary
+ *
+ * @category Summary
  * @subcategory UI Rendering
  * @param {string} name - The name to be rendered.
+ * @returns {void}
  */
 function renderUserName(name) {
     document.getElementById("user-name").innerText = name;
@@ -72,9 +79,11 @@ function renderUserName(name) {
 
 /**
  * Calculates and renders task statistics to the UI.
- * * @category Summary
+ *
+ * @category Summary
  * @subcategory UI Rendering
  * @param {Object} tasks - The task object.
+ * @returns {void}
  */
 function renderSummary(tasks) {
     const totalTasks = Object.keys(tasks).length;
@@ -83,7 +92,7 @@ function renderSummary(tasks) {
     const doneCount = Object.values(tasks).filter(t => t.status === "done").length;
     const urgentCount = Object.values(tasks).filter(t => t.priority === "urgent").length;
     const feedbackCount = Object.values(tasks).filter(t => t.status === "awaiting-feedback").length;
- getNextDeadline();
+    getNextDeadline();
 
     document.getElementById("total-tasks").innerText = totalTasks;
     document.getElementById("todo-tasks").innerText = todoCount;
@@ -91,14 +100,14 @@ function renderSummary(tasks) {
     document.getElementById("done-tasks").innerText = doneCount;
     document.getElementById("urgent-tasks").innerText = urgentCount;
     document.getElementById("awaitFeedback-tasks").innerText = feedbackCount;
-
-   
 }
 
 /**
  * Determines the current time of day and displays a greeting.
- * * @category Summary
+ *
+ * @category Summary
  * @subcategory UI Rendering
+ * @returns {void}
  */
 function setGreeting() {
     var today = new Date();
@@ -107,34 +116,70 @@ function setGreeting() {
     document.getElementById("greet").innerHTML = msg;
 }
 
+/**
+ * Finds the closest upcoming task deadline from all tasks.
+ *
+ * @param {Object} tasks - The task object from Firebase.
+ * @returns {Date|null} The closest upcoming deadline date or null if none found.
+ */
+function findClosestDeadline(tasks) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    let closestDeadline = null;
+
+    Object.values(tasks).forEach(task => {
+        if (!task.dueDate) return;
+        const taskDate = new Date(task.dueDate);
+        taskDate.setHours(0, 0, 0, 0);
+        if (taskDate >= today && (!closestDeadline || taskDate < closestDeadline)) {
+            closestDeadline = taskDate;
+        }
+    });
+
+    return closestDeadline;
+}
+
+/**
+ * Finds the task object that matches a given deadline date.
+ *
+ * @param {Object} tasks - The task object from Firebase.
+ * @param {Date} deadline - The deadline date to match against.
+ * @returns {Object|null} The matching task object or null if not found.
+ */
+function findTaskByDeadline(tasks, deadline) {
+    return Object.values(tasks).find(task => {
+        if (!task.dueDate) return false;
+        const taskDate = new Date(task.dueDate);
+        taskDate.setHours(0, 0, 0, 0);
+        return taskDate.getTime() === deadline.getTime();
+    }) || null;
+}
+
+/**
+ * Renders the next upcoming deadline into the designated HTML element.
+ *
+ * @param {Object} tasks - The task object from Firebase.
+ * @returns {void}
+ */
+function renderNextDeadline(tasks) {
+    const deadline = findClosestDeadline(tasks);
+    const task = deadline ? findTaskByDeadline(tasks, deadline) : null;
+    document.getElementById("next-deadline").innerText = task
+        ? task.dueDate
+        : "No upcoming deadlines";
+}
+
+/**
+ * Fetches all tasks from Firebase and displays the next upcoming deadline.
+ *
+ * @category Summary
+ * @subcategory UI Rendering
+ * @returns {void}
+ */
 function getNextDeadline() {
-    const tasksRef = db.ref("tasks");
-    tasksRef.get().then((snapshot) => {
+    db.ref("tasks").get().then((snapshot) => {
         if (snapshot.exists()) {
-            const tasks = snapshot.val();
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            
-            let closestDeadline = null;
-            let closestTask = null;
-            
-            Object.values(tasks).forEach(task => {
-                if (task.dueDate) {
-                    const taskDate = new Date(task.dueDate);
-                    taskDate.setHours(0, 0, 0, 0);
-                    
-                    if (taskDate >= today) {
-                        if (!closestDeadline || taskDate < closestDeadline) {
-                            closestDeadline = taskDate;
-                            closestTask = task;
-                        }
-                    }
-                }
-            });
-            
-            document.getElementById("next-deadline").innerText = closestTask 
-                ? closestTask.dueDate 
-                : "No upcoming deadlines";
+            renderNextDeadline(snapshot.val());
         } else {
             document.getElementById("next-deadline").innerText = "No upcoming deadlines";
         }
