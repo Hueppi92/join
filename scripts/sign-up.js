@@ -1,20 +1,4 @@
 /**
- * @typedef {Object} SignupFields
- * @property {HTMLFormElement} form - The form element.
- * @property {HTMLInputElement} nameInput - The name input field.
- * @property {HTMLInputElement} emailInput - The email input field.
- * @property {HTMLInputElement} passwordInput - The password input field.
- * @property {HTMLInputElement} confirmInput - The password confirmation input field.
- * @property {HTMLInputElement} privacyInput - The privacy checkbox.
- * @property {HTMLButtonElement} submitButton - The submit button.
- * @property {HTMLElement} nameMessage - Error message element for name.
- * @property {HTMLElement} emailMessage - Error message element for email.
- * @property {HTMLElement} passwordMessage - Error message element for password.
- * @property {HTMLElement} confirmMessage - Error message element for confirm password.
- * @property {HTMLElement} privacyMessage - Error message element for privacy.
- */
-
-/**
  * Sets a flag to skip the splash animation when returning to the login page.
  * @category Sign-Up
  * @subcategory UI & Init
@@ -45,60 +29,47 @@ function initSignupForm() {
 }
 
 /**
- * Computes a stable avatar color for a user name.
- * @param {string} name - User name.
- * @returns {string} Hex color string.
- */
-
-
-/**
  * Collects sign-up form fields and related message elements.
  * @param {HTMLFormElement} form - The sign-up form element.
- * @returns {SignupFields | null} Collected form fields or null if missing.
+ * @returns {Object | null} Collected form fields or null if missing.
  * @category Sign-Up
  * @subcategory UI & Init
  */
 function getSignupFields(form) {
-	const nameInput = form.querySelector('input[name="name"]');
-	const emailInput = form.querySelector('input[name="email"]');
-	const passwordInput = form.querySelector('input[name="password"]');
-	const confirmInput = form.querySelector('input[name="confirmPassword"]');
-	const privacyInput = form.querySelector('input[name="privacy"]');
-	const submitButton = form.querySelector('button[type="submit"]');
-	const nameMessage = form.querySelector('#msg-name');
-	const emailMessage = form.querySelector('#msg-email');
-	const passwordMessage = form.querySelector('#msg-password');
-	const confirmMessage = form.querySelector('#msg-confirmPassword');
-	const privacyMessage = form.querySelector('#msg-privacy');
-	if (
-		!nameInput ||
-		!emailInput ||
-		!passwordInput ||
-		!confirmInput ||
-		!privacyInput ||
-		!submitButton ||
-		!nameMessage ||
-		!emailMessage ||
-		!passwordMessage ||
-		!confirmMessage ||
-		!privacyMessage
-	)
-		return null;
+	const fields = collectSignupFields(form);
+	if (hasMissingSignupField(fields)) return null;
+	return { form, ...fields };
+}
 
+function collectSignupFields(form) {
+	const inputFields = collectSignupInputFields(form);
+	const messageFields = collectSignupMessageFields(form);
+	return { ...inputFields, ...messageFields };
+}
+
+function collectSignupInputFields(form) {
 	return {
-		form,
-		nameInput,
-		emailInput,
-		passwordInput,
-		confirmInput,
-		privacyInput,
-		submitButton,
-		nameMessage,
-		emailMessage,
-		passwordMessage,
-		confirmMessage,
-		privacyMessage,
+		nameInput: form.querySelector('input[name="name"]'),
+		emailInput: form.querySelector('input[name="email"]'),
+		passwordInput: form.querySelector('input[name="password"]'),
+		confirmInput: form.querySelector('input[name="confirmPassword"]'),
+		privacyInput: form.querySelector('input[name="privacy"]'),
+		submitButton: form.querySelector('button[type="submit"]'),
 	};
+}
+
+function collectSignupMessageFields(form) {
+	return {
+		nameMessage: form.querySelector('#msg-name'),
+		emailMessage: form.querySelector('#msg-email'),
+		passwordMessage: form.querySelector('#msg-password'),
+		confirmMessage: form.querySelector('#msg-confirmPassword'),
+		privacyMessage: form.querySelector('#msg-privacy'),
+	};
+}
+
+function hasMissingSignupField(fields) {
+	return Object.values(fields).some((value) => !value);
 }
 
 /**
@@ -119,6 +90,26 @@ function initMessageVisibility(fields) {
 	});
 }
 
+function bindSignupInputField(input, message, updateState) {
+	input.addEventListener('input', () => {
+		clearFieldError(input, message);
+		updateState();
+	});
+}
+
+function bindSignupBlurField(input, validateField, fields) {
+	input.addEventListener('blur', () => {
+		if (input.value.trim().length > 0) validateField(fields);
+	});
+}
+
+function bindPrivacyField(fields, updateState) {
+	fields.privacyInput.addEventListener('change', () => {
+		if (fields.privacyInput.checked) clearFieldError(fields.privacyInput, fields.privacyMessage);
+		updateState();
+	});
+}
+
 /**
  * Binds events to update sign-up form button state.
  * @param {SignupFields} fields - Collected sign-up form fields.
@@ -128,48 +119,15 @@ function initMessageVisibility(fields) {
 function bindSignupFieldEvents(fields) {
 	const updateState = () => updateSignupButtonState(fields);
 	initMessageVisibility(fields);
-	fields.nameInput.addEventListener('input', () => {
-		clearFieldError(fields.nameInput, fields.nameMessage);
-		updateState();
-	});
-	fields.emailInput.addEventListener('input', () => {
-		clearFieldError(fields.emailInput, fields.emailMessage);
-		updateState();
-	});
-	fields.passwordInput.addEventListener('input', () => {
-		clearFieldError(fields.passwordInput, fields.passwordMessage);
-		updateState();
-	});
-	fields.confirmInput.addEventListener('input', () => {
-		clearFieldError(fields.confirmInput, fields.confirmMessage);
-		updateState();
-	});
-	fields.nameInput.addEventListener('blur', () => {
-		if (fields.nameInput.value.trim().length > 0) {
-			validateNameField(fields);
-		}
-	});
-	fields.emailInput.addEventListener('blur', () => {
-		if (fields.emailInput.value.trim().length > 0) {
-			validateEmailField(fields);
-		}
-	});
-	fields.passwordInput.addEventListener('blur', () => {
-		if (fields.passwordInput.value.trim().length > 0) {
-			validatePasswordField(fields);
-		}
-	});
-	fields.confirmInput.addEventListener('blur', () => {
-		if (fields.confirmInput.value.trim().length > 0) {
-			validateConfirmField(fields);
-		}
-	});
-	fields.privacyInput.addEventListener('change', () => {
-		if (fields.privacyInput.checked) {
-			clearFieldError(fields.privacyInput, fields.privacyMessage);
-		}
-		updateState();
-	});
+	bindSignupInputField(fields.nameInput, fields.nameMessage, updateState);
+	bindSignupInputField(fields.emailInput, fields.emailMessage, updateState);
+	bindSignupInputField(fields.passwordInput, fields.passwordMessage, updateState);
+	bindSignupInputField(fields.confirmInput, fields.confirmMessage, updateState);
+	bindSignupBlurField(fields.nameInput, validateNameField, fields);
+	bindSignupBlurField(fields.emailInput, validateEmailField, fields);
+	bindSignupBlurField(fields.passwordInput, validatePasswordField, fields);
+	bindSignupBlurField(fields.confirmInput, validateConfirmField, fields);
+	bindPrivacyField(fields, updateState);
 	updateSignupButtonState(fields);
 }
 
@@ -202,6 +160,36 @@ function isSignupInputReady(fields) {
 	);
 }
 
+function clearSignupFieldErrors(fields) {
+	clearFieldError(fields.nameInput, fields.nameMessage);
+	clearFieldError(fields.emailInput, fields.emailMessage);
+	clearFieldError(fields.passwordInput, fields.passwordMessage);
+	clearFieldError(fields.confirmInput, fields.confirmMessage);
+	clearFieldError(fields.privacyInput, fields.privacyMessage);
+}
+
+function buildSignupUserData(fields, userId) {
+	const displayName = fields.nameInput.value.trim();
+	return {
+		displayName,
+		userId,
+		email: fields.emailInput.value.trim(),
+		color: getAvatarColorFromName(displayName),
+		createdAt: Date.now(),
+	};
+}
+
+async function persistSignupUser(credential, fields) {
+	const userData = buildSignupUserData(fields, credential.user.uid);
+	sessionStorage.setItem('userId', userData.userId);
+	await credential.user.updateProfile({ displayName: userData.displayName });
+	await firebase.database().ref(`users/${userData.userId}`).set({
+		name: userData.displayName,
+		email: userData.email,
+		color: userData.color,
+		createdAt: userData.createdAt,
+	});
+}
 
 /**
  * Handles Firebase sign-up submission.
@@ -212,36 +200,31 @@ function isSignupInputReady(fields) {
  */
 async function handleSignupSubmit(event, fields) {
 	event.preventDefault();
-	clearFieldError(fields.nameInput, fields.nameMessage);
-	clearFieldError(fields.emailInput, fields.emailMessage);
-	clearFieldError(fields.passwordInput, fields.passwordMessage);
-	clearFieldError(fields.confirmInput, fields.confirmMessage);
-	clearFieldError(fields.privacyInput, fields.privacyMessage);
+	clearSignupFieldErrors(fields);
 	if (!validateSignupFields(fields)) return;
+	await submitSignupWithLoading(fields);
+}
 
+async function submitSignupWithLoading(fields) {
 	setLoadingState(fields, true);
 	try {
-		const displayName = fields.nameInput.value.trim();
-		const credential = await firebase.auth().createUserWithEmailAndPassword(
-			fields.emailInput.value.trim(),
-			fields.passwordInput.value
-		);
-		sessionStorage.setItem('userId', credential.user.uid);
-		await credential.user.updateProfile({ displayName });
-		await firebase.database().ref(`users/${credential.user.uid}`).set({
-			name: displayName,
-			email: fields.emailInput.value.trim(),
-			color: getAvatarColorFromName(displayName),
-			createdAt: Date.now(),
-		});
-		sessionStorage.removeItem('guestLogin');
-		sessionStorage.setItem('skipSplash', '1');
-		showSuccessAnimation();
+		await performSignup(fields);
 	} catch (error) {
 		setFieldError(fields.emailInput, fields.emailMessage, getAuthErrorMessage(error));
 	} finally {
 		setLoadingState(fields, false);
 	}
+}
+
+async function performSignup(fields) {
+	const credential = await firebase.auth().createUserWithEmailAndPassword(
+		fields.emailInput.value.trim(),
+		fields.passwordInput.value
+	);
+	await persistSignupUser(credential, fields);
+	sessionStorage.removeItem('guestLogin');
+	sessionStorage.setItem('skipSplash', '1');
+	showSuccessAnimation();
 }
 
 /**
@@ -252,20 +235,23 @@ async function handleSignupSubmit(event, fields) {
 function showSuccessAnimation() {
 	const overlay = document.getElementById('success-overlay');
 	if (!overlay) {
-		window.location.href = '../index.html';
+		redirectToLoginWithSplashSkip();
 		return;
 	}
 
 	overlay.classList.remove('d-none');
-	const message = overlay.querySelector('.success-message');
-	if (message) {
-		message.classList.add('slide-in-bottom');
-	}
+	animateSignupSuccessMessage(overlay);
+	setTimeout(redirectToLoginWithSplashSkip, 1000);
+}
 
-	setTimeout(() => {
-		sessionStorage.setItem('skipSplash', '1');
-		window.location.href = '../index.html';
-	}, 1000);
+function animateSignupSuccessMessage(overlay) {
+	const message = overlay.querySelector('.success-message');
+	if (message) message.classList.add('slide-in-bottom');
+}
+
+function redirectToLoginWithSplashSkip() {
+	sessionStorage.setItem('skipSplash', '1');
+	window.location.href = '../index.html';
 }
 
 /**
@@ -290,21 +276,17 @@ function setLoadingState(fields, isLoading) {
 function getAuthErrorMessage(error) {
 	const fallback = 'Registration failed. Please try again.';
 	if (!error || typeof error !== 'object' || !('code' in error)) return fallback;
+	return getSignupAuthErrorMessages()[error.code] || fallback;
+}
 
-	switch (error.code) {
-		case 'auth/operation-not-allowed':
-			return 'Email/password sign-in is not enabled in Firebase yet.';
-		case 'auth/network-request-failed':
-			return 'Network error. Please check your connection.';
-		case 'auth/email-already-in-use':
-			return 'This email address is already registered.';
-		case 'auth/invalid-email':
-			return 'Please enter a valid email address.';
-		case 'auth/weak-password':
-			return 'Password is too weak. Please use at least 6 characters.';
-		default:
-			return fallback;
-	}
+function getSignupAuthErrorMessages() {
+	return {
+		'auth/operation-not-allowed': 'Email/password sign-in is not enabled in Firebase yet.',
+		'auth/network-request-failed': 'Network error. Please check your connection.',
+		'auth/email-already-in-use': 'This email address is already registered.',
+		'auth/invalid-email': 'Please enter a valid email address.',
+		'auth/weak-password': 'Password is too weak. Please use at least 6 characters.',
+	};
 }
 
 /**
@@ -398,7 +380,6 @@ function validatePrivacyField(fields) {
 	}
 	return true;
 }
-
 
 document.addEventListener('DOMContentLoaded', () => {
 	initSignupBackButton();

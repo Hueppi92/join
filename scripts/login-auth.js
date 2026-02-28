@@ -48,17 +48,23 @@ function getLoginFields(form) {
  */
 function bindLoginFieldEvents(fields) {
 	const updateState = () => updateLoginButtonState(fields);
-	fields.emailInput.addEventListener('input', () => {
-		setLoginFieldErrorState(fields, false);
-		setFormMessage(fields.message, '');
-		updateState();
-	});
-	fields.passwordInput.addEventListener('input', () => {
-		setLoginFieldErrorState(fields, false);
-		setFormMessage(fields.message, '');
-		updateState();
-	});
+	bindLoginInputListener(fields.emailInput, fields, updateState);
+	bindLoginInputListener(fields.passwordInput, fields, updateState);
 	updateLoginButtonState(fields);
+}
+
+
+function bindLoginInputListener(input, fields, updateState) {
+	input.addEventListener('input', () => {
+		clearLoginFeedback(fields);
+		updateState();
+	});
+}
+
+
+function clearLoginFeedback(fields) {
+	setLoginFieldErrorState(fields, false);
+	setFormMessage(fields.message, '');
 }
 
 /**
@@ -93,30 +99,46 @@ function isLoginInputValid(fields) {
  */
 async function handleLoginSubmit(event, fields) {
 	event.preventDefault();
-	setFormMessage(fields.message, '');
-
-	if (!isLoginInputValid(fields)) {
-		setFormMessage(fields.message, 'Please enter valid credentials.');
-		setLoginFieldErrorState(fields, true);
-		return;
-	}
-
+	clearLoginFeedback(fields);
+	if (!validateLoginBeforeSubmit(fields)) return;
 	setLoadingState(fields, true);
 	try {
-		const credential = await firebase.auth().signInWithEmailAndPassword(
-			fields.emailInput.value.trim(),
-			fields.passwordInput.value
-		);
-		sessionStorage.setItem('userId', credential.user.uid);
-		sessionStorage.removeItem('guestLogin');
-		sessionStorage.setItem('skipSplash', '1');
-		window.location.href = './sites/summary.html';
+		const credential = await signInWithCredentials(fields);
+		handleSuccessfulLogin(credential);
 	} catch (error) {
-		setFormMessage(fields.message, getAuthErrorMessage(error));
-		setLoginFieldErrorState(fields, true);
+		handleFailedLogin(fields, error);
 	} finally {
 		setLoadingState(fields, false);
 	}
+}
+
+
+function validateLoginBeforeSubmit(fields) {
+	if (isLoginInputValid(fields)) return true;
+	setFormMessage(fields.message, 'Please enter valid credentials.');
+	setLoginFieldErrorState(fields, true);
+	return false;
+}
+
+
+async function signInWithCredentials(fields) {
+	const email = fields.emailInput.value.trim();
+	const password = fields.passwordInput.value;
+	return firebase.auth().signInWithEmailAndPassword(email, password);
+}
+
+
+function handleSuccessfulLogin(credential) {
+	sessionStorage.setItem('userId', credential.user.uid);
+	sessionStorage.removeItem('guestLogin');
+	sessionStorage.setItem('skipSplash', '1');
+	window.location.href = './sites/summary.html';
+}
+
+
+function handleFailedLogin(fields, error) {
+	setFormMessage(fields.message, getAuthErrorMessage(error));
+	setLoginFieldErrorState(fields, true);
 }
 
 /**
@@ -165,23 +187,20 @@ function setFormMessage(message, text) {
 function getAuthErrorMessage(error) {
 	const fallback = 'Login failed. Please try again.';
 	if (!error || typeof error !== 'object' || !('code' in error)) return fallback;
+	return getLoginAuthErrorMessages()[error.code] || fallback;
+}
 
-	switch (error.code) {
-		case 'auth/invalid-credential':
-		case 'auth/invalid-login-credentials':
-			return 'Check your email and password. Please try again.';
-		case 'auth/invalid-email':
-			return 'Please enter a valid email address.';
-		case 'auth/user-not-found':
-		case 'auth/wrong-password':
-			return 'Check your email and password. Please try again.';
-		case 'auth/user-disabled':
-			return 'This user is disabled.';
-		case 'auth/too-many-requests':
-			return 'Too many attempts. Please try again later.';
-		default:
-			return fallback;
-	}
+
+function getLoginAuthErrorMessages() {
+	return {
+		'auth/invalid-credential': 'Check your email and password. Please try again.',
+		'auth/invalid-login-credentials': 'Check your email and password. Please try again.',
+		'auth/invalid-email': 'Please enter a valid email address.',
+		'auth/user-not-found': 'Check your email and password. Please try again.',
+		'auth/wrong-password': 'Check your email and password. Please try again.',
+		'auth/user-disabled': 'This user is disabled.',
+		'auth/too-many-requests': 'Too many attempts. Please try again later.',
+	};
 }
 
 /**

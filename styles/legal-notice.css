@@ -1,6 +1,68 @@
 
 .content {
-    margin: 300px;
-    margin-top: 120px;
-   
+    position: fixed;
+    top: 96px;
+    right: 0;
+    bottom: 0;
+    left: 232px;
+    margin: 0;
+    height: auto;
+    padding: 24px 40px 40px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
 }
+
+@media (max-width: 992px) {
+    main {
+        overflow: hidden !important;
+    }
+
+    .content {
+        position: fixed;
+        top: var(--mobile-header-height);
+        right: 0;
+        bottom: var(--mobile-footer-height);
+        left: 0;
+        margin: 0;
+        padding: 20px 16px calc(16px + env(safe-area-inset-bottom));
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+.paragraph {
+    margin-top: 65px;
+}
+.paragraph_Imprint {
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+.paragraph_Contact {
+    margin-top: 20px;   
+}
+.paragraph_EditoriallyResponsible {
+    margin-top: 20px;   
+}
+.paragraph_Scope {
+    margin-top: 30px;   
+}
+.paragraph_ProprietaryRights {
+    margin-top: 30px;   
+}
+.paragraph_UseOfTheProduct {
+    margin-top: 30px;   
+}
+.paragraph_Disclaimer {
+    margin-top: 30px;   
+}
+.paragraph_Terms {
+    margin-top: 30px;   
+}
+.paragraph_Indemnity {
+    margin-top: 30px;   
+}
+

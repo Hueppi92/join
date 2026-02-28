@@ -6,21 +6,30 @@
     --white: #ffffff;
 }
 
-body {
+.summary-page {
     font-family: "Inter", sans-serif;
     background-color: var(--bg-color);
     margin: 0;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
+    display: block;
+    justify-content: initial;
+    align-items: initial;
     min-height: 100vh;
+    overflow-y: hidden;
+    overflow-x: hidden;
 }
 
 .content-container {
-    width: 100%;
-    max-width: 1200px;
+    position: relative;
+    width: auto;
+    max-width: none;
+    min-height: 100vh;
+    height: 100vh;
     margin-left: 328px;
     padding: 0 40px 40px 40px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Header */
@@ -193,16 +202,46 @@ body {
     color: var(--light-blue);
 }
 
+@media (max-width: 992px) {
+    .summary-page {
+        display: block;
+        align-items: stretch;
+        overflow: hidden;
+    }
+
+    .summary-page .content-container {
+        position: fixed;
+        top: var(--mobile-header-height);
+        right: 0;
+        bottom: var(--mobile-footer-height);
+        left: 0;
+        max-width: none;
+        margin-left: 0;
+        margin-top: 0;
+        min-height: 0;
+        height: auto;
+        padding: 24px 20px calc(20px + env(safe-area-inset-bottom));
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+    }
+
+    .summary-header {
+        padding-top: 0;
+    }
+}
+
 @media (max-width: 430px) {
-    body {
+    .summary-page {
         display: block;
         align-items: stretch;
     }
 
-    .content-container {
+    .summary-page .content-container {
         max-width: none;
         margin-left: 0;
-        padding: 0 20px 104px;
+        padding: 20px 20px calc(16px + env(safe-area-inset-bottom));
         box-sizing: border-box;
     }
 
@@ -211,7 +250,7 @@ body {
         align-items: flex-start;
         gap: 8px;
         margin-bottom: 28px;
-        padding-top: 106px;
+        padding-top: 24px;
     }
 
     .summary-header h1 {
@@ -311,12 +350,12 @@ body {
 }
 
 @media (max-width: 320px) {
-    .content-container {
-        padding: 0 12px 96px;
+    .summary-page .content-container {
+        padding: 16px 12px calc(12px + env(safe-area-inset-bottom));
     }
 
     .summary-header {
-        padding-top: 94px;
+        padding-top: 20px;
         gap: 6px;
         margin-bottom: 20px;
     }

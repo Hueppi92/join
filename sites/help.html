@@ -15,9 +15,6 @@
     <header>
       <h2>Kanban Project Management Tool</h2>
       <div class="header-btn">
-        <a href="./help.html" class="help-btn"
-          ><img src="../assets/icons/help_icon.svg" alt="Help Icon"
-        /></a>
         <button id="profile-btn" class="profile-btn"></button>
       </div>
     </header>
@@ -76,45 +73,13 @@
       <div id="profile-menu" class="profile-overlay">
         <nav class="profile-menu">
           <ul class="flex-container">
-            <div class="hover-container">
-              <li><a href="./legal-notice.html">Legal Notice</a></li>
-            </div>
-            <div class="hover-container">
-              <li><a href="./privacy-policy.html">Privacy Policy</a></li>
-            </div>
-            <div class="hover-container">
-              <li><a href="../index.html" data-logout="1">Log out</a></li>
-            </div>
+            <li class="hover-container"><a href="./legal-notice.html">Legal Notice</a></li>
+            <li class="hover-container"><a href="./privacy-policy.html">Privacy Policy</a></li>
+            <li class="hover-container"><a href="../index.html" data-logout="1">Log out</a></li>
           </ul>
         </nav>
       </div>
-    </main>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script src="../scripts/firebaseConfig.js"></script>
-    <script src="../scripts/db.js"></script>
-    <script src="../scripts/user-context.js"></script>
-    <script src="../script.js"></script>
-    <div class="help-content">
-      <div><h2>Help</h2></div>
-      <div>
-        <a href="./contacts.html" title="Go back"
-          ><svg
-            width="37"
-            height="37"
-            viewBox="0 0 37 37"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M12.9373 17.6667H27.8333C28.5696 17.6667 29.1666 18.2637 29.1666 19.0001C29.1666 19.7364 28.5696 20.3334 27.8333 20.3334H12.9373L19.1466 26.5427C19.6672 27.0634 19.6672 27.9074 19.1466 28.4281C18.626 28.9487 17.7819 28.9487 17.2613 28.4281L9.24746 20.4143C8.46642 19.6332 8.46642 18.3669 9.24747 17.5858L17.2613 9.57206C17.7819 9.05144 18.626 9.05144 19.1466 9.57206C19.6672 10.0927 19.6672 10.9368 19.1466 11.4574L12.9373 17.6667Z"
-              fill="#29ABE2"
-            /></svg
-        ></a>
-      </div>
-    </div>
-    <div class="content">
+      <div class="content">
       <div class="help-content">
         <div class="help-header">
           <h1>Help</h1>
@@ -274,20 +239,11 @@
       </div>
      </div>
     </div>
-      <div class="block">
+      <div class="block1">
       <div>
-        <svg
-        width="23"
-        height="20"
-        viewBox="0 0 23 20"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        >
-        <path
-          d="M-4.43161e-05 16.1846V12.9151L8.19775 -1.16825e-05H11.0166V4.52556H9.34832L4.18035 12.7042V12.8576H15.8299V16.1846H-4.43161e-05ZM9.42503 19.6364V15.1875L9.50173 13.7397V-1.16825e-05H13.3945V19.6364H9.42503ZM20.6527 19.8856C20.0198 19.8856 19.4765 19.6619 19.0227 19.2145C18.5752 18.7606 18.3515 18.2173 18.3515 17.5845C18.3515 16.9581 18.5752 16.4212 19.0227 15.9737C19.4765 15.5263 20.0198 15.3025 20.6527 15.3025C21.2663 15.3025 21.8032 15.5263 22.2635 15.9737C22.7237 16.4212 22.9538 16.9581 22.9538 17.5845C22.9538 18.0064 22.8451 18.3931 22.6278 18.7447C22.4169 19.0898 22.1388 19.3679 21.7936 19.5788C21.4485 19.7834 21.0681 19.8856 20.6527 19.8856Z"
-          fill="black"
-        />
-        </svg>
+        <div class="number-icon" aria-hidden="true">
+          <span>5.</span>
+        </div>
       </div>
       <div>
         <div><h4>Deleting Cards</h4></div>
@@ -315,6 +271,14 @@
           Contact Email]. We're here to help you!
         </p>
       </div>
-    </div>
+      </div>
+    </main>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="../scripts/firebaseConfig.js"></script>
+    <script src="../scripts/db.js"></script>
+    <script src="../scripts/user-context.js"></script>
+    <script src="../script.js"></script>
   </body>
 </html>

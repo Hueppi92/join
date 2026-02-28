@@ -1,0 +1,324 @@
+@media (max-width: 768px) {
+  html,
+  body {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  body main {
+    margin-left: 0;
+    margin-top: 80px;
+    height: calc(100vh - 160px);
+    height: calc(100dvh - 160px);
+    overflow: hidden;
+  }
+
+  .contacts-section {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    height: 100%;
+    border-right: none;
+    background: transparent;
+    overflow: hidden;
+  }
+
+  .contacts-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .contacts-header {
+    height: 0;
+  }
+
+  .contacts-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 0 110px;
+  }
+
+  .contact-group-title {
+    margin: 0 32px 10px;
+    padding: 8px 0 12px;
+  }
+
+  .contact-box {
+    width: auto;
+    margin: 0 20px 8px;
+    padding: 12px 12px;
+  }
+
+  .contact-logo {
+    margin-right: 0;
+  }
+
+  .contact-details-section {
+    display: none;
+  }
+
+  body.contacts-mobile-details-open .contacts-section {
+    display: none;
+  }
+
+  body.contacts-mobile-details-open .contact-details-section {
+    display: flex;
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    height: 100%;
+    padding: 8px 10px 110px;
+    gap: 32px;
+    background: transparent;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  body.contacts-mobile-details-open .contact-details-headline {
+    width: 100%;
+    position: relative;
+    align-items: flex-start;
+  }
+
+  body.contacts-mobile-details-open .contact-details-headline-text {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  body.contacts-mobile-details-open .contact-details-headline h1 {
+    font-size: 47px;
+    line-height: 1.1;
+    margin: 0;
+  }
+
+  body.contacts-mobile-details-open .contact-details-headline p {
+    font-size: 20px;
+    line-height: 1.2;
+  }
+
+  body.contacts-mobile-details-open .contact-details-headline-divider {
+    width: 61px;
+    height: 3px;
+    order: 3;
+  }
+
+  body.contacts-mobile-details-open .mobile-contact-back-btn {
+    position: absolute;
+    top: 10px;
+    right: 0;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  body.contacts-mobile-details-open .mobile-contact-back-btn img {
+    width: 20px;
+    height: 20px;
+  }
+
+  body.contacts-mobile-details-open #contact-details {
+    gap: 32px;
+  }
+
+  body.contacts-mobile-details-open .contact-details-profile {
+    gap: 16px;
+  }
+
+  body.contacts-mobile-details-open .contact-details-avatar {
+    width: 80px;
+    height: 80px;
+    font-size: 27px;
+  }
+
+  body.contacts-mobile-details-open .contact-details-name {
+    font-size: 38px;
+    line-height: 1.1;
+    font-weight: 700;
+  }
+
+  body.contacts-mobile-details-open .contact-details-actions {
+    display: none;
+  }
+
+  body.contacts-mobile-details-open .contact-details-info {
+    gap: 12px;
+  }
+
+  body.contacts-mobile-details-open .contact-details-info-title,
+  body.contacts-mobile-details-open .contact-details-label,
+  body.contacts-mobile-details-open .contact-details-email,
+  body.contacts-mobile-details-open .contact-details-phone {
+    font-size: 20px;
+  }
+
+  body.contacts-mobile-details-open .contact-details-info-title {
+    margin: 0 0 8px;
+  }
+
+  body.contacts-mobile-details-open .mobile-contact-detail-menu-btn {
+    position: fixed;
+    right: 12px;
+    bottom: 92px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    background: #2a3647;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    z-index: 20;
+    transition: background-color 120ms ease, border-color 120ms ease;
+  }
+
+  body.contacts-mobile-details-open .mobile-contact-detail-menu-btn:hover {
+    background: #29abe2;
+  }
+
+  body.contacts-mobile-details-open .mobile-contact-detail-menu-btn:focus-visible {
+    background: #29abe2;
+    outline: none;
+  }
+
+  body.contacts-mobile-details-open .mobile-contact-detail-menu-btn span {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #ffffff;
+    display: block;
+    position: relative;
+  }
+
+  body.contacts-mobile-details-open .mobile-contact-detail-menu-btn span::before,
+  body.contacts-mobile-details-open .mobile-contact-detail-menu-btn span::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #ffffff;
+  }
+
+  body.contacts-mobile-details-open .mobile-contact-detail-menu-btn span::before {
+    top: -9px;
+  }
+
+  body.contacts-mobile-details-open .mobile-contact-detail-menu-btn span::after {
+    top: 9px;
+  }
+
+  body.contacts-mobile-details-open .mobile-contact-detail-menu {
+    position: fixed;
+    right: 12px;
+    bottom: 92px;
+    min-width: 116px;
+    background: #ffffff;
+    border-radius: 20px 20px 0 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transform: translateX(130%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 220ms ease-out, opacity 220ms ease-out;
+    z-index: 21;
+  }
+
+  body.contacts-mobile-details-open .mobile-contact-detail-menu.is-open {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  body.contacts-mobile-details-open .mobile-contact-detail-menu__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    background: transparent;
+    padding: 4px 6px;
+    color: #2a3647;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.2;
+    cursor: pointer;
+    border-radius: 8px;
+  }
+
+  body.contacts-mobile-details-open .mobile-contact-detail-menu__item img {
+    width: 20px;
+    height: 20px;
+  }
+
+  body.contacts-mobile-details-open .mobile-contact-detail-menu__item:hover {
+    color: #29abe2;
+  }
+
+  body.contacts-mobile-details-open .mobile-contact-detail-menu__item:focus-visible {
+    color: #29abe2;
+    outline: none;
+  }
+
+  body.contacts-mobile-details-open .mobile-contact-detail-menu__item:hover img[src$='edit.svg'] {
+    content: url('../assets/icons/edit_hover.svg');
+  }
+
+  body.contacts-mobile-details-open .mobile-contact-detail-menu__item:focus-visible img[src$='edit.svg'] {
+    content: url('../assets/icons/edit_hover.svg');
+  }
+
+  body.contacts-mobile-details-open .mobile-contact-detail-menu__item:hover img[src$='delete.svg'] {
+    content: url('../assets/icons/delete_hover.svg');
+  }
+
+  body.contacts-mobile-details-open .mobile-contact-detail-menu__item:focus-visible img[src$='delete.svg'] {
+    content: url('../assets/icons/delete_hover.svg');
+  }
+
+  .contact-btn {
+    position: fixed;
+    right: 16px;
+    bottom: 90px;
+    width: 56px;
+    min-height: 56px;
+    height: 56px;
+    margin: 0;
+    padding: 0;
+    border-radius: 50%;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    z-index: 16;
+  }
+
+  .contact-btn span {
+    display: none;
+  }
+
+  .contact-btn img {
+    width: 32px;
+    height: 32px;
+    content: url('../assets/icons/person_add.svg');
+    filter: none;
+  }
+}
+
