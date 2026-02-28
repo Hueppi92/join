@@ -6,9 +6,9 @@
    1. BOARD LAYOUT
    ========================================================================== */
 .board-container {
-    margin-left: 232px;
-    width: calc(100% - 232px);
-    padding: 116px 40px 40px 40px;
+    margin-left: 348px;
+    width: calc(80% - 232px);
+    margin-top:196px;
     box-sizing: border-box;
     min-height: 100vh;
 }
@@ -408,10 +408,10 @@
     background: var(--white);
     border-radius: 24px;
     padding: 40px 48px;
-    width: 100%;
-    max-width: 900px;
+    width: min(900px, calc(100vw - 32px));
+    min-width: 320px;
     max-height: 92vh;
-    overflow: hidden;
+    overflow: hidden;           /* FIX: war "visible" — korrekt auf "hidden" */
     display: flex;
     flex-direction: column;
     position: relative;
@@ -437,21 +437,28 @@
 
 .close-btn:hover { background: var(--bg-color); }
 
-.modal-title { font-size: 40px; font-weight: 700; margin: 0 0 24px; }
+.modal-title { font-size: 40px; font-weight: 700; margin: 0 0 24px; flex-shrink: 0; }
 
 .editor_wrapper {
     display: flex;
     gap: 40px;
     flex: 1;
-    overflow-y: auto;
+    overflow-y: auto;           /* scrollt wenn Inhalt zu groß */
+    overflow-x: auto;         /* FIX: kein horizontales Überlaufen */
     padding-right: 4px;
+    min-height: 0;              /* FIX: kritisch — erlaubt flex-child zu schrumpfen */
 }
 
 .editor_wrapper::-webkit-scrollbar { width: 4px; }
 .editor_wrapper::-webkit-scrollbar-thumb { background: var(--separator-color); border-radius: 4px; }
 
 .new_task,
-.task_settings { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.task_settings {
+    
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
 
 .editor_divider { width: 1px; background: var(--separator-color); flex-shrink: 0; }
 
@@ -469,7 +476,7 @@
 .new_task input,
 .new_task textarea,
 .task_settings input {
-    width: 100%;
+    width: 50%;
     padding: 10px 14px;
     border: 1px solid var(--separator-color);
     border-radius: 10px;
@@ -505,10 +512,17 @@
    ========================================================================== */
 
 /* Add Task Modal */
-.priority_row { display: flex; flex-direction: row; gap: 8px; margin-top: 6px; }
+.priority_row {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    margin-top: 6px;
+    flex-wrap: nowrap;
+}
 
 .prio {
     flex: 1;
+    min-width: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -523,6 +537,7 @@
     color: var(--text-main);
     transition: all 0.15s;
     white-space: nowrap;
+    overflow: hidden;           /* FIX: war "visible" */
 }
 
 .prio img { width: 16px; }
@@ -535,10 +550,17 @@
 .prio.low_btn.active img { filter: brightness(0) invert(1) !important; }
 
 /* Edit Task Overlay */
-.priority-row-edit { display: flex; flex-direction: row; gap: 8px; margin-top: 6px; }
+.priority-row-edit {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    margin-top: 6px;
+    flex-wrap: nowrap;
+}
 
 .prio-btn-edit {
     flex: 1;
+    min-width: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -599,7 +621,7 @@
 
 .select_native.open .selector_dropdown { display: block; }
 
-.dropdown_item { display: block; padding: 10px 14px; cursor: pointer; font-size: 15px; transition: background 0.1s; }
+.dropdown_item { display: flex; flex-direction: row; width:100%; justify-content: space-between; padding: 10px 14px; cursor: pointer; font-size: 15px; transition: background 0.1s; }
 .dropdown_item:hover    { background: var(--bg-color); }
 .dropdown_item.selected { background: var(--dark-blue); color: white; }
 
@@ -643,7 +665,7 @@
     padding-top: 20px;
     margin-top: 16px;
     border-top: 1px solid var(--separator-color);
-    flex-shrink: 0;
+    flex-shrink: 0;             /* bleibt immer unten sichtbar, scrollt nicht mit */
 }
 
 .task_footer p { font-size: 13px; color: var(--text-gray); margin: 0; }
@@ -745,7 +767,7 @@
     box-sizing: border-box;
 }
 
-.custom-select-header img { width: 18px; transition: transform 0.2s; }
+.custom-select-header img { width: 10px; transition: transform 0.2s; }
 
 .custom-contact-list {
     position: absolute;
@@ -857,7 +879,6 @@
 }
 
 @media (max-width: 1024px) {
-    /* Sidebar = 80px auf Tablet */
     .board-container {
         margin-left: 80px;
         width: calc(100% - 80px);
@@ -868,8 +889,15 @@
     .search-container input { width: 160px; }
 }
 
+@media (max-width: 860px) {
+    #addTaskModal .modal-content { padding: 32px 24px; }
+    .editor_wrapper { flex-direction: column; gap: 20px; }
+    .editor_divider { display: none; }
+    .priority_row, .priority-row-edit { gap: 6px; }
+    .prio, .prio-btn-edit { font-size: 13px; padding: 9px 6px; }
+}
+
 @media (max-width: 768px) {
-    /* Sidebar versteckt auf Mobile */
     .board-container {
         margin-left: 0;
         width: 100%;
@@ -902,8 +930,7 @@
     .detail-title { font-size: 28px; }
     .save-btn { width: 100%; align-self: stretch; }
 
-    .priority_row,
-    .priority-row-edit { gap: 6px; }
+    .priority_row, .priority-row-edit { gap: 6px; }
     .prio, .prio-btn-edit { font-size: 12px; padding: 9px 4px; gap: 4px; }
     .prio img, .prio-btn-edit img { width: 14px; }
 }
