@@ -193,7 +193,7 @@ function renderContactDetails(contact, options = {}) {
   detailsRef.replaceChildren();
   detailsRef.classList.remove("is-entering");
   if (!contact) {
-    renderContactDetailsPlaceholder(detailsRef);
+    scheduleContactDetailsSectionScrollabilitySync();
     return;
   }
   renderContactDetailsContent(detailsRef, contact);
@@ -334,16 +334,14 @@ function applyContactsState(contacts) {
     !selectedContactId ||
     !contactsState.some((contact) => contact.id === selectedContactId)
   ) {
-    selectedContactId = contactsState[0]?.id || "";
+    selectedContactId = "";
   }
   renderContacts(contactsState);
   const selectedContact =
     contactsState.find((item) => item.id === selectedContactId) || null;
   renderContactDetails(selectedContact);
   setMobileContactActionMenuState(false);
-  if (!contactsState.length) {
-    setMobileContactDetailsState(false);
-  }
+  setMobileContactDetailsState(Boolean(selectedContact));
 }
 
 /**
