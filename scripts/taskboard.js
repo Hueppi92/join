@@ -13,6 +13,7 @@
 /** @type {string[]}*/
 /**  All valid board status columns in display order.  */
 const BOARD_STATUSES = ['todo', 'in-progress', 'await-feedback', 'done'];
+const BOARD_CACHE_KEY = 'join_board_cache_v1';
 
 /** @type {Object|null} */
 /** Cache for all loaded user objects from Firebase. */
@@ -37,6 +38,102 @@ let currentEditContacts = [];
 /** @type {string}*/
 /** Status of the column from which the Add Task modal was opened. */
 let currentSelectedStatus = 'todo';
+
+/**
+ * Normalizes a cached board task badge object.
+ *
+ * @param {Object} badge - Cached badge object.
+ * @returns {{id: string, name: string, color: string, initials: string}|null} Normalized badge or null.
+ */
+function normalizeCachedBadge(badge) {
+    if (!badge || typeof badge !== 'object') return null;
+    const name = String(badge.name || '').trim();
+    if (!name) return null;
+    return {
+        id: typeof badge.id === 'string' ? badge.id : '',
+        name,
+        color: typeof badge.color === 'string' && badge.color ? badge.color : getAvatarColorFromName(name),
+        initials: typeof badge.initials === 'string' && badge.initials ? badge.initials : getInitials(name)
+    };
+}
+
+/**
+ * Normalizes a cached board task object.
+ *
+ * @param {Object} task - Raw cached task object.
+ * @returns {Object|null} Normalized task object or null.
+ */
+function normalizeCachedBoardTask(task) {
+    if (!task || typeof task !== 'object') return null;
+    const status = BOARD_STATUSES.includes(task.status) ? task.status : 'todo';
+    const assignedTo = Array.isArray(task.assignedTo)
+        ? task.assignedTo.map(normalizeCachedBadge).filter(Boolean)
+        : [];
+    return {
+        title: task.title || '',
+        description: task.description || '',
+        dueDate: task.dueDate || '',
+        priority: task.priority || 'low',
+        category: task.category || '',
+        status,
+        assignedTo,
+        subtasks: normalizeSubtasks(task.subtasks),
+        createdAt: task.createdAt || 0
+    };
+}
+
+/**
+ * Reads the cached normalized board task map from localStorage.
+ *
+ * @returns {Object} Cached board task map.
+ */
+function readBoardCache() {
+    try {
+        const raw = localStorage.getItem(BOARD_CACHE_KEY);
+        if (!raw) return {};
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== 'object') return {};
+        const normalized = {};
+        Object.entries(parsed).forEach(([taskId, task]) => {
+            if (typeof taskId !== 'string') return;
+            const normalizedTask = normalizeCachedBoardTask(task);
+            if (normalizedTask) normalized[taskId] = normalizedTask;
+        });
+        return normalized;
+    } catch (error) {
+        return {};
+    }
+}
+
+/**
+ * Writes the normalized board task map to localStorage.
+ *
+ * @param {Object} taskMap - Normalized task map.
+ * @returns {void}
+ */
+function writeBoardCache(taskMap) {
+    try {
+        localStorage.setItem(BOARD_CACHE_KEY, JSON.stringify(taskMap || {}));
+    } catch (error) {
+        return;
+    }
+}
+
+/**
+ * Builds board columns from a normalized cached task map.
+ *
+ * @param {Object} cachedTasks - Normalized cached task map.
+ * @returns {Object} Columns object with HTML per status.
+ */
+function buildColumnsFromCachedTasks(cachedTasks) {
+    const columns = { 'todo': '', 'in-progress': '', 'await-feedback': '', 'done': '' };
+    Object.entries(cachedTasks).forEach(([taskId, task]) => {
+        if (columns[task.status] !== undefined) {
+            columns[task.status] += getCardTemplate(task, taskId);
+        }
+    });
+    return columns;
+}
 
 /* ==========================================================================
    2. UTILS & HELPER FUNCTIONS
@@ -261,12 +358,20 @@ async function fetchBoardData() {
  * @async
  * @returns {Promise<void>}
  */
-async function renderBoard() {
+async function renderBoard(options = {}) {
+    const preferCache = options?.preferCache !== false;
+    const cachedTasks = preferCache ? readBoardCache() : {};
+    if (Object.keys(cachedTasks).length) {
+        boardTaskCache = cachedTasks;
+        renderColumnHTML(buildColumnsFromCachedTasks(cachedTasks));
+    }
+
     try {
         const { tasks, allUsers, legacyConnections } = await fetchBoardData();
         const { columns, nextCache } = buildColumnsFromTasks(tasks, allUsers, legacyConnections);
         boardTaskCache = nextCache;
         renderColumnHTML(columns);
+        writeBoardCache(nextCache);
     } catch (error) {
         console.error("Error rendering board:", error);
     }
@@ -705,6 +810,7 @@ async function saveTaskEdit(taskId) {
 function clearTaskFromCache(taskId) {
     delete boardTaskCache[taskId];
     if (boardLegacyConnectionsCache?.[taskId]) delete boardLegacyConnectionsCache[taskId];
+    writeBoardCache(boardTaskCache);
 }
 
 /**

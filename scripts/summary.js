@@ -6,6 +6,8 @@
  * Initialisiert die Summary-Ansicht und lädt die Daten.
  */
 
+const SUMMARY_CACHE_KEY = "join_summary_cache_v1";
+
 /**
  * 
  * Main initialization function for the summary page.
@@ -17,16 +19,63 @@
  * @returns {Promise<void>}
  */
 async function loadSummary() {
+    setGreeting();
+
+    const cachedSummary = readSummaryCache();
+    if (cachedSummary) {
+        renderUserName(cachedSummary.userName);
+        renderSummary(cachedSummary.tasks);
+    } else {
+        renderUserName("Guest");
+        renderSummary({});
+    }
+
     try {
-        const userId = await resolveActiveUserId();
-        const userName = await getUserName(userId);
-        const tasks = await getTasks();
+        const userIdPromise = resolveActiveUserId();
+        const tasksPromise = getTasks();
+        const userId = await userIdPromise;
+        const [userName, tasks] = await Promise.all([getUserName(userId), tasksPromise]);
 
         renderUserName(userName);
-        setGreeting();
         renderSummary(tasks);
+        writeSummaryCache({ userName, tasks, updatedAt: Date.now() });
     } catch (error) {
         console.error("Error in loadSummary:", error);
+    }
+}
+
+/**
+ * Reads cached summary payload from localStorage.
+ *
+ * @returns {{ userName: string, tasks: Object }|null} Cached summary payload or null.
+ */
+function readSummaryCache() {
+    try {
+        const raw = localStorage.getItem(SUMMARY_CACHE_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== "object") return null;
+
+        return {
+            userName: typeof parsed.userName === "string" ? parsed.userName : "Guest",
+            tasks: parsed.tasks && typeof parsed.tasks === "object" ? parsed.tasks : {},
+        };
+    } catch (error) {
+        return null;
+    }
+}
+
+/**
+ * Writes summary payload into localStorage.
+ *
+ * @param {{ userName: string, tasks: Object, updatedAt?: number }} payload - Summary payload.
+ * @returns {void}
+ */
+function writeSummaryCache(payload) {
+    try {
+        localStorage.setItem(SUMMARY_CACHE_KEY, JSON.stringify(payload || {}));
+    } catch (error) {
+        return;
     }
 }
 
@@ -88,6 +137,29 @@ function renderUserName(name) {
 }
 
 /**
+ * Calculates task statistics by status and priority.
+ *
+ * @param {Object} tasks - The task object containing all tasks.
+ * @returns {Object} An object with task counts by category.
+ */
+function calculateTaskStats(tasks) {
+    const taskList = Object.values(tasks || {});
+    const normalizeStatus = (status) => String(status || "").trim().toLowerCase();
+
+    return {
+        totalTasks: taskList.length,
+        todoCount: taskList.filter((t) => normalizeStatus(t.status) === "todo").length,
+        inProgressCount: taskList.filter((t) => normalizeStatus(t.status) === "in-progress").length,
+        doneCount: taskList.filter((t) => normalizeStatus(t.status) === "done").length,
+        urgentCount: taskList.filter((t) => t.priority === "urgent").length,
+        feedbackCount: taskList.filter((t) => {
+            const status = normalizeStatus(t.status);
+            return status === "await-feedback" || status === "awaiting-feedback";
+        }).length,
+    };
+}
+
+/**
  * Calculates and renders task statistics to the UI.
  * Filters tasks by status and priority to update the dashboard counters.
  *
@@ -97,26 +169,16 @@ function renderUserName(name) {
  * @returns {void}
  */
 function renderSummary(tasks) {
-    const taskList = Object.values(tasks || {});
-    const normalizeStatus = (status) => String(status || "").trim().toLowerCase();
+    const stats = calculateTaskStats(tasks);
+    
+    document.getElementById("total-tasks").innerText = stats.totalTasks;
+    document.getElementById("todo-tasks").innerText = stats.todoCount;
+    document.getElementById("inprogress-tasks").innerText = stats.inProgressCount;
+    document.getElementById("done-tasks").innerText = stats.doneCount;
+    document.getElementById("urgent-tasks").innerText = stats.urgentCount;
+    document.getElementById("awaitFeedback-tasks").innerText = stats.feedbackCount;
 
-    const totalTasks = taskList.length;
-    const todoCount = taskList.filter((t) => normalizeStatus(t.status) === "todo").length;
-    const inProgressCount = taskList.filter((t) => normalizeStatus(t.status) === "in-progress").length;
-    const doneCount = taskList.filter((t) => normalizeStatus(t.status) === "done").length;
-    const urgentCount = taskList.filter((t) => t.priority === "urgent").length;
-    const feedbackCount = taskList.filter((t) => {
-        const status = normalizeStatus(t.status);
-        return status === "await-feedback" || status === "awaiting-feedback";
-    }).length;
-    getNextDeadline();
-
-    document.getElementById("total-tasks").innerText = totalTasks;
-    document.getElementById("todo-tasks").innerText = todoCount;
-    document.getElementById("inprogress-tasks").innerText = inProgressCount;
-    document.getElementById("done-tasks").innerText = doneCount;
-    document.getElementById("urgent-tasks").innerText = urgentCount;
-    document.getElementById("awaitFeedback-tasks").innerText = feedbackCount;
+    renderNextDeadline(tasks);
 }
 
 /**
@@ -143,7 +205,6 @@ function findClosestDeadline(tasks) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     let closestDeadline = null;
-
     Object.values(tasks).forEach(task => {
         if (!task.dueDate) return;
         const taskDate = new Date(task.dueDate);
@@ -152,7 +213,6 @@ function findClosestDeadline(tasks) {
             closestDeadline = taskDate;
         }
     });
-
     return closestDeadline;
 }
 
@@ -184,23 +244,6 @@ function renderNextDeadline(tasks) {
     document.getElementById("next-deadline").innerText = task
         ? task.dueDate
         : "No upcoming deadlines";
-}
-
-/**
- * Fetches all tasks from Firebase and triggers the rendering of the next upcoming deadline.
- *
- * @category Summary
- * @subcategory UI Rendering
- * @returns {void}
- */
-function getNextDeadline() {
-    db.ref("tasks").get().then((snapshot) => {
-        if (snapshot.exists()) {
-            renderNextDeadline(snapshot.val());
-        } else {
-            document.getElementById("next-deadline").innerText = "No upcoming deadlines";
-        }
-    });
 }
 
 // Initial call to start the page logic
