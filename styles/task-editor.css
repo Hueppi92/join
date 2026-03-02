@@ -139,8 +139,7 @@ body {
 }
 
 .description_box textarea {
-    min-height: 24px;
-    height: 120px;
+    min-height: 120px;
     padding: 18px 16px;
 }
 
@@ -787,6 +786,11 @@ input:focus-visible {
    RESPONSIBILITY
 ========================================================= */
 @media (max-width: 1280px) {
+    .addTask-container {
+        margin-left: 250px;
+    }
+}
+@media (max-width: 1120px) {
 
     .editor_wrapper {
         flex-direction: column;
@@ -836,8 +840,13 @@ input:focus-visible {
         padding: 10px 14px;
     }
 
+    .description_box {
+        height: 80px;
+    }
+    
     .description_box textarea {
-        min-height: 40px;
+        min-height: 78px;
+        max-height: 78px;
         padding: 10px 14px;
     }
 
