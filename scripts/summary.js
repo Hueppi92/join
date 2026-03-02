@@ -97,12 +97,18 @@ function renderUserName(name) {
  * @returns {void}
  */
 function renderSummary(tasks) {
-    const totalTasks = Object.keys(tasks).length;
-    const todoCount = Object.values(tasks).filter(t => t.status === "todo").length;
-    const inProgressCount = Object.values(tasks).filter(t => t.status === "in-progress").length;
-    const doneCount = Object.values(tasks).filter(t => t.status === "done").length;
-    const urgentCount = Object.values(tasks).filter(t => t.priority === "urgent").length;
-    const feedbackCount = Object.values(tasks).filter(t => t.status === "awaiting-feedback").length;
+    const taskList = Object.values(tasks || {});
+    const normalizeStatus = (status) => String(status || "").trim().toLowerCase();
+
+    const totalTasks = taskList.length;
+    const todoCount = taskList.filter((t) => normalizeStatus(t.status) === "todo").length;
+    const inProgressCount = taskList.filter((t) => normalizeStatus(t.status) === "in-progress").length;
+    const doneCount = taskList.filter((t) => normalizeStatus(t.status) === "done").length;
+    const urgentCount = taskList.filter((t) => t.priority === "urgent").length;
+    const feedbackCount = taskList.filter((t) => {
+        const status = normalizeStatus(t.status);
+        return status === "await-feedback" || status === "awaiting-feedback";
+    }).length;
     getNextDeadline();
 
     document.getElementById("total-tasks").innerText = totalTasks;
