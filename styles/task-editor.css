@@ -383,6 +383,7 @@ body {
 .selector_dropdown.open {
     max-height: 220px;
     overflow-y: auto;
+    z-index: 40;
 }
 
 .selector_dropdown::-webkit-scrollbar {
