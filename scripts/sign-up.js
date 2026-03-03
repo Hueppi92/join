@@ -223,6 +223,7 @@ async function performSignup(fields) {
 	);
 	await persistSignupUser(credential, fields);
 	sessionStorage.removeItem('guestLogin');
+	localStorage.removeItem('guestLogin');
 	sessionStorage.setItem('skipSplash', '1');
 	showSuccessAnimation();
 }
