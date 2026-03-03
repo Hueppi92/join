@@ -18,13 +18,25 @@ function redirectToAuthGuardLogin() {
 }
 
 
+function releaseAuthGuardVisibility() {
+	document.documentElement.classList.remove('auth-check-pending');
+}
+
+
 function enforceAuthGuard() {
+	if (isGuestSessionActive()) {
+		releaseAuthGuardVisibility();
+		return;
+	}
 	if (!isFirebaseAuthAvailable()) {
 		redirectToAuthGuardLogin();
 		return;
 	}
 	firebase.auth().onAuthStateChanged((user) => {
-		if (user || isGuestSessionActive()) return;
+		if (user || isGuestSessionActive()) {
+			releaseAuthGuardVisibility();
+			return;
+		}
 		redirectToAuthGuardLogin();
 	});
 }
