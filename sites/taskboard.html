@@ -4,6 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.classList.add('auth-check-pending');
+  </script>
 
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="../styles/sidebar.css">
@@ -15,7 +18,7 @@
   <title>Join - Task Board</title>
 </head>
 
-<body onload="renderBoard()">
+<body>
   <header>
     <h2>Kanban Project Management Tool</h2>
     <div class="header-btn">

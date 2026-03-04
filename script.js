@@ -111,6 +111,7 @@ function hasFirebaseAuth() {
 function clearUserSession() {
 	sessionStorage.removeItem('userId');
 	sessionStorage.removeItem('guestLogin');
+	localStorage.removeItem('guestLogin');
 	sessionStorage.removeItem('skipSplash');
 }
 

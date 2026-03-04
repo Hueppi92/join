@@ -131,6 +131,7 @@ async function signInWithCredentials(fields) {
 function handleSuccessfulLogin(credential) {
 	sessionStorage.setItem('userId', credential.user.uid);
 	sessionStorage.removeItem('guestLogin');
+	localStorage.removeItem('guestLogin');
 	sessionStorage.setItem('skipSplash', '1');
 	window.location.href = './sites/summary.html';
 }
@@ -222,6 +223,7 @@ function initGuestLogin() {
  */
 function handleGuestLogin() {
 	sessionStorage.setItem('guestLogin', '1');
+	localStorage.setItem('guestLogin', '1');
 	sessionStorage.removeItem('userId');
 	window.location.href = './sites/summary.html';
 }

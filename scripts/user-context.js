@@ -19,7 +19,7 @@ function initUserContext() {
 
 
 function isGuestSessionActive() {
-	return sessionStorage.getItem('guestLogin') === '1';
+	return sessionStorage.getItem('guestLogin') === '1' || localStorage.getItem('guestLogin') === '1';
 }
 
 
