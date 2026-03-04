@@ -246,6 +246,78 @@ async function updateContact(contactId, contact) {
 	writeLocalContactsMap(contactsMap);
 }
 
+
+function normalizeAssignmentIdentity(entry) {
+	if (typeof entry === 'string') return { id: entry, name: '', email: '' };
+	if (!entry || typeof entry !== 'object') return { id: '', name: '', email: '' };
+	return {
+		id: String(entry.id || entry.userId || entry.contactId || ''),
+		name: String(entry.name || ''),
+		email: String(entry.email || ''),
+	};
+}
+
+
+function assignmentMatchesDeletedContact(entry, contactId, contactData) {
+	void contactData;
+	const normalized = normalizeAssignmentIdentity(entry);
+	return normalized.id && normalized.id === contactId;
+}
+
+
+function normalizeAssignedEntries(assignedRaw) {
+	if (Array.isArray(assignedRaw)) return assignedRaw;
+	if (assignedRaw && typeof assignedRaw === 'object') return Object.values(assignedRaw);
+	return [];
+}
+
+
+function buildTaskAssignmentCleanupUpdates(tasks, contactId, contactData) {
+	const updates = {};
+	Object.entries(tasks || {}).forEach(([taskId, task]) => {
+		const assignedEntries = normalizeAssignedEntries(task?.assignedTo);
+		if (!assignedEntries.length) return;
+		const filteredEntries = assignedEntries.filter(
+			(entry) => !assignmentMatchesDeletedContact(entry, contactId, contactData)
+		);
+		if (filteredEntries.length === assignedEntries.length) return;
+		updates[`tasks/${taskId}/assignedTo`] = filteredEntries;
+	});
+	return updates;
+}
+
+
+function applyTaskUsersCleanup(taskUsersMap, contactId, updates) {
+	Object.entries(taskUsersMap || {}).forEach(([taskId, userMap]) => {
+		if (!userMap || typeof userMap !== 'object' || !userMap[contactId]) return;
+		const nextUserMap = { ...userMap };
+		delete nextUserMap[contactId];
+		updates[`taskUsers/${taskId}`] = Object.keys(nextUserMap).length ? nextUserMap : null;
+	});
+}
+
+
+async function cleanupDeletedContactAssignments(contactId, contactData) {
+	if (!hasDb() || !contactId) return;
+	let tasks = {};
+	let taskUsersMap = {};
+	try {
+		const [tasksSnapshot, taskUsersSnapshot] = await Promise.all([
+			db.ref('tasks').get(),
+			db.ref('taskUsers').get(),
+		]);
+		tasks = tasksSnapshot.val() || {};
+		taskUsersMap = taskUsersSnapshot.val() || {};
+	} catch (error) {
+		return;
+	}
+
+	const updates = buildTaskAssignmentCleanupUpdates(tasks, contactId, contactData);
+	applyTaskUsersCleanup(taskUsersMap, contactId, updates);
+	if (!Object.keys(updates).length) return;
+	await db.ref().update(updates);
+}
+
 /**
  * Deletes a contact from the database.
  * @param {string} contactId - Contact id.
@@ -256,8 +328,10 @@ async function updateContact(contactId, contact) {
 async function deleteContact(contactId) {
 	if (!contactId) return;
 	if (isSelfContactId(contactId)) return;
+	const contactData = await fetchContact(contactId);
 	if (hasDb()) {
 		try {
+			await cleanupDeletedContactAssignments(contactId, contactData);
 			await db.ref(`contacts/${contactId}`).remove();
 			return;
 		} catch (error) {
