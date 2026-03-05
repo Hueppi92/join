@@ -1,5 +1,6 @@
 /* ==========================================================================
-   TASK BOARD — task-board.css  (Clean Rewrite)
+   TASK BOARD — task-board.css
+   Scope: Nur taskboard.html — kein Overlap mit task-editor.css
    ========================================================================== */
 
 /* ==========================================================================
@@ -21,13 +22,12 @@ main {
 .board-container {
     margin-left: 348px;
     width: calc(80% - 232px);
-    margin-top:196px;
+    margin-top: 196px;
     box-sizing: border-box;
     min-height: 100vh;
     height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
-  
     -webkit-overflow-scrolling: touch;
 }
 
@@ -52,7 +52,6 @@ main {
     flex-shrink: 0;
 }
 
-/* Search container: input + separate search icon button */
 .search-container {
     display: flex;
     align-items: center;
@@ -78,7 +77,6 @@ main {
 
 .search-container input::placeholder { color: var(--text-gray); }
 
-/* Search icon as a button/divider style inside the container */
 .search-divider {
     width: 1px;
     height: 20px;
@@ -172,7 +170,6 @@ main {
     gap: 16px;
 }
 
-/* Empty state: dashed border, light gray text */
 .empty-msg {
     border: 2px dashed #D1D7DB;
     border-radius: 16px;
@@ -267,44 +264,64 @@ main {
 .prio-icon img { width: 24px; height: 24px; }
 
 /* ==========================================================================
-   4. OVERLAY & MODAL — Sichtbarkeitssteuerung (JS nutzt .hidden)
+   4. OVERLAY & MODAL — Sichtbarkeitssteuerung
    ========================================================================== */
 .overlay,
 #addTaskModal {
-    display: none !important;
+    display: none;
 }
 
 .overlay:not(.hidden) {
-    display: flex !important;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background: rgba(0,0,0,0.5) !important;
-    align-items: center !important;
-    justify-content: center !important;
-    z-index: 9999 !important;
-    padding: 16px !important;
-    box-sizing: border-box !important;
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    background: rgba(0,0,0,0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 16px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overscroll-behavior: contain;
 }
 
 #addTaskModal:not(.hidden) {
-    display: flex !important;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    height: 100dvh !important;
-    background: rgba(0,0,0,0.5) !important;
-    align-items: center !important;
-    justify-content: center !important;
-    z-index: 9999 !important;
-    padding: 16px !important;
-    box-sizing: border-box !important;
-    overflow-y: auto !important;
-    overscroll-behavior: contain !important;
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    background: rgba(0,0,0,0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 16px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+/* Animations */
+#addTaskModal {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+#addTaskModal:not(.hidden) {
+    opacity: 0;
+}
+
+#addTaskModal.is-open {
+    display: flex;
+    opacity: 1;
+    pointer-events: auto;
 }
 
 /* ==========================================================================
@@ -384,7 +401,6 @@ main {
 .subtask-row:hover { background: var(--bg-color); }
 .subtask-row img   { width: 20px; flex-shrink: 0; }
 
-/* Detail actions: Delete | Edit style with text labels */
 .detail-actions {
     display: flex;
     justify-content: flex-end;
@@ -414,22 +430,16 @@ main {
 .action-btn:hover { background: #f5f5f5; color: #29ABE2; }
 .action-btn:hover img { filter: invert(55%) sepia(80%) saturate(400%) hue-rotate(165deg); }
 .action-btn img { height: 20px; width: auto; object-fit: contain; }
-
-.action-btn-label {
-    font-size: 16px;
-    font-weight: 400;
-}
-
 .action-divider { width: 1px; height: 20px; background: #D1D7DB; margin: 0 4px; }
 
 /* ==========================================================================
-   6. ADD TASK MODAL CONTENT
+   6. ADD TASK MODAL — Container & Layout
    ========================================================================== */
 #addTaskModal .modal-content {
     background: var(--white);
     border-radius: 24px;
-    padding: 40px 48px;
-    width: min(900px, calc(100vw - 32px));
+    padding: 48px 56px;
+    width: min(960px, calc(100vw - 32px));
     min-width: 320px;
     max-height: 92vh;
     max-height: calc(100dvh - 32px);
@@ -441,6 +451,7 @@ main {
     box-sizing: border-box;
 }
 
+/* Modal-interner Schließ-Button */
 .close-btn {
     position: absolute;
     top: 16px;
@@ -459,50 +470,74 @@ main {
 
 .close-btn:hover { background: var(--bg-color); }
 
-.modal-title { font-size: 40px; font-weight: 700; margin: 0 0 24px; flex-shrink: 0; }
+.modal-title {
+    font-size: 47px;
+    font-weight: 700;
+    margin: 0 0 32px;
+    flex-shrink: 0;
+}
 
-.editor_wrapper {
+/* ==========================================================================
+   7. EDITOR WRAPPER — nur im Modal-Kontext scoped
+   ========================================================================== */
+#addTaskModal .editor_wrapper {
     display: flex;
-    gap: 40px;
+    gap: 48px;
     flex: 1;
     min-height: 0;
     overflow-y: auto;
     padding-right: 4px;
-    min-height: 0;              /* FIX: kritisch — erlaubt flex-child zu schrumpfen */
+    align-items: stretch;
 }
 
-.editor_wrapper::-webkit-scrollbar { width: 4px; }
-.editor_wrapper::-webkit-scrollbar-thumb { background: var(--separator-color); border-radius: 4px; }
+#addTaskModal .editor_wrapper::-webkit-scrollbar { width: 4px; }
+#addTaskModal .editor_wrapper::-webkit-scrollbar-thumb {
+    background: var(--separator-color);
+    border-radius: 4px;
+}
 
-.new_task,
-.task_settings {
-    
+#addTaskModal .new_task,
+#addTaskModal .task_settings {
     flex: 1;
     display: flex;
     flex-direction: column;
+    min-width: 0;
 }
 
-.editor_divider { width: 1px; background: var(--separator-color); flex-shrink: 0; }
+#addTaskModal .editor_divider {
+    width: 1px;
+    background: #D1D1D1;
+    flex-shrink: 0;
+    align-self: stretch;
+    min-height: 380px;
+}
 
-.left_row { display: flex; flex-direction: column; margin-bottom: 12px; }
+/* ==========================================================================
+   8. FORM FELDER — nur im Modal-Kontext scoped
+   ========================================================================== */
+#addTaskModal .left_row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
 
-.new_task label,
-.task_settings label {
-    font-size: 14px;
+#addTaskModal .new_task label,
+#addTaskModal .task_settings label {
+    font-size: 16px;
     font-weight: 700;
     color: var(--dark-blue);
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     display: block;
 }
 
-.new_task input,
-.new_task textarea,
-.task_settings input {
-    width: 50%;
-    padding: 10px 14px;
-    border: 1px solid var(--separator-color);
+#addTaskModal .new_task input,
+#addTaskModal .new_task textarea,
+#addTaskModal .task_settings input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #D1D1D1;
     border-radius: 10px;
-    font-size: 15px;
+    font-size: 16px;
     font-family: inherit;
     outline: none;
     background: var(--white);
@@ -510,68 +545,106 @@ main {
     transition: border-color 0.15s;
 }
 
-.new_task input:focus,
-.new_task textarea:focus { border-color: var(--light-blue); }
+#addTaskModal .new_task input:focus,
+#addTaskModal .new_task textarea:focus { border-color: var(--light-blue); }
 
-.description_box textarea { min-height: 100px; resize: none; }
+#addTaskModal .description_box textarea { min-height: 120px; resize: none; }
 
-.left_single_row { position: relative; }
+#addTaskModal .left_single_row { position: relative; }
 
-.calendar_icon {
+#addTaskModal .calendar_icon {
     position: absolute;
     right: 12px;
     top: 50%;
     transform: translateY(-50%);
-    width: 18px;
+    width: 20px;
     opacity: 0.5;
     pointer-events: none;
 }
 
-.settings_block { margin-bottom: 16px; }
+#addTaskModal .settings_block { margin-bottom: 20px; }
+
+/* Validierungs-Fehler im Modal */
+#addTaskModal .left_row.error .left_single_row {
+    border-color: #E60026;
+}
+
+#addTaskModal .left_row.error .error_text {
+    display: block;
+}
+
+.error_text {
+    display: none;
+    font-size: 12px;
+    margin-top: 4px;
+    color: #FF3D00;
+}
 
 /* ==========================================================================
-   7. PRIORITÄT BUTTONS
+   9. PRIORITÄT BUTTONS — im Modal
    ========================================================================== */
-
-/* Add Task Modal */
-.priority_row {
+#addTaskModal .priority_row {
     display: flex;
     flex-direction: row;
     gap: 8px;
-    margin-top: 6px;
+    margin-top: 8px;
     flex-wrap: nowrap;
 }
 
-.prio {
+#addTaskModal .prio {
     flex: 1;
     min-width: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 10px 8px;
+    gap: 8px;
+    padding: 12px 8px;
     border-radius: 10px;
-    border: 1px solid var(--separator-color);
+    border: 1px solid #D1D1D1;
     background: var(--white);
     cursor: pointer;
-    font-size: 14px;
+    font-size: 16px;
     font-family: inherit;
     color: var(--text-main);
     transition: all 0.15s;
     white-space: nowrap;
-    overflow: hidden;           /* FIX: war "visible" */
+    overflow: hidden;
 }
 
-.prio img { width: 16px; }
+#addTaskModal .prio img { width: 14px; height: 14px; }
 
-.prio.urgent_btn.active { background-color: #FF3B30; color: white !important; border-color: #FF3B30; }
-.prio.medium_btn.active { background-color: #FF9800; color: white !important; border-color: #FF9800; }
-.prio.low_btn.active    { background-color: #4CAF50; color: white !important; border-color: #4CAF50; }
-.prio.urgent_btn.active img,
-.prio.medium_btn.active img,
-.prio.low_btn.active img { filter: brightness(0) invert(1) !important; }
+#addTaskModal .prio div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    line-height: 0;
+}
 
-/* Edit Task Overlay */
+#addTaskModal .prio div img {
+    width: 10px;
+    height: auto;
+}
+
+#addTaskModal .prio.active div img,
+#addTaskModal .prio.urgent_btn.active div img,
+#addTaskModal .prio.medium_btn.active div img,
+#addTaskModal .prio.low_btn.active div img {
+    filter: brightness(0) invert(1);
+}
+
+#addTaskModal .prio.urgent_btn.active { background-color: #FF3B30; color: white; border-color: #FF3B30; }
+#addTaskModal .prio.medium_btn.active { background-color: #FF9800; color: white; border-color: #FF9800; }
+#addTaskModal .prio.low_btn.active    { background-color: #4CAF50; color: white; border-color: #4CAF50; }
+
+#addTaskModal .prio.urgent_btn.active img,
+#addTaskModal .prio.medium_btn.active img,
+#addTaskModal .prio.low_btn.active img { filter: brightness(0) invert(1); }
+
+/* ==========================================================================
+   10. PRIORITÄT BUTTONS — im Edit-Task-Overlay
+   ========================================================================== */
 .priority-row-edit {
     display: flex;
     flex-direction: row;
@@ -592,7 +665,7 @@ main {
     border: 1px solid var(--separator-color);
     background: var(--white);
     cursor: pointer;
-    font-size: 12px;
+    font-size: 13px;
     font-family: inherit;
     color: var(--text-main);
     transition: all 0.15s;
@@ -601,31 +674,59 @@ main {
 
 .prio-btn-edit img { width: 16px; }
 
-.prio-btn-edit.active-urgent { background-color: #FF3B30; color: white !important; border-color: #FF3B30; }
-.prio-btn-edit.active-medium { background-color: #FF9800; color: white !important; border-color: #FF9800; }
-.prio-btn-edit.active-low    { background-color: #4CAF50; color: white !important; border-color: #4CAF50; }
+.prio-btn-edit.active-urgent { background-color: #FF3B30; color: white; border-color: #FF3B30; }
+.prio-btn-edit.active-medium { background-color: #FF9800; color: white; border-color: #FF9800; }
+.prio-btn-edit.active-low    { background-color: #4CAF50; color: white; border-color: #4CAF50; }
 .prio-btn-edit.active-urgent img,
 .prio-btn-edit.active-medium img,
-.prio-btn-edit.active-low img { filter: brightness(0) invert(1) !important; }
+.prio-btn-edit.active-low img { filter: brightness(0) invert(1); }
 
 /* ==========================================================================
-   8. ASSIGNED DROPDOWN (Add Task)
+   11. ASSIGNED DROPDOWN — im Modal
    ========================================================================== */
-.select_native { position: relative; border: 1px solid var(--separator-color); border-radius: 10px; }
+#addTaskModal .select_native {
+    position: relative;
+    border: 1px solid #D1D1D1;
+    border-radius: 10px;
+}
 
-.selector_input { display: flex; align-items: center; padding: 10px 14px; }
+#addTaskModal .select_native::after {
+      content: "";
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    z-index: 30;
+    width: 24px;
+    height: 24px;
+    background: url(../assets/icons/arrow_drop_down.png) no-repeat center;
+    filter: brightness(0) saturate(100%) invert(17%) sepia(19%) saturate(1020%) hue-rotate(176deg) brightness(95%) contrast(93%);
+    pointer-events: none;
+    transition: transform 180ms ease;
+    transform: translateY(-50%);
+}
 
-.selector_input input {
+#addTaskModal .select_native.open::after {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+#addTaskModal .selector_input {
+    display: flex;
+    align-items: center;
+    padding: 12px 40px 12px 16px;
+}
+
+#addTaskModal .selector_input input {
     border: none;
     outline: none;
     width: 100%;
-    font-size: 12px;
+    font-size: 16px;
     font-family: inherit;
     background: transparent;
     padding: 0;
+    color: var(--text-main);
 }
 
-.selector_dropdown {
+#addTaskModal .selector_dropdown {
     position: absolute;
     top: 100%;
     left: -1px;
@@ -641,23 +742,111 @@ main {
     box-shadow: 0 8px 16px rgba(0,0,0,0.1);
 }
 
-.select_native.open .selector_dropdown { display: block; }
+#addTaskModal .select_native.open .selector_dropdown { display: block; }
 
-.dropdown_item { display: flex; flex-direction: row; width:100%; justify-content: space-between; padding: 10px 14px; cursor: pointer; font-size: 15px; transition: background 0.1s; }
-.dropdown_item:hover    { background: var(--bg-color); }
-.dropdown_item.selected { background: var(--dark-blue); color: white; }
+#addTaskModal .dropdown_item {
+  display:flex;
+}
 
-.assigned_avatars { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+#addTaskModal .dropdown_item:hover    { background: var(--bg-color); }
+#addTaskModal .dropdown_item.selected { background: var(--dark-blue); color: white; border-radius: 8px; }
+
+#addTaskModal .dropdown_item span {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display:flex;
+    justify-content: flex-start;
+}
+
+#addTaskModal .dropdown_item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    flex-shrink: 0;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--dark-blue);
+    border: none;
+    padding: 0;
+    background: transparent;
+    display:flex;
+    justify-content: flex-end;
+}
+
+#addTaskModal .dropdown_avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    color: white;
+    background: #29ABE2;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+#addTaskModal .assigned_avatars {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
 
 /* ==========================================================================
-   9. SUBTASKS (Add Task)
+   12. SUBTASKS — im Modal
    ========================================================================== */
-.subtask_input { position: relative; display: flex; align-items: center; }
-.subtask_input input { padding-right: 80px; }
+#addTaskModal .subtask_input {
+    position: relative;
+    width: 100%;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #D1D1D1;
+    border-radius: 10px;
+    box-sizing: border-box;
+}
 
-.subtask_actions { position: absolute; right: 10px; display: flex; align-items: center; gap: 6px; }
+#addTaskModal .subtask_input:focus-within {
+    border-color: var(--light-blue);
+}
 
-.subtask_actions button {
+#addTaskModal .subtask_input input {
+    flex: 1;
+    height: 100%;
+    padding: 0 52px 0 16px;
+    font-family: inherit;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#addTaskModal .subtask_actions {
+    position: absolute;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.12s;
+}
+
+#addTaskModal .subtask_input.has-text .subtask_actions {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#addTaskModal .subtask_actions button {
     background: none;
     border: none;
     cursor: pointer;
@@ -668,61 +857,134 @@ main {
     transition: background 0.1s;
 }
 
-.subtask_actions button:hover { background: var(--bg-color); }
-.subtask_actions button img   { width: 18px; }
+#addTaskModal .subtask_actions button:hover { background: var(--bg-color); }
+#addTaskModal .subtask_actions button img   { width: 18px; }
 
-.separator { width: 1px; height: 18px; background: var(--separator-color); }
+#addTaskModal .separator {
+    width: 1px;
+    height: 18px;
+    background: var(--separator-color);
+}
 
-.subtask_list { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-direction: column; gap: 4px; }
-.subtask_list li { font-size: 15px; padding: 6px 10px; border-radius: 8px; transition: background 0.1s; cursor: pointer; }
-.subtask_list li:hover { background: var(--bg-color); }
+#addTaskModal .subtask_list {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 120px;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+#addTaskModal .subtask_list::-webkit-scrollbar { display: none; }
+
+#addTaskModal .subtask_list li {
+    font-size: 15px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: background 0.1s;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 32px;
+}
+
+#addTaskModal .subtask_list li:hover { background: var(--bg-color); }
+
+#addTaskModal .subtask_list li:hover .subtask_item_actions { opacity: 1; }
+
+#addTaskModal .subtask_item_actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0;
+    transition: opacity 0.12s;
+}
+
+#addTaskModal .subtask_text { flex: 1; display: flex; }
+
+#addTaskModal .subtask_edit_input {
+    width: 100%;
+    height: 28px;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 15px;
+}
+
+#addTaskModal .subtask_list li.editing {
+    background: white;
+    border-bottom: 1px solid #29ABE2;
+    border-radius: 0;
+}
+
+#addTaskModal .subtask_list li.editing .subtask_item_actions { opacity: 1; }
 
 /* ==========================================================================
-   10. FOOTER (Add Task Modal)
+   13. FOOTER (Modal)
    ========================================================================== */
-.task_footer {
+#addTaskModal .task_footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding-top: 20px;
     margin-top: 16px;
     border-top: 1px solid var(--separator-color);
-    flex-shrink: 0;             /* bleibt immer unten sichtbar, scrollt nicht mit */
+    flex-shrink: 0;
 }
 
-.task_footer p { font-size: 13px; color: var(--text-gray); margin: 0; }
-.footer_actions { display: flex; gap: 12px; }
+#addTaskModal .task_footer p {
+    font-size: 13px;
+    color: var(--text-gray);
+    margin: 0;
+}
 
-.clear_btn {
-    padding: 12px 20px;
+#addTaskModal .footer_actions { display: flex; gap: 12px; }
+
+#addTaskModal .clear_btn {
+    padding: 14px 24px;
     border: 1px solid var(--dark-blue);
     border-radius: 10px;
     background: var(--white);
-    font-size: 16px;
+    font-size: 18px;
     font-family: inherit;
     cursor: pointer;
+    color: var(--dark-blue);
     transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.clear_btn:hover { border-color: var(--light-blue); color: var(--light-blue); }
+#addTaskModal .clear_btn:hover {
+    border-color: var(--light-blue);
+    color: var(--light-blue);
+}
 
-.create_btn {
-    padding: 12px 24px;
+#addTaskModal .create_btn {
+    padding: 14px 28px;
     background: var(--dark-blue);
     color: var(--white);
     border: none;
     border-radius: 10px;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 700;
     font-family: inherit;
     cursor: pointer;
     transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.create_btn:hover { background: var(--light-blue); }
+#addTaskModal .create_btn:hover { background: var(--light-blue); }
 
 /* ==========================================================================
-   11. EDIT TASK OVERLAY INHALT
+   14. EDIT TASK OVERLAY INHALT
    ========================================================================== */
 .task-edit-container { display: flex; flex-direction: column; width: 100%; }
 
@@ -738,7 +1000,13 @@ main {
 .edit-scroll-area::-webkit-scrollbar { width: 4px; }
 .edit-scroll-area::-webkit-scrollbar-thumb { background: var(--separator-color); border-radius: 4px; }
 
-.edit-label { display: block; font-size: 13px; font-weight: 400; color: #666; margin: 10px 0 4px; }
+.edit-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 400;
+    color: #666;
+    margin: 10px 0 4px;
+}
 
 .edit-input {
     width: 100%;
@@ -771,7 +1039,7 @@ main {
 
 .edit-textarea:focus { border-color: #7B61FF; }
 
-/* Kontakt Dropdown (Edit) */
+/* Kontakt Dropdown (Edit-Overlay) */
 .custom-select-container { position: relative; width: 100%; }
 
 .custom-select-header {
@@ -806,7 +1074,7 @@ main {
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.custom-contact-list.hidden { display: none !important; }
+.custom-contact-list.hidden { display: none; }
 
 .contact-item {
     display: flex;
@@ -826,7 +1094,7 @@ main {
 
 .edit-assigned-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 
-/* Subtask Input (Edit) */
+/* Subtask Input (Edit-Overlay) */
 .subtask-input-container { position: relative; display: flex; align-items: center; margin-top: 6px; }
 .subtask-input-container .edit-input { padding-right: 44px; margin-top: 0; }
 
@@ -856,14 +1124,13 @@ main {
 .edit-subtask-item img   { width: 16px; cursor: pointer; opacity: 0.6; }
 .edit-subtask-item img:hover { opacity: 1; }
 
-/* Priority Label im Edit-Modus fett und dunkel */
 .edit-label-priority {
-    font-weight: 700 !important;
-    color: #2A3647 !important;
-    font-size: 14px !important;
+    font-weight: 700;
+    color: #2A3647;
+    font-size: 14px;
 }
 
-/* Save Button */
+/* Save Button (Edit-Overlay) */
 .save-btn {
     display: flex;
     align-items: center;
@@ -886,14 +1153,21 @@ main {
 .save-btn:hover { background: var(--light-blue); }
 .save-btn img   { width: 18px; filter: brightness(0) invert(1); }
 
-/* Errors */
+/* ==========================================================================
+   15. FOKUS & GENERELLE UTILITIES
+   ========================================================================== */
 .error      { color: var(--error-red); }
 .error_text { font-size: 12px; color: var(--error-red); margin-top: 4px; display: none; }
 
-/* ==========================================================================
-   12. MEDIA QUERIES
-   ========================================================================== */
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid #29ABE2;
+    outline-offset: 2px;
+}
 
+/* ==========================================================================
+   16. MEDIA QUERIES
+   ========================================================================== */
 @media (max-width: 1200px) {
     .board-container { padding: 116px 24px 32px 24px; }
     .board-header h1 { font-size: 48px; }
@@ -949,30 +1223,39 @@ main {
     .board { grid-template-columns: 1fr; gap: 20px; }
     .column-header h2 { font-size: 22px; }
 
-    #addTaskModal .modal-content { padding: 28px 20px 20px; border-radius: 20px; max-height: 95vh; max-height: calc(100dvh - 32px); }
+    #addTaskModal .modal-content {
+        padding: 28px 20px 20px;
+        border-radius: 20px;
+        max-height: 95vh;
+        max-height: calc(100dvh - 32px);
+    }
+
     .modal-title { font-size: 28px; margin-bottom: 16px; }
 
-    .editor_wrapper { flex-direction: column; gap: 0; }
-    .editor_divider { display: none; }
-    .new_task, .task_settings { width: 100%; }
+    #addTaskModal .editor_wrapper { flex-direction: column; gap: 0; }
+    #addTaskModal .editor_divider { display: none; }
+    #addTaskModal .new_task,
+    #addTaskModal .task_settings { width: 100%; }
 
-    .task_footer { flex-direction: column; gap: 10px; align-items: stretch; }
-    .footer_actions { width: 100%; flex-direction: row;}
-    .clear_btn, .create_btn { flex: 1; text-align: center; }
+    #addTaskModal .task_footer { flex-direction: column; gap: 10px; align-items: stretch; }
+    #addTaskModal .footer_actions { width: 100%; flex-direction: row; }
+    #addTaskModal .clear_btn,
+    #addTaskModal .create_btn { flex: 1; text-align: center; }
 
     .overlay-card { max-width: calc(100vw - 24px); padding: 28px 20px; border-radius: 20px; max-height: 88vh; }
     .detail-title { font-size: 28px; }
     .save-btn { width: 100%; align-self: stretch; }
 
-    .priority_row, .priority-row-edit { gap: 6px; }
-    .prio, .prio-btn-edit { font-size: 12px; padding: 9px 4px; gap: 4px; }
-    .prio img, .prio-btn-edit img { width: 14px; }
+    .priority-row-edit { gap: 6px; }
+    .prio-btn-edit { font-size: 12px; padding: 9px 4px; gap: 4px; }
+    .prio-btn-edit img { width: 14px; }
 }
+
 @media (max-width: 576px) {
-    .footer_actions {
-        display: flex;
+    #addTaskModal .footer_actions {
         flex-direction: row !important;
-    }}
+    }
+}
 
 @media (max-width: 480px) {
     .board-container { margin-left: 0; width: 100%; min-height: 100%; padding: 12px 12px 16px; }
@@ -980,7 +1263,13 @@ main {
     .card { padding: 14px; border-radius: 16px; }
     .badge { font-size: 13px; padding: 3px 10px; }
 
-    #addTaskModal .modal-content { padding: 24px 14px; border-radius: 16px; max-height: 96vh; max-height: calc(100dvh - 32px); }
+    #addTaskModal .modal-content {
+        padding: 24px 14px;
+        border-radius: 16px;
+        max-height: 96vh;
+        max-height: calc(100dvh - 32px);
+    }
+
     .overlay-card { padding: 24px 14px; }
     .detail-title { font-size: 24px; }
 
@@ -988,8 +1277,8 @@ main {
     .detail-prio-row { flex-direction: column; align-items: flex-start; gap: 4px; }
     .info-label { min-width: unset; font-size: 13px; color: var(--text-gray); font-weight: 400; }
 
-    .prio, .prio-btn-edit { font-size: 11px; padding: 8px 2px; gap: 3px; }
-    .prio img, .prio-btn-edit img { width: 13px; }
+    .prio-btn-edit { font-size: 11px; padding: 8px 2px; gap: 3px; }
+    .prio-btn-edit img { width: 13px; }
 }
 
 @media (max-width: 360px) {

@@ -19,6 +19,10 @@ const BOARD_CACHE_KEY = 'join_board_cache_v1';
 /** Cache for all loaded user objects from Firebase. */
 let boardUsersCache = null;
 
+/** @type {Object|null} */
+/** Cache for all loaded contact objects from Firebase. */
+let boardContactsCache = null;
+
 /** @type {Object|null}  */
 /** Cache for legacy task-user connections from Firebase. */
 let boardLegacyConnectionsCache = null;
@@ -278,6 +282,19 @@ async function getUsersMap() {
     const snapshot = await firebase.database().ref('users').get();
     boardUsersCache = snapshot.val() || {};
     return boardUsersCache;
+}
+
+/**
+ * Returns the contacts map from Firebase. Uses in-memory cache.
+ *
+ * @async
+ * @returns {Promise<Object>} Map of all contact objects.
+ */
+async function getContactsMap() {
+    if (boardContactsCache) return boardContactsCache;
+    const snapshot = await firebase.database().ref('contacts').get();
+    boardContactsCache = snapshot.val() || {};
+    return boardContactsCache;
 }
 
 /**
@@ -543,10 +560,10 @@ async function editTask(taskId) {
     if (!task) return;
     currentEditSubtasks = task.subtasks ? [...task.subtasks] : [];
     currentEditContacts = task.assignedTo ? [...task.assignedTo] : [];
-    const allUsers = await getUsersMap();
+    const allContacts = await getContactsMap();
     const overlayCard = document.querySelector('#task-overlay .overlay-card');
     overlayCard.innerHTML = getEditTaskTemplate(task, taskId);
-    fillContactDropdown(allUsers);
+    fillContactDropdown(allContacts);
     refreshEditSubtaskUI();
     renderEditContactBadges();
 }
@@ -559,7 +576,7 @@ async function editTask(taskId) {
 function editTaskAssigned() {
     const select = document.getElementById('edit-assigned');
     if (!select?.value) return;
-    const user = boardUsersCache[select.value];
+    const user = boardContactsCache?.[select.value];
     if (user && !currentEditContacts.some(c => c.id === select.value)) {
         currentEditContacts.push(mapUserToBadge(select.value, user));
         renderEditContactBadges();
@@ -575,7 +592,7 @@ function editTaskAssigned() {
 function addContactToEdit() {
     const select = document.getElementById('edit-assigned');
     if (!select?.value) return;
-    const user = boardUsersCache[select.value];
+    const user = boardContactsCache?.[select.value];
     if (user && !currentEditContacts.some(c => c.id === select.value)) {
         currentEditContacts.push(mapUserToBadge(select.value, user));
         renderEditContactBadges();
@@ -676,8 +693,8 @@ async function filterTasks(term) {
 function toggleUserSelection(userId) {
     const userIndex = currentEditContacts.findIndex(c => c.id === userId);
     if (userIndex > -1) currentEditContacts.splice(userIndex, 1);
-    else currentEditContacts.push(mapUserToBadge(userId, boardUsersCache[userId]));
-    fillContactDropdown(boardUsersCache);
+    else currentEditContacts.push(mapUserToBadge(userId, boardContactsCache?.[userId]));
+    fillContactDropdown(boardContactsCache);
     renderEditContactBadges();
 }
 

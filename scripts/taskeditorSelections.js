@@ -31,12 +31,12 @@ function getContactElements() {
 }
 
 /**
- * Fetches the list of users from Firebase Realtime Database.
+ * Fetches the list of contacts from Firebase Realtime Database.
  *
- * @returns {Promise<firebase.database.DataSnapshot>} Promise resolving with the users snapshot.
+ * @returns {Promise<firebase.database.DataSnapshot>} Promise resolving with the contacts snapshot.
  */
 function fetchUsers() {
-    return firebase.database().ref("users").once("value");
+    return firebase.database().ref("contacts").once("value");
 }
 
 /**

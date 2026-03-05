@@ -188,7 +188,7 @@ function buildAssignedToOptions(users) {
 async function populateAssignedToSelect() {
 	const select = getAssignedToSelect();
 	if (!select || !hasDatabaseRef()) return;
-	const snapshot = await db.ref('users').get();
+	const snapshot = await db.ref('contacts').get();
 	select.innerHTML = buildAssignedToOptions(snapshot.val() || {});
 }
 
