@@ -993,7 +993,7 @@ main {
 }
 
 @media (max-width: 360px) {
-    .board-container { margin-left: 0; width: 100%; min-height: 100%; padding: 10px 10px 16px; }
+    .board-container { margin-top: 48px; margin-left: 0; width: 100%; min-height: 100%; padding: 10px 10px 16px; }
     .search-add { flex-wrap: wrap; }
     .search-container { width: 100%; }
     .add-task { width: 100%; justify-content: center; }
