@@ -78,10 +78,30 @@ async function fetchOwnAccountContactForAssigned() {
  */
 function renderContacts(contactsMap, dropdown) {
     dropdown.innerHTML = "";
-    Object.entries(contactsMap || {}).forEach(([contactId, contact]) => {
+    const sortedEntries = getSortedAssignedContactEntries(contactsMap);
+    sortedEntries.forEach(([contactId, contact]) => {
         let label = createContactLabel(contactId, contact);
         if (!label) return;
         dropdown.appendChild(label);
+    });
+}
+
+/**
+ * Sorts assigned contact entries with own account first and remaining contacts alphabetically.
+ *
+ * @param {Record<string, Object>} contactsMap - Contact records keyed by id.
+ * @returns {Array<[string, Object]>} Sorted contact entries.
+ */
+function getSortedAssignedContactEntries(contactsMap) {
+    const entries = Object.entries(contactsMap || {});
+    return entries.sort(([leftId, leftContact], [rightId, rightContact]) => {
+        const leftIsOwn = String(leftId || "").startsWith("self_");
+        const rightIsOwn = String(rightId || "").startsWith("self_");
+        if (leftIsOwn !== rightIsOwn) return leftIsOwn ? -1 : 1;
+
+        const leftName = String(leftContact?.name || leftContact?.email || "").trim();
+        const rightName = String(rightContact?.name || rightContact?.email || "").trim();
+        return leftName.localeCompare(rightName, "de", { sensitivity: "base" });
     });
 }
 
