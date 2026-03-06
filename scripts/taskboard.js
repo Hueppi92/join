@@ -16,10 +16,6 @@ const BOARD_STATUSES = ['todo', 'in-progress', 'await-feedback', 'done'];
 const BOARD_CACHE_KEY = 'join_board_cache_v1';
 
 /** @type {Object|null} */
-/** Cache for all loaded user objects from Firebase. */
-let boardUsersCache = null;
-
-/** @type {Object|null} */
 /** Cache for all loaded contact objects from Firebase. */
 let boardContactsCache = null;
 
@@ -146,53 +142,53 @@ function buildColumnsFromCachedTasks(cachedTasks) {
 // getInitials is defined in taskeditor.js — do not redeclare here
 
 /**
- * Converts a Firebase user object into a badge object for UI rendering.
+ * Converts a Firebase contact object into a badge object for UI rendering.
  *
- * @param {string} userId - The Firebase ID of the user.
- * @param {Object} user - The user object from Firebase.
- * @param {string} user.name - The full name of the user.
- * @param {string} [user.color] - The avatar color of the user.
+ * @param {string} contactId - The Firebase ID of the contact.
+ * @param {Object} contact - The contact object from Firebase.
+ * @param {string} contact.name - The full name of the contact.
+ * @param {string} [contact.color] - The avatar color of the contact.
  * @returns {Object} Badge object containing id, name, color, and initials.
  */
-function mapUserToBadge(userId, user) {
-    const name = user?.name || '';
+function mapContactToBadge(contactId, contact) {
+    const name = contact?.name || '';
     const fallbackColor = name ? getAvatarColorFromName(name) : '#2A3647';
     return {
-        id: userId,
+        id: contactId,
         name: name,
-        color: user?.color || fallbackColor,
+        color: contact?.color || fallbackColor,
         initials: name ? getInitials(name) : '?'
     };
 }
 
 /**
- * Normalizes a string-based assigned user entry using the user map.
+ * Normalizes a string-based assigned contact entry using the contact map.
  *
- * @param {string} entry - The Firebase ID of the user.
- * @param {Object} allUsers - Map of all known user objects.
- * @returns {Object|null} Badge object or null if user not found.
+ * @param {string} entry - The Firebase ID of the contact.
+ * @param {Object} allContacts - Map of all known contact objects.
+ * @returns {Object|null} Badge object or null if contact not found.
  */
-function normalizeAssignedUserString(entry, allUsers) {
-    const user = allUsers[entry];
-    return user ? mapUserToBadge(entry, user) : null;
+function normalizeAssignedContactString(entry, allContacts) {
+    const contact = allContacts[entry];
+    return contact ? mapContactToBadge(entry, contact) : null;
 }
 
 /**
- * Normalizes an object-based assigned user entry using the user map.
+ * Normalizes an object-based assigned contact entry using the contact map.
  *
- * @param {Object} entry - Raw user object from the task.
- * @param {Object} allUsers - Map of all known user objects.
+ * @param {Object} entry - Raw contact object from the task.
+ * @param {Object} allContacts - Map of all known contact objects.
  * @returns {Object|null} Normalized badge object or null if name is missing.
  */
-function normalizeAssignedUserObject(entry, allUsers) {
+function normalizeAssignedContactObject(entry, allContacts) {
     const id = entry.id || '';
-    const fullUser = id ? allUsers[id] : null;
-    const name = entry.name || fullUser?.name || '';
+    const fullContact = id ? allContacts[id] : null;
+    const name = entry.name || fullContact?.name || '';
     if (!name) return null;
     return {
         id,
         name,
-        color: entry.color || fullUser?.color || getAvatarColorFromName(name),
+        color: entry.color || fullContact?.color || getAvatarColorFromName(name),
         initials: entry.initials || getInitials(name)
     };
 }
@@ -201,13 +197,13 @@ function normalizeAssignedUserObject(entry, allUsers) {
  * Normalizes a single entry from a task's assignedTo list into a unified badge object.
  *
  * @param {string|Object|null} entry - Raw entry (ID string or object).
- * @param {Object} allUsers - Map of all known user objects.
+ * @param {Object} allContacts - Map of all known contact objects.
  * @returns {Object|null} Badge object or null.
  */
-function normalizeAssignedUser(entry, allUsers) {
+function normalizeAssignedContact(entry, allContacts) {
     if (!entry) return null;
-    if (typeof entry === 'string') return normalizeAssignedUserString(entry, allUsers);
-    if (typeof entry === 'object') return normalizeAssignedUserObject(entry, allUsers);
+    if (typeof entry === 'string') return normalizeAssignedContactString(entry, allContacts);
+    if (typeof entry === 'object') return normalizeAssignedContactObject(entry, allContacts);
     return null;
 }
 
@@ -238,50 +234,33 @@ function normalizeSubtasks(subtasks) {
  * Resolves assigned users via the legacy task-user connection table.
  *
  * @param {string} taskId - The Firebase ID of the task.
- * @param {Object} allUsers - Map of all known user objects.
+ * @param {Object} allContacts - Map of all known contact objects.
  * @param {Object} legacyConnections - Loaded taskUsers connections.
  * @returns {Array} Array of badge objects.
  */
-function buildAssignedFromLegacy(taskId, allUsers, legacyConnections) {
+function buildAssignedFromLegacy(taskId, allContacts, legacyConnections) {
     const legacyIds = legacyConnections[taskId] ? Object.keys(legacyConnections[taskId]) : [];
     return legacyIds
-        .map((userId) => mapUserToBadge(userId, allUsers[userId]))
-        .filter((user) => user.name);
+        .map((contactId) => mapContactToBadge(contactId, allContacts[contactId]))
+        .filter((contact) => contact.name);
 }
 
 /**
- * Resolves all assigned users of a task and returns them as a badge array.
+ * Resolves all assigned contacts of a task and returns them as a badge array.
  *
  * @param {string} taskId - The Firebase ID of the task.
  * @param {Object} task - The raw task object from Firebase.
- * @param {Object} allUsers - Map of all known user objects.
+ * @param {Object} allContacts - Map of all known contact objects.
  * @param {Object} legacyConnections - Loaded taskUsers connections.
  * @returns {Array} Array of badge objects.
  */
-function buildAssignedUsers(taskId, task, allUsers, legacyConnections) {
+function buildAssignedContacts(taskId, task, allContacts, legacyConnections) {
     const assignedRaw = Array.isArray(task.assignedTo) ? task.assignedTo : [];
     const assignedFromTask = assignedRaw
-        .map((entry) => normalizeAssignedUser(entry, allUsers))
-        .filter((user) => user !== null);
+        .map((entry) => normalizeAssignedContact(entry, allContacts))
+        .filter((contact) => contact !== null);
     if (assignedFromTask.length > 0 || Array.isArray(task.assignedTo)) return assignedFromTask;
-    return buildAssignedFromLegacy(taskId, allUsers, legacyConnections);
-}
-
-/* ==========================================================================
-   3. DATA FETCHING (FIREBASE)
-   ========================================================================== */
-
-/**
- * Returns the user map from Firebase. Uses in-memory cache.
- *
- * @async
- * @returns {Promise<Object>} Map of all user objects.
- */
-async function getUsersMap() {
-    if (boardUsersCache) return boardUsersCache;
-    const snapshot = await firebase.database().ref('users').get();
-    boardUsersCache = snapshot.val() || {};
-    return boardUsersCache;
+    return buildAssignedFromLegacy(taskId, allContacts, legacyConnections);
 }
 
 /**
@@ -294,7 +273,33 @@ async function getContactsMap() {
     if (boardContactsCache) return boardContactsCache;
     const snapshot = await firebase.database().ref('contacts').get();
     boardContactsCache = snapshot.val() || {};
+    const ownAccountContact = await fetchOwnAccountContactForBoard();
+    if (ownAccountContact && !boardContactsCache[ownAccountContact.id]) {
+        boardContactsCache[ownAccountContact.id] = ownAccountContact;
+    }
     return boardContactsCache;
+}
+
+/**
+ * Returns the signed-in account as a board-selectable contact.
+ *
+ * @async
+ * @returns {Promise<{id: string, name: string, email: string, color: string}|null>} Own-account contact or null.
+ */
+async function fetchOwnAccountContactForBoard() {
+    if (!window?.userContext?.getActiveUserProfile) return null;
+    const profile = await window.userContext.getActiveUserProfile();
+    if (!profile?.id) return null;
+
+    const contactName = String(profile.name || profile.email?.split('@')[0] || 'User').trim();
+    if (!contactName) return null;
+
+    return {
+        id: `self_${profile.id}`,
+        name: contactName,
+        email: String(profile.email || ''),
+        color: profile.color || getAvatarColorFromName(contactName)
+    };
 }
 
 /**
@@ -318,18 +323,18 @@ async function getLegacyTaskConnections(tasks) {
    ========================================================================== */
 
 /**
- * Normalizes a single task object with resolved users and subtasks.
+ * Normalizes a single task object with resolved contacts and subtasks.
  *
  * @param {string} taskId - The Firebase ID of the task.
  * @param {Object} task - The raw task object.
- * @param {Object} allUsers - Map of all known users.
+ * @param {Object} allContacts - Map of all known contacts.
  * @param {Object} legacyConnections - Legacy task-user connections.
  * @returns {Object} Normalized task object.
  */
-function normalizeTask(taskId, task, allUsers, legacyConnections) {
+function normalizeTask(taskId, task, allContacts, legacyConnections) {
     return {
         ...task,
-        assignedTo: buildAssignedUsers(taskId, task, allUsers, legacyConnections),
+        assignedTo: buildAssignedContacts(taskId, task, allContacts, legacyConnections),
         subtasks: normalizeSubtasks(task.subtasks),
         priority: task.priority || 'low'
     };
@@ -339,15 +344,15 @@ function normalizeTask(taskId, task, allUsers, legacyConnections) {
  * Processes all tasks and generates HTML strings per column.
  *
  * @param {Object} tasks - All tasks from Firebase.
- * @param {Object} allUsers - Map of all known users.
+ * @param {Object} allContacts - Map of all known contacts.
  * @param {Object} legacyConnections - Legacy connections.
  * @returns {Object} Object containing columns HTML and nextCache.
  */
-function buildColumnsFromTasks(tasks, allUsers, legacyConnections) {
+function buildColumnsFromTasks(tasks, allContacts, legacyConnections) {
     const columns = { 'todo': '', 'in-progress': '', 'await-feedback': '', 'done': '' };
     const nextCache = {};
     Object.entries(tasks).forEach(([taskId, task]) => {
-        const normalized = normalizeTask(taskId, task, allUsers, legacyConnections);
+        const normalized = normalizeTask(taskId, task, allContacts, legacyConnections);
         nextCache[taskId] = normalized;
         if (columns[task.status] !== undefined) columns[task.status] += getCardTemplate(normalized, taskId);
     });
@@ -358,15 +363,15 @@ function buildColumnsFromTasks(tasks, allUsers, legacyConnections) {
  * Fetches all required board data from Firebase in parallel.
  *
  * @async
- * @returns {Promise<Object>} Object containing tasks, users, and legacy connections.
+ * @returns {Promise<Object>} Object containing tasks, contacts, and legacy connections.
  */
 async function fetchBoardData() {
     const tasksPromise = firebase.database().ref('tasks').get();
-    const usersPromise = getUsersMap();
+    const contactsPromise = getContactsMap();
     const tasksSnapshot = await tasksPromise;
     const tasks = tasksSnapshot.val() || {};
-    const [allUsers, legacyConnections] = await Promise.all([usersPromise, getLegacyTaskConnections(tasks)]);
-    return { tasks, allUsers, legacyConnections };
+    const [allContacts, legacyConnections] = await Promise.all([contactsPromise, getLegacyTaskConnections(tasks)]);
+    return { tasks, allContacts, legacyConnections };
 }
 
 /**
@@ -384,8 +389,8 @@ async function renderBoard(options = {}) {
     }
 
     try {
-        const { tasks, allUsers, legacyConnections } = await fetchBoardData();
-        const { columns, nextCache } = buildColumnsFromTasks(tasks, allUsers, legacyConnections);
+        const { tasks, allContacts, legacyConnections } = await fetchBoardData();
+        const { columns, nextCache } = buildColumnsFromTasks(tasks, allContacts, legacyConnections);
         boardTaskCache = nextCache;
         renderColumnHTML(columns);
         writeBoardCache(nextCache);
@@ -489,20 +494,20 @@ function closeAddTaskModal() {
 }
 
 /**
- * Loads a single task and enriches it with user data.
+ * Loads a single task and enriches it with contact data.
  *
  * @async
  * @param {string} taskId - Firebase task ID.
  * @returns {Promise<Object|null>} Normalized task or null.
  */
-async function fetchTaskWithUsers(taskId) {
-    const [taskSnap, allUsers] = await Promise.all([
+async function fetchTaskWithContacts(taskId) {
+    const [taskSnap, allContacts] = await Promise.all([
         firebase.database().ref('tasks/' + taskId).get(),
-        getUsersMap()
+        getContactsMap()
     ]);
     const task = taskSnap.val();
     if (!task) return null;
-    return normalizeTask(taskId, task, allUsers, boardLegacyConnectionsCache || {});
+    return normalizeTask(taskId, task, allContacts, boardLegacyConnectionsCache || {});
 }
 
 /**
@@ -515,8 +520,8 @@ async function fetchTaskWithUsers(taskId) {
 async function openTaskDetail(taskId) {
     const cachedTask = boardTaskCache[taskId];
     if (cachedTask) { renderTaskDetail(cachedTask, taskId); return; }
-    const taskWithUsers = await fetchTaskWithUsers(taskId);
-    if (taskWithUsers) renderTaskDetail(taskWithUsers, taskId);
+    const taskWithContacts = await fetchTaskWithContacts(taskId);
+    if (taskWithContacts) renderTaskDetail(taskWithContacts, taskId);
 }
 
 /**
@@ -576,9 +581,9 @@ async function editTask(taskId) {
 function editTaskAssigned() {
     const select = document.getElementById('edit-assigned');
     if (!select?.value) return;
-    const user = boardContactsCache?.[select.value];
-    if (user && !currentEditContacts.some(c => c.id === select.value)) {
-        currentEditContacts.push(mapUserToBadge(select.value, user));
+    const contact = boardContactsCache?.[select.value];
+    if (contact && !currentEditContacts.some(c => c.id === select.value)) {
+        currentEditContacts.push(mapContactToBadge(select.value, contact));
         renderEditContactBadges();
     }
     select.value = "";
@@ -592,9 +597,9 @@ function editTaskAssigned() {
 function addContactToEdit() {
     const select = document.getElementById('edit-assigned');
     if (!select?.value) return;
-    const user = boardContactsCache?.[select.value];
-    if (user && !currentEditContacts.some(c => c.id === select.value)) {
-        currentEditContacts.push(mapUserToBadge(select.value, user));
+    const contact = boardContactsCache?.[select.value];
+    if (contact && !currentEditContacts.some(c => c.id === select.value)) {
+        currentEditContacts.push(mapContactToBadge(select.value, contact));
         renderEditContactBadges();
     }
     select.value = "";
@@ -615,34 +620,47 @@ function toggleEditContactList() {
 /**
  * Generates HTML for a single contact item in the dropdown list.
  *
- * @param {string} userId - Firebase user ID.
- * @param {Object} badge - User badge data.
- * @param {boolean} isAssigned - Whether the user is currently assigned.
+ * @param {string} contactId - Firebase contact ID.
+ * @param {Object} badge - Contact badge data.
+ * @param {boolean} isAssigned - Whether the contact is currently assigned.
  * @returns {string} HTML string.
  */
-function buildContactItemHTML(userId, badge, isAssigned) {
-    return `<div class="contact-item ${isAssigned ? 'selected' : ''}" onclick="toggleUserSelection('${userId}')">
+function buildContactItemHTML(contactId, badge, isAssigned) {
+    const displayName = formatContactDisplayName(contactId, badge?.name || '');
+    return `<div class="contact-item ${isAssigned ? 'selected' : ''}" onclick="toggleContactSelection('${contactId}')">
         <div class="contact-item-left">
             <div class="user-badge" style="background-color: ${badge.color}">${badge.initials}</div>
-            <span>${badge.name}</span>
+            <span>${displayName}</span>
         </div>
         <img src="../assets/icons/checkbox_${isAssigned ? 'white' : 'empty'}.svg">
     </div>`;
 }
 
 /**
- * Populates the dropdown menu with all available users for assignment.
+ * Formats contact names for UI display and marks own account.
  *
- * @param {Object} allUsers - Map of all users.
+ * @param {string} contactId - Contact id.
+ * @param {string} contactName - Contact name.
+ * @returns {string} Display name.
+ */
+function formatContactDisplayName(contactId, contactName) {
+    if (String(contactId || '').startsWith('self_')) return `${contactName} (You)`;
+    return contactName;
+}
+
+/**
+ * Populates the dropdown menu with all available contacts for assignment.
+ *
+ * @param {Object} allContacts - Map of all contacts.
  * @returns {void}
  */
-function fillContactDropdown(allUsers) {
+function fillContactDropdown(allContacts) {
     const listContainer = document.getElementById('edit-contact-list');
     if (!listContainer) return;
     let html = '';
-    Object.entries(allUsers).forEach(([userId, user]) => {
-        const isAssigned = currentEditContacts.some(c => c.id === userId);
-        html += buildContactItemHTML(userId, mapUserToBadge(userId, user), isAssigned);
+    Object.entries(allContacts).forEach(([contactId, contact]) => {
+        const isAssigned = currentEditContacts.some(c => c.id === contactId);
+        html += buildContactItemHTML(contactId, mapContactToBadge(contactId, contact), isAssigned);
     });
     listContainer.innerHTML = html;
 }
@@ -685,15 +703,15 @@ async function filterTasks(term) {
 }
 
 /**
- * Toggles a user's selection status in the edit buffer.
+ * Toggles a contact's selection status in the edit buffer.
  *
- * @param {string} userId - Firebase user ID.
+ * @param {string} contactId - Firebase contact ID.
  * @returns {void}
  */
-function toggleUserSelection(userId) {
-    const userIndex = currentEditContacts.findIndex(c => c.id === userId);
-    if (userIndex > -1) currentEditContacts.splice(userIndex, 1);
-    else currentEditContacts.push(mapUserToBadge(userId, boardContactsCache?.[userId]));
+function toggleContactSelection(contactId) {
+    const contactIndex = currentEditContacts.findIndex(c => c.id === contactId);
+    if (contactIndex > -1) currentEditContacts.splice(contactIndex, 1);
+    else currentEditContacts.push(mapContactToBadge(contactId, boardContactsCache?.[contactId]));
     fillContactDropdown(boardContactsCache);
     renderEditContactBadges();
 }
@@ -908,7 +926,7 @@ function buildTaskObject() {
         dueDate: document.getElementById("dateInput").value.trim(),
         priority: getActivePriority(),
         category: document.getElementById("categoryInput")?.dataset.value || "",
-        assignedTo: getAssignedUsers(),
+        assignedTo: getAssignedContacts(),
         subtasks: getSubtasks(),
         status,
         createdAt: Date.now()

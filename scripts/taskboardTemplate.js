@@ -91,10 +91,11 @@ function renderCardBadge(u, index) {
  */
 function renderDetailBadge(u) {
   const name = u.name || "Unknown";
+  const displayName = String(u.id || "").startsWith("self_") ? `${name} (You)` : name;
   const initials = resolveUserInitials(u);
   return `<div class="assigned-user-badge-container">
     <div class="user-badge" style="background-color:${u.color || "#2A3647"};">${initials}</div>
-    <span>${name}</span>
+    <span>${displayName}</span>
   </div>`;
 }
 
@@ -106,7 +107,7 @@ function renderDetailBadge(u) {
  * @param {boolean} [isDetail=false] - True for detail view (with name), false for card view.
  * @returns {string} HTML string with all badge elements.
  */
-function renderUserBadges(users, limit = 3, isDetail = false) {
+function renderContactBadges(users, limit = 3, isDetail = false) {
   const list = ensureArray(users).filter((u) => u && typeof u === "object");
   if (isDetail) return list.map(renderDetailBadge).join("");
   return list.slice(0, limit).map(renderCardBadge).join("");
@@ -205,7 +206,7 @@ function getCardTemplate(task, id) {
     </div>
     ${renderProgressBar(task.subtasks)}
     <div class="card-footer">
-      <div class="assigned-to-container">${renderUserBadges(task.assignedTo)}</div>
+      <div class="assigned-to-container">${renderContactBadges(task.assignedTo)}</div>
       <div class="prio-icon"><img src="../assets/icons/prio-${prio}.svg" alt="${prio}" onerror="this.style.display='none'"></div>
     </div>
   </div>`;
@@ -236,7 +237,7 @@ function getTaskDetailTemplate(task, id) {
       <div class="info-value-prio"><span>${prioLabel}</span><img src="../assets/icons/prio-${prio}.svg" alt="${prioLabel}"></div>
     </div>
     <div class="detail-section"><h3 class="section-title">Assigned To:</h3>
-      <div class="assigned-list">${renderUserBadges(task.assignedTo, 100, true)}</div>
+      <div class="assigned-list">${renderContactBadges(task.assignedTo, 100, true)}</div>
     </div>
     <div class="detail-section"><h3 class="section-title">Subtasks</h3>
       <div class="subtask-list">${renderSubtaskItems(task.subtasks, id)}</div>

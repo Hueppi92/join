@@ -159,45 +159,10 @@ function escapeHtml(text = '') {
 }
 
 
-function getAssignedToSelect() {
-	return document.querySelector('select[data-role="assigned-to"]');
-}
-
-
-function getAssignedToPlaceholderOption() {
-	return '<option disabled selected data-placeholder="1">Select contacts to assign</option>';
-}
-
-
-function buildAssignedToOption(id, user) {
-	const safeId = escapeHtml(id);
-	const name = escapeHtml(user?.name || user?.email || 'User');
-	return `<option value="${safeId}">${name}</option>`;
-}
-
-
-function buildAssignedToOptions(users) {
-	let optionsHtml = getAssignedToPlaceholderOption();
-	Object.entries(users).forEach(([id, user]) => {
-		optionsHtml += buildAssignedToOption(id, user);
-	});
-	return optionsHtml;
-}
-
-
-async function populateAssignedToSelect() {
-	const select = getAssignedToSelect();
-	if (!select || !hasDatabaseRef()) return;
-	const snapshot = await db.ref('contacts').get();
-	select.innerHTML = buildAssignedToOptions(snapshot.val() || {});
-}
-
-
 async function hydrateUserContext() {
 	const profile = await getActiveUserProfile();
 	updateHeaderProfile(profile);
 	updateGreetingName(profile);
-	populateAssignedToSelect();
 }
 
 

@@ -2,7 +2,7 @@
 
 /**
  * Loads contacts from the database and initializes the contact dropdown.
- * Fetches user records and renders them inside the dropdown while also
+ * Fetches contact records and renders them inside the dropdown while also
  * setting up the required interaction listeners.
  *
  * @returns {void}
@@ -11,8 +11,8 @@ function loadContacts() {
     let { dropdown, searchInput } = getContactElements();
     if (!dropdown || !searchInput) return;
 
-    fetchUsers().then(snapshot => {
-        renderContacts(snapshot, dropdown);
+    fetchContacts().then(contactsMap => {
+        renderContacts(contactsMap, dropdown);
     });
 
     setupContactDropdownListeners(dropdown, searchInput);
@@ -31,27 +31,56 @@ function getContactElements() {
 }
 
 /**
- * Fetches the list of contacts from Firebase Realtime Database.
+ * Fetches contacts from Firebase and merges the signed-in account as selectable contact.
  *
- * @returns {Promise<firebase.database.DataSnapshot>} Promise resolving with the contacts snapshot.
+ * @returns {Promise<Record<string, Object>>} Promise resolving with a contacts map.
  */
-function fetchUsers() {
-    return firebase.database().ref("contacts").once("value");
+async function fetchContacts() {
+    const snapshot = await firebase.database().ref("contacts").once("value");
+    const contactsMap = snapshot.val() || {};
+    const ownAccountContact = await fetchOwnAccountContactForAssigned();
+    if (!ownAccountContact) return contactsMap;
+    return {
+        ...contactsMap,
+        [ownAccountContact.id]: ownAccountContact
+    };
+}
+
+/**
+ * Builds the signed-in account as a selectable contact entry.
+ *
+ * @returns {Promise<{id: string, name: string, email: string, color: string}|null>} Own-account contact or null.
+ */
+async function fetchOwnAccountContactForAssigned() {
+    if (!window?.userContext?.getActiveUserProfile) return null;
+    const profile = await window.userContext.getActiveUserProfile();
+    if (!profile?.id) return null;
+
+    const displayName = String(profile.name || profile.email?.split("@")[0] || "User").trim();
+    if (!displayName) return null;
+
+    return {
+        id: `self_${profile.id}`,
+        name: displayName,
+        email: String(profile.email || ""),
+        color: profile.color || getAvatarColorFromName(displayName)
+    };
 }
 
 /**
  * Renders the contact list inside the dropdown container.
- * Iterates over all user entries from the snapshot and
+ * Iterates over all contact entries from the map and
  * generates a dropdown item for each contact.
  *
- * @param {firebase.database.DataSnapshot} snapshot - Firebase snapshot containing user records.
+ * @param {Record<string, Object>} contactsMap - Contact records keyed by id.
  * @param {HTMLElement} dropdown - Dropdown container element where contacts will be rendered.
  * @returns {void}
  */
-function renderContacts(snapshot, dropdown) {
+function renderContacts(contactsMap, dropdown) {
     dropdown.innerHTML = "";
-    snapshot.forEach(child => {
-        let label = createContactLabel(child);
+    Object.entries(contactsMap || {}).forEach(([contactId, contact]) => {
+        let label = createContactLabel(contactId, contact);
+        if (!label) return;
         dropdown.appendChild(label);
     });
 }
@@ -59,26 +88,40 @@ function renderContacts(snapshot, dropdown) {
 /**
  * Creates a dropdown label element representing a single contact.
  *
- * @param {firebase.database.DataSnapshot} child - Firebase child snapshot representing a user.
- * @returns {HTMLLabelElement} Generated label element for the dropdown entry.
+ * @param {string} contactId - Contact id.
+ * @param {Object} contact - Contact record.
+ * @returns {HTMLLabelElement|null} Generated label element for the dropdown entry.
  */
-function createContactLabel(child) {
-    let user = child.val();
-    let initials = getInitials(user.name);
-    let color = user.color || getAvatarColorFromName(user.name);
+function createContactLabel(contactId, contact) {
+    let contactName = String(contact?.name || contact?.email || "").trim();
+    if (!contactName) return null;
+    let displayName = formatAssignedContactDisplayName(contactId, contactName);
+    let initials = getInitials(contactName);
+    let color = contact.color || getAvatarColorFromName(contactName);
 
     let label = document.createElement("label");
     label.className = "dropdown_item";
-    label.dataset.username = user.name.toLowerCase();
-    label.innerHTML = buildContactTemplate(child.key, user.name, color, initials);
+    label.dataset.contactname = contactName.toLowerCase();
+    label.innerHTML = buildContactTemplate(contactId, contactName, displayName, color, initials);
 
     return label;
 }
 
 /**
+ * Returns the display label for an assigned contact entry.
+ *
+ * @param {string} contactId - Contact id.
+ * @param {string} contactName - Contact name.
+ * @returns {string} Display name with own-account badge text when applicable.
+ */
+function formatAssignedContactDisplayName(contactId, contactName) {
+    return String(contactId || "").startsWith("self_") ? `${contactName} (You)` : contactName;
+}
+
+/**
  * Generates initials from a full name string.
  *
- * @param {string} name - Full name of the user.
+ * @param {string} name - Full name of the contact.
  * @returns {string} Uppercase initials with a maximum length of two characters.
  */
 function getInitials(name) {
@@ -92,19 +135,20 @@ function getInitials(name) {
 /**
  * Builds the HTML template string for a contact dropdown entry.
  *
- * @param {string} id - Unique user ID.
- * @param {string} name - Name of the user.
+ * @param {string} id - Unique contact ID.
+ * @param {string} name - Name of the contact.
+ * @param {string} displayName - Display name used in the dropdown UI.
  * @param {string} color - Avatar background color.
  * @param {string} initials - Generated initials displayed in the avatar.
  * @returns {string} HTML template string representing the dropdown item.
  */
-function buildContactTemplate(id, name, color, initials) {
+function buildContactTemplate(id, name, displayName, color, initials) {
     return `
         <div class="dropdown_avatar" style="background-color:${color};">${initials}</div>
-        <span>${name}</span>
+        <span>${displayName}</span>
         <input type="checkbox"
-            data-userid="${id}"
-            data-username="${name}"
+            data-contactid="${id}"
+            data-contactname="${name}"
             data-color="${color}">
     `;
 }
@@ -148,7 +192,7 @@ function updateAssignedDisplay() {
         return;
     }
 
-    let names = Array.from(checked).map(cb => cb.dataset.username);
+    let names = Array.from(checked).map(cb => cb.dataset.contactname);
     searchInput.value = names.join(", ");
 }
 
@@ -156,37 +200,37 @@ function updateAssignedDisplay() {
 
 /**
  * Updates the assigned avatars display.
- * Creates and renders avatar elements for all currently selected users.
+ * Creates and renders avatar elements for all currently selected contacts.
  *
  * @returns {void}
  */
 function updateAssignedAvatars() {
     let container = document.getElementById("assignedAvatars");
-    let checked = getCheckedAssignedUsers();
+    let checked = getCheckedAssignedContacts();
 
     container.innerHTML = "";
     checked.forEach(cb => container.appendChild(createAvatar(cb)));
 }
 
 /**
- * Retrieves all selected assigned user checkboxes from the dropdown.
+ * Retrieves all selected assigned contact checkboxes from the dropdown.
  *
  * @returns {NodeListOf<HTMLInputElement>} List of checked checkbox elements.
  */
-function getCheckedAssignedUsers() {
+function getCheckedAssignedContacts() {
     return document.querySelectorAll(
         "#assignedDropdown input[type='checkbox']:checked"
     );
 }
 
 /**
- * Creates an avatar element representing an assigned user.
+ * Creates an avatar element representing an assigned contact.
  *
  * @param {HTMLInputElement} cb - Checkbox element containing user dataset information.
  * @returns {HTMLDivElement} Generated avatar element.
  */
 function createAvatar(cb) {
-    let name = cb.dataset.username;
+    let name = cb.dataset.contactname;
     let initials = getInitials(name);
     let color = cb.dataset.color || getAvatarColorFromName(name);
 
@@ -209,7 +253,7 @@ function filterAssignedContacts(searchInput, dropdown) {
     let value = searchInput.value.trim().toLowerCase();
 
     dropdown.querySelectorAll(".dropdown_item").forEach(item => {
-        let name = item.dataset.username;
+        let name = item.dataset.contactname;
         item.style.display = value === "" || name.includes(value) ? "flex" : "none";
     });
 }

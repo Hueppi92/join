@@ -100,18 +100,18 @@ function getActivePriority() {
 }
 
 /**
- * Retrieves all currently selected assigned users from the dropdown.
+ * Retrieves all currently selected assigned contacts from the dropdown.
  *
- * @returns {{id: string, name: string}[]} Array of assigned user objects containing ID and name.
+ * @returns {{id: string, name: string}[]} Array of assigned contact objects containing ID and name.
  */
-function getAssignedUsers() {
+function getAssignedContacts() {
     let checked = document.querySelectorAll(
         "#assignedDropdown input[type='checkbox']:checked"
     );
 
     return Array.from(checked).map(cb => ({
-        id: cb.dataset.userid,
-        name: cb.dataset.username
+        id: cb.dataset.contactid,
+        name: cb.dataset.contactname
     }));
 }
 
@@ -164,7 +164,7 @@ function handleCreateTaskClick(e, form) {
  * Collects all relevant input fields and generates a structured
  * task object ready for database storage.
  *
- * @returns {Object} Task data object containing title, description, date, priority, category, assigned users, and subtasks.
+ * @returns {Object} Task data object containing title, description, date, priority, category, assigned contacts, and subtasks.
  */
 function buildTaskObject() {
     return {
@@ -173,7 +173,7 @@ function buildTaskObject() {
         dueDate: document.getElementById("dateInput").value.trim(),
         priority: getActivePriority(),
         category: document.getElementById("categoryInput")?.dataset.value || "",
-        assignedTo: getAssignedUsers(),
+        assignedTo: getAssignedContacts(),
         subtasks: getSubtasks(),
         status: "todo",
         createdAt: Date.now()
