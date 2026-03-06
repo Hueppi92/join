@@ -649,6 +649,26 @@ function formatContactDisplayName(contactId, contactName) {
 }
 
 /**
+ * Sorts contact entries for the edit dropdown.
+ * Own account stays on top; all other contacts are sorted alphabetically.
+ *
+ * @param {Object} allContacts - Map of all contacts.
+ * @returns {Array<[string, Object]>} Sorted entries.
+ */
+function getSortedEditContactEntries(allContacts) {
+    const entries = Object.entries(allContacts || {});
+    return entries.sort(([leftId, leftContact], [rightId, rightContact]) => {
+        const leftIsOwn = String(leftId || '').startsWith('self_');
+        const rightIsOwn = String(rightId || '').startsWith('self_');
+        if (leftIsOwn !== rightIsOwn) return leftIsOwn ? -1 : 1;
+
+        const leftName = String(leftContact?.name || leftContact?.email || '').trim();
+        const rightName = String(rightContact?.name || rightContact?.email || '').trim();
+        return leftName.localeCompare(rightName, 'de', { sensitivity: 'base' });
+    });
+}
+
+/**
  * Populates the dropdown menu with all available contacts for assignment.
  *
  * @param {Object} allContacts - Map of all contacts.
@@ -658,7 +678,8 @@ function fillContactDropdown(allContacts) {
     const listContainer = document.getElementById('edit-contact-list');
     if (!listContainer) return;
     let html = '';
-    Object.entries(allContacts).forEach(([contactId, contact]) => {
+    const sortedEntries = getSortedEditContactEntries(allContacts);
+    sortedEntries.forEach(([contactId, contact]) => {
         const isAssigned = currentEditContacts.some(c => c.id === contactId);
         html += buildContactItemHTML(contactId, mapContactToBadge(contactId, contact), isAssigned);
     });
