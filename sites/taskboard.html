@@ -247,8 +247,21 @@
 
     </div><!-- END modal-content -->
   </div><!-- END addTaskModal -->
-
-  <div id="profile-menu" class="profile-overlay">
+  
+  <!-- Toast -->
+ <div id="toastOverlay" class="toast-overlay hidden">
+    <div id="toast" class="toast">
+        <span>Really delete this task?</span>
+        <button id="toastConfirm">Delete</button>
+        <button id="toastCancel">Cancel</button>
+    </div>
+</div>
+<div id="successToast" class="success-toast hidden">
+    Task gelöscht
+</div>
+<!--  -->
+  
+<div id="profile-menu" class="profile-overlay">
     <nav class="profile-menu">
       <ul class="flex-container">
         <li class="hover-container"><a href="./legal-notice.html">Legal Notice</a></li>

@@ -877,14 +877,60 @@ function clearTaskFromCache(taskId) {
  * @returns {Promise<void>}
  */
 async function deleteTask(taskId) {
-    if (!confirm('Really delete this task?')) return;
-    await firebase.database().ref('tasks/' + taskId).remove();
-    await firebase.database().ref('taskUsers/' + taskId).remove();
-    clearTaskFromCache(taskId);
-    closeTaskDetail();
-    renderBoard();
-}
 
+    showDeleteToast(async () => {
+
+        await firebase.database().ref('tasks/' + taskId).remove();
+        await firebase.database().ref('taskUsers/' + taskId).remove();
+
+        clearTaskFromCache(taskId);
+        closeTaskDetail();
+        renderBoard();
+
+        showSuccessToast("Task gelöscht");
+
+    });
+}
+function showDeleteToast(callback) {
+
+    const overlay = document.getElementById("toastOverlay");
+    const confirmBtn = document.getElementById("toastConfirm");
+    const cancelBtn = document.getElementById("toastCancel");
+
+    overlay.classList.remove("hidden");
+
+    const close = () => {
+        overlay.classList.add("hidden");
+    };
+
+    confirmBtn.onclick = () => {
+        callback();
+        close();
+    };
+
+    cancelBtn.onclick = close;
+}
+function showSuccessToast(message = "Task gelöscht") {
+
+    const toast = document.getElementById("successToast");
+
+    toast.textContent = message;
+
+    toast.classList.remove("hidden");
+
+    setTimeout(() => {
+        toast.classList.add("show");
+    }, 10);
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+
+        setTimeout(() => {
+            toast.classList.add("hidden");
+        }, 250);
+
+    }, 2500);
+}
 /**
  * Updates the completion status of a subtask in Firebase.
  *
