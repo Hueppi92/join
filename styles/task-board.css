@@ -969,6 +969,35 @@ main {
     transform: translateY(-1px);
 }
 
+/* Move-to Dropdown (mobile detail view) */
+.move-to-wrapper {
+    display: none; /* nur auf Mobile sichtbar */
+}
+
+.move-to-select {
+    background: #2A3647;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    outline: none;
+}
+
+.move-to-select option {
+    background: #2A3647;
+    color: #fff;
+}
+
+@media (max-width: 768px) {
+    .move-to-wrapper {
+        display: flex;
+        align-items: center;
+    }
+}
+
 /* ==========================================================================
    14. EDIT TASK OVERLAY INHALT
    ========================================================================== */

@@ -918,7 +918,22 @@ function onDrop(taskId, newStatus) {
     firebase.database().ref('tasks/' + taskId).update({ status: newStatus })
         .then(() => renderBoard());
 }
-
+/**
+ * Moves a task to a new status column (used in mobile detail view).
+ *
+ * @param {string} taskId - Firebase task ID.
+ * @param {string} newStatus - Target status column.
+ * @returns {void}
+ */
+function moveTaskToStatus(taskId, newStatus) {
+    if (!taskId || !BOARD_STATUSES.includes(newStatus)) return;
+    firebase.database().ref('tasks/' + taskId).update({ status: newStatus })
+        .then(() => {
+            if (boardTaskCache[taskId]) boardTaskCache[taskId].status = newStatus;
+            closeTaskDetail();
+            renderBoard();
+        });
+}
 /**
  * Closes task detail if the user clicks the overlay background.
  *
