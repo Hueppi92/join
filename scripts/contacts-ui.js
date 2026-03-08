@@ -2,12 +2,23 @@ let contactsState = [];
 let selectedContactId = "";
 const SELF_CONTACT_ID_PREFIX = "self_";
 
-
+/**
+ * Checks whether a contact represents the currently logged-in account.
+ * @param {{id?: string} | null} contact - Contact candidate.
+ * @returns {boolean} True when contact id uses the own-account prefix.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function isOwnAccountContact(contact) {
   return contact?.id?.startsWith(SELF_CONTACT_ID_PREFIX);
 }
 
-
+/**
+ * Creates a badge node that marks own-account contacts.
+ * @returns {HTMLSpanElement} Badge element.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function createYouBadgeNode() {
   const badge = document.createElement("span");
   badge.className = "contact-you-badge";
@@ -16,7 +27,13 @@ function createYouBadgeNode() {
   return badge;
 }
 
-
+/**
+ * Creates the contact name node used in list rows.
+ * @param {{id?: string, name?: string}} contact - Contact data.
+ * @returns {HTMLSpanElement} Name element.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function createContactNameNode(contact) {
   const name = document.createElement("span");
   name.className = "contact-name";
@@ -69,6 +86,12 @@ function animateContactDetails(detailsRef) {
   detailsRef.classList.add("is-entering");
 }
 
+/**
+ * Creates the default placeholder for the empty details view.
+ * @returns {HTMLParagraphElement} Placeholder element.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function createContactDetailsPlaceholder() {
   const placeholder = document.createElement("p");
   placeholder.className = "contact-details-placeholder";
@@ -76,6 +99,15 @@ function createContactDetailsPlaceholder() {
   return placeholder;
 }
 
+/**
+ * Creates a contact details action button.
+ * @param {string} label - Visible action label.
+ * @param {string} iconPath - Icon path.
+ * @param {() => void | Promise<void>} onClick - Action callback.
+ * @returns {HTMLButtonElement} Action button.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function createContactDetailsAction(label, iconPath, onClick) {
   const button = document.createElement("button");
   button.type = "button";
@@ -85,6 +117,13 @@ function createContactDetailsAction(label, iconPath, onClick) {
   return button;
 }
 
+/**
+ * Builds the details action row for a contact.
+ * @param {{id: string, name?: string, email?: string, phone?: string}} contact - Contact data.
+ * @returns {HTMLDivElement} Action row element.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function createContactDetailsActions(contact) {
   const actions = document.createElement("div");
   actions.className = "contact-details-actions";
@@ -106,6 +145,13 @@ function createContactDetailsActions(contact) {
   return actions;
 }
 
+/**
+ * Builds the details profile section with avatar and actions.
+ * @param {{id: string, name?: string, email?: string, phone?: string}} contact - Contact data.
+ * @returns {HTMLDivElement} Profile section element.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function createContactDetailsProfile(contact) {
   const profile = document.createElement("div");
   profile.className = "contact-details-profile";
@@ -118,6 +164,13 @@ function createContactDetailsProfile(contact) {
   return profile;
 }
 
+/**
+ * Builds the textual profile info block for details view.
+ * @param {{id: string, name?: string}} contact - Contact data.
+ * @returns {HTMLDivElement} Profile info element.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function createContactDetailsProfileInfo(contact) {
   const profileInfo = document.createElement("div");
   profileInfo.className = "contact-details-profile-info";
@@ -130,6 +183,13 @@ function createContactDetailsProfileInfo(contact) {
   return profileInfo;
 }
 
+/**
+ * Creates either a mailto link or plain text for contact email.
+ * @param {string} emailValue - Email value.
+ * @returns {HTMLAnchorElement | HTMLParagraphElement} Email node.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function createContactDetailsEmailNode(emailValue) {
   const emailNode = document.createElement(emailValue ? "a" : "p");
   emailNode.className = "contact-details-email";
@@ -138,6 +198,14 @@ function createContactDetailsEmailNode(emailValue) {
   return emailNode;
 }
 
+/**
+ * Creates a labeled paragraph used in details info sections.
+ * @param {string} text - Label text.
+ * @param {string} [className='contact-details-label'] - CSS class name.
+ * @returns {HTMLParagraphElement} Label element.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function createContactDetailsLabel(text, className = "contact-details-label") {
   const label = document.createElement("p");
   label.className = className;
@@ -145,6 +213,13 @@ function createContactDetailsLabel(text, className = "contact-details-label") {
   return label;
 }
 
+/**
+ * Creates the contact information section for details view.
+ * @param {{email?: string, phone?: string}} contact - Contact data.
+ * @returns {HTMLDivElement} Details info section.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function createContactDetailsInfo(contact) {
   const info = document.createElement("div");
   info.className = "contact-details-info";
@@ -152,6 +227,13 @@ function createContactDetailsInfo(contact) {
   return info;
 }
 
+/**
+ * Appends labeled email/phone content to the details info section.
+ * @param {HTMLDivElement} info - Target info container.
+ * @param {{email?: string, phone?: string}} contact - Contact data.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function appendContactDetailsInfoContent(info, contact) {
   const emailValue = String(contact.email || "").trim();
   const phone = createContactDetailsLabel(
@@ -170,11 +252,24 @@ function appendContactDetailsInfoContent(info, contact) {
   info.appendChild(phone);
 }
 
+/**
+ * Renders the placeholder content into the details container.
+ * @param {HTMLElement} detailsRef - Details container.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function renderContactDetailsPlaceholder(detailsRef) {
   detailsRef.appendChild(createContactDetailsPlaceholder());
   scheduleContactDetailsSectionScrollabilitySync();
 }
 
+/**
+ * Renders profile and info blocks for the selected contact.
+ * @param {HTMLElement} detailsRef - Details container.
+ * @param {{id: string, name: string, email: string, phone: string}} contact - Contact data.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function renderContactDetailsContent(detailsRef, contact) {
   detailsRef.appendChild(createContactDetailsProfile(contact));
   detailsRef.appendChild(createContactDetailsInfo(contact));
@@ -203,6 +298,12 @@ function renderContactDetails(contact, options = {}) {
   scheduleContactDetailsSectionScrollabilitySync();
 }
 
+/**
+ * Creates the empty-state list entry shown when no contacts exist.
+ * @returns {HTMLParagraphElement} Empty-state node.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function createEmptyContactsListItem() {
   const empty = document.createElement("p");
   empty.className = "contact-item";
@@ -210,6 +311,13 @@ function createEmptyContactsListItem() {
   return empty;
 }
 
+/**
+ * Groups contacts by display letter for sectioned rendering.
+ * @param {Array<{name?: string}>} contacts - Contact list.
+ * @returns {Map<string, Array<object>>} Grouped contact map.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function groupContactsByLetter(contacts) {
   return contacts.reduce((groups, contact) => {
     const groupLetter = getContactGroupLetter(contact.name);
@@ -219,6 +327,13 @@ function groupContactsByLetter(contacts) {
   }, new Map());
 }
 
+/**
+ * Creates the text block (name + email) for a list row.
+ * @param {{id?: string, name?: string, email?: string}} contact - Contact data.
+ * @returns {HTMLDivElement} Info block element.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function createContactListInfo(contact) {
   const info = document.createElement("div");
   info.className = "contact-info";
@@ -231,6 +346,13 @@ function createContactListInfo(contact) {
   return info;
 }
 
+/**
+ * Binds click and keyboard selection behavior to a contact row.
+ * @param {HTMLElement} box - Clickable list item element.
+ * @param {string} contactId - Contact id.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function bindContactSelection(box, contactId) {
   box.addEventListener("click", () => selectContact(contactId));
   box.addEventListener("keydown", (event) => {
@@ -240,6 +362,13 @@ function bindContactSelection(box, contactId) {
   });
 }
 
+/**
+ * Creates the avatar node for a contact list row.
+ * @param {{name?: string}} contact - Contact data.
+ * @returns {HTMLDivElement} Avatar element.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function createContactAvatarNode(contact) {
   const avatar = document.createElement("div");
   avatar.className = "contact-logo";
@@ -248,6 +377,13 @@ function createContactAvatarNode(contact) {
   return avatar;
 }
 
+/**
+ * Creates one interactive contact box for the list.
+ * @param {{id: string, name?: string, email?: string}} contact - Contact data.
+ * @returns {HTMLDivElement} Contact box element.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function createContactBox(contact) {
   const box = document.createElement("div");
   box.className = "contact-box";
@@ -261,6 +397,13 @@ function createContactBox(contact) {
   return box;
 }
 
+/**
+ * Wraps a contact box into a list item container.
+ * @param {{id: string, name?: string, email?: string}} contact - Contact data.
+ * @returns {HTMLDivElement} Contact list item.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function createContactListItem(contact) {
   const item = document.createElement("div");
   item.className = "contact-item";
@@ -268,10 +411,25 @@ function createContactListItem(contact) {
   return item;
 }
 
+/**
+ * Normalizes and sorts incoming contacts for rendering.
+ * @param {Array<{id: string, name: string, email: string, phone: string}>} contacts - Contact list input.
+ * @returns {Array<{id: string, name: string, email: string, phone: string}>} Sorted contacts.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function getSortedContactsInput(contacts) {
   return sortContactsByName(Array.isArray(contacts) ? contacts : []);
 }
 
+/**
+ * Appends one grouped section (title + entries) to the list fragment.
+ * @param {DocumentFragment} fragment - Target fragment.
+ * @param {string} groupLetter - Group heading letter.
+ * @param {Array<{id: string, name?: string, email?: string}>} groupContacts - Group contacts.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function appendContactGroup(fragment, groupLetter, groupContacts) {
   const title = document.createElement("h3");
   title.className = "contact-group-title";

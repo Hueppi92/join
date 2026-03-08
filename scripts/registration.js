@@ -1,1 +1,0 @@
-// for objects like arrays or maybe better... = objectlists

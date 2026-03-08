@@ -1,4 +1,20 @@
 /**
+ * @typedef {Object} SignupFields
+ * @property {HTMLFormElement} form - The sign-up form element.
+ * @property {HTMLInputElement} nameInput - The name input field.
+ * @property {HTMLInputElement} emailInput - The email input field.
+ * @property {HTMLInputElement} passwordInput - The password input field.
+ * @property {HTMLInputElement} confirmInput - The confirm password input field.
+ * @property {HTMLInputElement} privacyInput - The privacy consent checkbox.
+ * @property {HTMLButtonElement} submitButton - The submit button.
+ * @property {HTMLElement} nameMessage - The inline name error message element.
+ * @property {HTMLElement} emailMessage - The inline email error message element.
+ * @property {HTMLElement} passwordMessage - The inline password error message element.
+ * @property {HTMLElement} confirmMessage - The inline confirm password error message element.
+ * @property {HTMLElement} privacyMessage - The inline privacy error message element.
+ */
+
+/**
  * Sets a flag to skip the splash animation when returning to the login page.
  * @category Sign-Up
  * @subcategory UI & Init
@@ -41,12 +57,26 @@ function getSignupFields(form) {
 	return { form, ...fields };
 }
 
+/**
+ * Combines all sign-up input and message elements.
+ * @param {HTMLFormElement} form - The sign-up form element.
+ * @returns {Omit<SignupFields, 'form'>} Collected sign-up fields.
+ * @category Sign-Up
+ * @subcategory UI & Init
+ */
 function collectSignupFields(form) {
 	const inputFields = collectSignupInputFields(form);
 	const messageFields = collectSignupMessageFields(form);
 	return { ...inputFields, ...messageFields };
 }
 
+/**
+ * Collects sign-up input elements.
+ * @param {HTMLFormElement} form - The sign-up form element.
+ * @returns {{nameInput: HTMLInputElement | null, emailInput: HTMLInputElement | null, passwordInput: HTMLInputElement | null, confirmInput: HTMLInputElement | null, privacyInput: HTMLInputElement | null, submitButton: HTMLButtonElement | null}} Input element map.
+ * @category Sign-Up
+ * @subcategory UI & Init
+ */
 function collectSignupInputFields(form) {
 	return {
 		nameInput: form.querySelector('input[name="name"]'),
@@ -58,6 +88,13 @@ function collectSignupInputFields(form) {
 	};
 }
 
+/**
+ * Collects sign-up message elements.
+ * @param {HTMLFormElement} form - The sign-up form element.
+ * @returns {{nameMessage: HTMLElement | null, emailMessage: HTMLElement | null, passwordMessage: HTMLElement | null, confirmMessage: HTMLElement | null, privacyMessage: HTMLElement | null}} Message element map.
+ * @category Sign-Up
+ * @subcategory UI & Init
+ */
 function collectSignupMessageFields(form) {
 	return {
 		nameMessage: form.querySelector('#msg-name'),
@@ -68,6 +105,13 @@ function collectSignupMessageFields(form) {
 	};
 }
 
+/**
+ * Checks whether required sign-up nodes are missing.
+ * @param {Record<string, HTMLElement | HTMLInputElement | HTMLButtonElement | null>} fields - Collected field map.
+ * @returns {boolean} True when at least one required element is missing.
+ * @category Sign-Up
+ * @subcategory Validation
+ */
 function hasMissingSignupField(fields) {
 	return Object.values(fields).some((value) => !value);
 }
@@ -90,6 +134,14 @@ function initMessageVisibility(fields) {
 	});
 }
 
+/**
+ * Binds input handling for one sign-up field.
+ * @param {HTMLInputElement} input - Input element to bind.
+ * @param {HTMLElement} message - Matching validation message element.
+ * @param {() => void} updateState - Callback to refresh submit state.
+ * @category Sign-Up
+ * @subcategory UI & Init
+ */
 function bindSignupInputField(input, message, updateState) {
 	input.addEventListener('input', () => {
 		clearFieldError(input, message);
@@ -97,12 +149,27 @@ function bindSignupInputField(input, message, updateState) {
 	});
 }
 
+/**
+ * Binds blur validation for one sign-up input.
+ * @param {HTMLInputElement} input - Input element to validate on blur.
+ * @param {(fields: SignupFields) => boolean} validateField - Field validator.
+ * @param {SignupFields} fields - Full sign-up field set.
+ * @category Sign-Up
+ * @subcategory UI & Init
+ */
 function bindSignupBlurField(input, validateField, fields) {
 	input.addEventListener('blur', () => {
 		if (input.value.trim().length > 0) validateField(fields);
 	});
 }
 
+/**
+ * Binds privacy checkbox behavior and button state updates.
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @param {() => void} updateState - Callback to refresh submit state.
+ * @category Sign-Up
+ * @subcategory UI & Init
+ */
 function bindPrivacyField(fields, updateState) {
 	fields.privacyInput.addEventListener('change', () => {
 		if (fields.privacyInput.checked) clearFieldError(fields.privacyInput, fields.privacyMessage);
@@ -160,6 +227,12 @@ function isSignupInputReady(fields) {
 	);
 }
 
+/**
+ * Clears all inline sign-up validation errors.
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @category Sign-Up
+ * @subcategory Validation
+ */
 function clearSignupFieldErrors(fields) {
 	clearFieldError(fields.nameInput, fields.nameMessage);
 	clearFieldError(fields.emailInput, fields.emailMessage);
@@ -168,6 +241,14 @@ function clearSignupFieldErrors(fields) {
 	clearFieldError(fields.privacyInput, fields.privacyMessage);
 }
 
+/**
+ * Builds user data for persistence after successful sign-up.
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @param {string} userId - Firebase user id.
+ * @returns {{displayName: string, userId: string, email: string, color: string, createdAt: number}} Persistable user payload.
+ * @category Sign-Up
+ * @subcategory Firebase Logic
+ */
 function buildSignupUserData(fields, userId) {
 	const displayName = fields.nameInput.value.trim();
 	return {
@@ -179,6 +260,14 @@ function buildSignupUserData(fields, userId) {
 	};
 }
 
+/**
+ * Persists a newly created user profile in Firebase auth and database.
+ * @param {{user: {uid: string, updateProfile: (profile: {displayName: string}) => Promise<void>}}} credential - Firebase auth credential.
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @returns {Promise<void>} Resolves after profile persistence completes.
+ * @category Sign-Up
+ * @subcategory Firebase Logic
+ */
 async function persistSignupUser(credential, fields) {
 	const userData = buildSignupUserData(fields, credential.user.uid);
 	sessionStorage.setItem('userId', userData.userId);
@@ -205,6 +294,13 @@ async function handleSignupSubmit(event, fields) {
 	await submitSignupWithLoading(fields);
 }
 
+/**
+ * Wraps sign-up submission with loading-state handling.
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @returns {Promise<void>} Resolves when submission flow finishes.
+ * @category Sign-Up
+ * @subcategory Firebase Logic
+ */
 async function submitSignupWithLoading(fields) {
 	setLoadingState(fields, true);
 	try {
@@ -216,6 +312,13 @@ async function submitSignupWithLoading(fields) {
 	}
 }
 
+/**
+ * Performs Firebase account creation and post-signup redirects.
+ * @param {SignupFields} fields - Collected sign-up form fields.
+ * @returns {Promise<void>} Resolves after signup side effects complete.
+ * @category Sign-Up
+ * @subcategory Firebase Logic
+ */
 async function performSignup(fields) {
 	const credential = await firebase.auth().createUserWithEmailAndPassword(
 		fields.emailInput.value.trim(),
@@ -245,11 +348,22 @@ function showSuccessAnimation() {
 	setTimeout(redirectToLoginWithSplashSkip, 1000);
 }
 
+/**
+ * Starts the success message animation in the overlay.
+ * @param {HTMLElement} overlay - Success overlay element.
+ * @category Sign-Up
+ * @subcategory UI & Init
+ */
 function animateSignupSuccessMessage(overlay) {
 	const message = overlay.querySelector('.success-message');
 	if (message) message.classList.add('slide-in-bottom');
 }
 
+/**
+ * Redirects back to login while keeping splash animation disabled once.
+ * @category Sign-Up
+ * @subcategory UI & Init
+ */
 function redirectToLoginWithSplashSkip() {
 	sessionStorage.setItem('skipSplash', '1');
 	window.location.href = '../index.html';
@@ -280,6 +394,12 @@ function getAuthErrorMessage(error) {
 	return getSignupAuthErrorMessages()[error.code] || fallback;
 }
 
+/**
+ * Returns the auth error code to message map for sign-up.
+ * @returns {Record<string, string>} Sign-up auth error messages.
+ * @category Sign-Up
+ * @subcategory Firebase Logic
+ */
 function getSignupAuthErrorMessages() {
 	return {
 		'auth/operation-not-allowed': 'Email/password sign-in is not enabled in Firebase yet.',

@@ -53,7 +53,14 @@ function bindLoginFieldEvents(fields) {
 	updateLoginButtonState(fields);
 }
 
-
+/**
+ * Binds a login input to reset feedback and re-evaluate submit state.
+ * @param {HTMLInputElement} input - Input to observe.
+ * @param {LoginFields} fields - Collected login form fields.
+ * @param {() => void} updateState - Callback to refresh submit state.
+ * @category Login
+ * @subcategory UI & Init
+ */
 function bindLoginInputListener(input, fields, updateState) {
 	input.addEventListener('input', () => {
 		clearLoginFeedback(fields);
@@ -61,7 +68,12 @@ function bindLoginInputListener(input, fields, updateState) {
 	});
 }
 
-
+/**
+ * Clears current login error states and messages.
+ * @param {LoginFields} fields - Collected login form fields.
+ * @category Login
+ * @subcategory UI & Init
+ */
 function clearLoginFeedback(fields) {
 	setLoginFieldErrorState(fields, false);
 	setFormMessage(fields.message, '');
@@ -112,7 +124,13 @@ async function handleLoginSubmit(event, fields) {
 	}
 }
 
-
+/**
+ * Performs pre-submit validation and sets UI feedback on failure.
+ * @param {LoginFields} fields - Collected login form fields.
+ * @returns {boolean} True when login can be submitted.
+ * @category Login
+ * @subcategory Validation
+ */
 function validateLoginBeforeSubmit(fields) {
 	if (isLoginInputValid(fields)) return true;
 	setFormMessage(fields.message, 'Please enter valid credentials.');
@@ -120,14 +138,25 @@ function validateLoginBeforeSubmit(fields) {
 	return false;
 }
 
-
+/**
+ * Sends email/password credentials to Firebase auth.
+ * @param {LoginFields} fields - Collected login form fields.
+ * @returns {Promise<{user: {uid: string}}>} Firebase credential result.
+ * @category Login
+ * @subcategory Firebase Logic
+ */
 async function signInWithCredentials(fields) {
 	const email = fields.emailInput.value.trim();
 	const password = fields.passwordInput.value;
 	return firebase.auth().signInWithEmailAndPassword(email, password);
 }
 
-
+/**
+ * Applies session flags and redirects after successful login.
+ * @param {{user: {uid: string}}} credential - Firebase credential result.
+ * @category Login
+ * @subcategory Firebase Logic
+ */
 function handleSuccessfulLogin(credential) {
 	sessionStorage.setItem('userId', credential.user.uid);
 	sessionStorage.removeItem('guestLogin');
@@ -136,7 +165,13 @@ function handleSuccessfulLogin(credential) {
 	window.location.href = './sites/summary.html';
 }
 
-
+/**
+ * Shows authentication errors in the login form.
+ * @param {LoginFields} fields - Collected login form fields.
+ * @param {unknown} error - Firebase auth error.
+ * @category Login
+ * @subcategory Firebase Logic
+ */
 function handleFailedLogin(fields, error) {
 	setFormMessage(fields.message, getAuthErrorMessage(error));
 	setLoginFieldErrorState(fields, true);
@@ -191,7 +226,12 @@ function getAuthErrorMessage(error) {
 	return getLoginAuthErrorMessages()[error.code] || fallback;
 }
 
-
+/**
+ * Returns the auth error code to message map for login.
+ * @returns {Record<string, string>} Login auth error messages.
+ * @category Login
+ * @subcategory Firebase Logic
+ */
 function getLoginAuthErrorMessages() {
 	return {
 		'auth/invalid-credential': 'Check your email and password. Please try again.',

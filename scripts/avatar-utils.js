@@ -16,12 +16,20 @@ const AVATAR_COLOR_PALETTE = [
 	'#ffe62b',
 ];
 
-
+/**
+ * Normalizes a name before deterministic color hashing.
+ * @param {string} name - Raw name value.
+ * @returns {string} Normalized lowercase name.
+ */
 function normalizeAvatarName(name) {
 	return String(name || '').trim().toLowerCase();
 }
 
-
+/**
+ * Computes a small deterministic hash for a normalized name.
+ * @param {string} value - Normalized name.
+ * @returns {number} Deterministic hash value.
+ */
 function getAvatarNameHash(value) {
 	let hash = 0;
 	for (let index = 0; index < value.length; index += 1) {

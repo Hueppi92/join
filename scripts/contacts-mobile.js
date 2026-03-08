@@ -77,7 +77,12 @@ function getSelectedContact() {
 	return contactsState.find((contact) => contact.id === selectedContactId) || null;
 }
 
-
+/**
+ * Binds the mobile back button to return from details to list view.
+ * @param {HTMLElement | null} backButton - Mobile back button.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function bindMobileBackButton(backButton) {
 	if (!backButton) return;
 	backButton.addEventListener('click', () => {
@@ -86,7 +91,13 @@ function bindMobileBackButton(backButton) {
 	});
 }
 
-
+/**
+ * Binds the mobile action menu toggle button.
+ * @param {HTMLElement | null} menuButton - Menu toggle button.
+ * @param {HTMLElement | null} actionMenu - Action menu container.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function bindMobileMenuToggle(menuButton, actionMenu) {
 	if (!menuButton || !actionMenu) return;
 	menuButton.addEventListener('click', () => {
@@ -95,7 +106,13 @@ function bindMobileMenuToggle(menuButton, actionMenu) {
 	});
 }
 
-
+/**
+ * Closes the mobile action menu when clicking outside of it.
+ * @param {HTMLElement | null} menuButton - Menu toggle button.
+ * @param {HTMLElement | null} actionMenu - Action menu container.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function bindMobileMenuOutsideClose(menuButton, actionMenu) {
 	if (!menuButton || !actionMenu) return;
 	document.addEventListener('click', (event) => {
@@ -105,7 +122,12 @@ function bindMobileMenuOutsideClose(menuButton, actionMenu) {
 	});
 }
 
-
+/**
+ * Binds mobile edit action to open the edit overlay.
+ * @param {HTMLElement | null} editButton - Mobile edit button.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function bindMobileEditButton(editButton) {
 	if (!editButton) return;
 	editButton.addEventListener('click', () => {
@@ -116,7 +138,12 @@ function bindMobileEditButton(editButton) {
 	});
 }
 
-
+/**
+ * Binds mobile delete action for the currently selected contact.
+ * @param {HTMLElement | null} deleteButton - Mobile delete button.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function bindMobileDeleteButton(deleteButton) {
 	if (!deleteButton) return;
 	deleteButton.addEventListener('click', async () => {
@@ -128,7 +155,13 @@ function bindMobileDeleteButton(deleteButton) {
 	});
 }
 
-
+/**
+ * Creates a viewport-change handler for mobile contact layout transitions.
+ * @param {MediaQueryList} mediaQuery - Mobile breakpoint media query.
+ * @returns {() => void} Viewport change handler.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function createMobileViewportChangeHandler(mediaQuery) {
 	return () => {
 		if (!mediaQuery.matches) {
@@ -139,7 +172,11 @@ function createMobileViewportChangeHandler(mediaQuery) {
 	};
 }
 
-
+/**
+ * Subscribes to viewport changes to reset mobile-only UI state.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function bindMobileViewportChangeListener() {
 	const mediaQuery = window.matchMedia(MOBILE_CONTACTS_BREAKPOINT_QUERY);
 	const onViewportChange = createMobileViewportChangeHandler(mediaQuery);
@@ -147,7 +184,11 @@ function bindMobileViewportChangeListener() {
 	if (typeof mediaQuery.addListener === 'function') mediaQuery.addListener(onViewportChange);
 }
 
-
+/**
+ * Binds the Escape key to close the mobile action menu.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function bindMobileEscapeHandler() {
 	window.addEventListener('keydown', (event) => {
 		if (event.key !== 'Escape') return;

@@ -1,6 +1,6 @@
 /**
  * Returns overlay elements used for add/edit states.
- * @returns {{overlay: HTMLElement, title: HTMLElement | null, subtitle: HTMLElement | null, submitLabel: HTMLElement | null, deleteButton: HTMLButtonElement | null} | null}
+ * @returns {{overlay: HTMLElement, title: HTMLElement | null, subtitle: HTMLElement | null, submitLabel: HTMLElement | null, deleteButton: HTMLButtonElement | null, cancelButton: HTMLButtonElement | null, formMessage: HTMLElement | null, avatar: HTMLElement | null, avatarIcon: HTMLElement | null, avatarText: HTMLElement | null} | null}
  * @category Contacts
  * @subcategory UI & Init
  */
@@ -246,7 +246,12 @@ async function refreshContactsList() {
 	}
 }
 
-
+/**
+ * Resets the add-contact form to its default state.
+ * @param {ReturnType<typeof getContactFields>} fields - Contact form fields.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function prepareAddContactForm(fields) {
 	if (!fields) return;
 	fields.form.dataset.mode = 'add';
@@ -257,7 +262,13 @@ function prepareAddContactForm(fields) {
 	setContactFormMessage('');
 }
 
-
+/**
+ * Builds a normalized payload from current form values.
+ * @param {ReturnType<typeof getContactFields>} fields - Contact form fields.
+ * @returns {{name: string, email: string, phone: string, color: string}} Normalized contact payload.
+ * @category Contacts
+ * @subcategory Data Handling
+ */
 function getContactFormPayload(fields) {
 	const name = fields.nameInput.value.trim();
 	const email = fields.emailInput.value.trim();
@@ -266,7 +277,15 @@ function getContactFormPayload(fields) {
 	return { name, email, phone, color };
 }
 
-
+/**
+ * Persists contact form data for add/edit modes.
+ * @param {'add' | 'edit'} mode - Active form mode.
+ * @param {string} contactId - Contact id for edit mode.
+ * @param {{name: string, email: string, phone: string, color: string}} payload - Form payload.
+ * @returns {Promise<boolean>} True when persistence succeeded.
+ * @category Contacts
+ * @subcategory Firebase Logic
+ */
 async function persistContactForm(mode, contactId, payload) {
 	if (mode !== 'edit') {
 		await saveContact({ ...payload, createdAt: Date.now() });
@@ -277,7 +296,13 @@ async function persistContactForm(mode, contactId, payload) {
 	return true;
 }
 
-
+/**
+ * Deletes the current contact from the edit overlay context.
+ * @param {ReturnType<typeof getContactFields>} fields - Contact form fields.
+ * @returns {Promise<void>} Resolves after delete flow completes.
+ * @category Contacts
+ * @subcategory Firebase Logic
+ */
 async function handleDeleteContactFromOverlay(fields) {
 	const contactId = fields.form.dataset.contactId;
 	if (!contactId) return;
@@ -287,7 +312,13 @@ async function handleDeleteContactFromOverlay(fields) {
 	closeContactOverlay(true);
 }
 
-
+/**
+ * Submits contact form data and handles follow-up UI state.
+ * @param {ReturnType<typeof getContactFields>} fields - Contact form fields.
+ * @returns {Promise<boolean>} True when submit completed successfully.
+ * @category Contacts
+ * @subcategory Firebase Logic
+ */
 async function submitContactForm(fields) {
 	const mode = fields.form.dataset.mode || 'add';
 	const payload = getContactFormPayload(fields);
@@ -341,6 +372,12 @@ function initContactForm() {
 	initializeContactFormSubmit(fields);
 }
 
+/**
+ * Binds the contact form submit handler.
+ * @param {ReturnType<typeof getContactFields>} fields - Contact form fields.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
 function initializeContactFormSubmit(fields) {
 	if (!fields) return;
 	fields.form.addEventListener('submit', async (event) => {

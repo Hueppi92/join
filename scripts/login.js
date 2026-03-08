@@ -1,10 +1,9 @@
 /**
- * @typedef {Object} LoginFields
- * @property {HTMLFormElement} form - The login form element.
- * @property {HTMLInputElement} emailInput - The email input field.
- * @property {HTMLInputElement} passwordInput - The password input field.
- * @property {HTMLButtonElement} submitButton - The submit button.
- * @property {HTMLElement} message - The login error message element.
+ * @typedef {Object} SplashElements
+ * @property {HTMLElement} splashLogo - The initial splash logo element.
+ * @property {HTMLElement} splashLogoEnd - The end-state splash logo element.
+ * @property {HTMLElement} headerLogo - The header logo element.
+ * @property {HTMLElement} splashBg - The splash background element.
  */
 
 /**
@@ -22,6 +21,13 @@ function runSplashAnimation() {
 }
 
 
+/**
+ * Skips the splash animation when a skip flag is present.
+ * @param {SplashElements} elements - Required splash elements.
+ * @returns {boolean} True when splash was skipped and finalized immediately.
+ * @category Login
+ * @subcategory UI & Init
+ */
 function handleSkippedSplash(elements) {
 	if (!shouldSkipSplash()) return false;
 	clearSkipSplash();
@@ -30,6 +36,12 @@ function handleSkippedSplash(elements) {
 }
 
 
+/**
+ * Starts splash logo and overlay animations.
+ * @param {SplashElements} elements - Required splash elements.
+ * @category Login
+ * @subcategory UI & Init
+ */
 function playSplashAnimation(elements) {
 	const context = getSplashAnimationContext(elements);
 	const animations = startSplashLogoAnimations(elements, context);
@@ -38,6 +50,13 @@ function playSplashAnimation(elements) {
 }
 
 
+/**
+ * Builds all values needed to animate the splash logo.
+ * @param {SplashElements} elements - Required splash elements.
+ * @returns {{delta: {x: number, y: number}, endScale: number, startScale: number}} Computed animation context.
+ * @category Login
+ * @subcategory UI & Init
+ */
 function getSplashAnimationContext(elements) {
 	const endRect = elements.headerLogo.getBoundingClientRect();
 	const startScale = getResponsiveSplashStartScale(getSplashStartScale(endRect.height));
@@ -48,6 +67,13 @@ function getSplashAnimationContext(elements) {
 }
 
 
+/**
+ * Prepares splash logos before the animation starts.
+ * @param {SplashElements} elements - Required splash elements.
+ * @param {number} startScale - Initial logo scale.
+ * @category Login
+ * @subcategory UI & Init
+ */
 function prepareSplashElementsForAnimation(elements, startScale) {
 	prepareSplashLogo(elements.splashLogo, startScale);
 	prepareSplashLogo(elements.splashLogoEnd, startScale);
@@ -55,6 +81,14 @@ function prepareSplashElementsForAnimation(elements, startScale) {
 }
 
 
+/**
+ * Starts both splash logo animations.
+ * @param {SplashElements} elements - Required splash elements.
+ * @param {{startScale: number, endScale: number, delta: {x: number, y: number}}} context - Computed animation context.
+ * @returns {Animation[]} Started logo animations.
+ * @category Login
+ * @subcategory UI & Init
+ */
 function startSplashLogoAnimations(elements, context) {
 	const logoAnimation = animateSplashLogo(elements.splashLogo, context.startScale, context.endScale, context.delta, 1, 0.2);
 	const endLogoAnimation = animateSplashLogo(elements.splashLogoEnd, context.startScale, context.endScale, context.delta, 0, 1);
@@ -139,6 +173,17 @@ function animateSplashLogo(splashLogo, startScale, endScale, delta, fromOpacity 
 }
 
 
+/**
+ * Builds keyframes for the splash logo translation and scaling.
+ * @param {number} startScale - Initial logo scale.
+ * @param {number} endScale - Target logo scale.
+ * @param {{x: number, y: number}} delta - Delta offsets toward the header logo.
+ * @param {number} fromOpacity - Initial opacity.
+ * @param {number} toOpacity - Target opacity.
+ * @returns {Keyframe[]} Animation keyframes.
+ * @category Login
+ * @subcategory UI & Init
+ */
 function buildSplashAnimationKeyframes(startScale, endScale, delta, fromOpacity, toOpacity) {
 	return [
 		{
@@ -152,7 +197,12 @@ function buildSplashAnimationKeyframes(startScale, endScale, delta, fromOpacity,
 	];
 }
 
-
+/**
+ * Returns shared timing options for splash logo animations.
+ * @returns {KeyframeAnimationOptions} Animation options.
+ * @category Login
+ * @subcategory UI & Init
+ */
 function getSplashAnimationOptions() {
 	return {
 		duration: 500,
@@ -236,10 +286,7 @@ function clearSkipSplash() {
 
 /**
  * Shows the final state immediately without animations.
- * @param {HTMLElement} splashLogo - The splash logo element.
- * @param {HTMLElement} splashLogoEnd - The end-color splash logo element.
- * @param {HTMLElement} headerLogo - The header logo element.
- * @param {HTMLElement} splashBg - The splash background element.
+ * @param {SplashElements} elements - Required splash elements.
  * @category Login
  * @subcategory UI & Init
  */
@@ -252,10 +299,7 @@ function showFinalSplashState({ splashLogo, splashLogoEnd, headerLogo, splashBg 
 
 /**
  * Finalizes the animation by swapping the logos after animations finish.
- * @param {HTMLElement} splashLogo - The splash logo element.
- * @param {HTMLElement} splashLogoEnd - The end-color splash logo element.
- * @param {HTMLElement} headerLogo - The header logo element.
- * @param {HTMLElement} splashBg - The splash background element.
+ * @param {SplashElements} elements - Required splash elements.
  * @category Login
  * @subcategory UI & Init
  */
@@ -289,7 +333,7 @@ function fadeOutOverlay(splashBg, delay = 0, duration = 1000) {
  * Waits for both animations to finish before finalizing the splash.
  * @param {Animation[]} logoAnimations - Splash logo animations.
  * @param {Animation | null} overlayAnimation - The overlay fade animation.
- * @param {{splashLogo: HTMLElement, splashLogoEnd: HTMLElement, headerLogo: HTMLElement, splashBg: HTMLElement}} elements - Required splash elements.
+ * @param {SplashElements} elements - Required splash elements.
  * @category Login
  * @subcategory UI & Init
  */
