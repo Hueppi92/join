@@ -65,6 +65,20 @@ function setupPasswordToggle(input) {
 }
 
 
+/**
+ * @typedef {Object} PasswordIconSources
+ * @property {string} lockSrc - Icon path for empty password input.
+ * @property {string} offSrc - Icon path for hidden password state.
+ * @property {string} onSrc - Icon path for visible password state.
+ */
+
+/**
+ * Derives all icon source paths for password toggle states.
+ * @param {HTMLImageElement} icon - Base icon element.
+ * @returns {PasswordIconSources} Icon source map for all password states.
+ * @category Shared
+ * @subcategory UI & Init
+ */
 function getPasswordIconSources(icon) {
 	const lockSrc = icon.getAttribute('src') || '';
 	return {
@@ -75,6 +89,14 @@ function getPasswordIconSources(icon) {
 }
 
 
+/**
+ * Updates the password icon based on current input value and visibility state.
+ * @param {HTMLInputElement} input - Password input element.
+ * @param {HTMLImageElement} icon - Icon element to update.
+ * @param {PasswordIconSources} iconSources - Icon source map.
+ * @category Shared
+ * @subcategory UI & Init
+ */
 function updatePasswordIcon(input, icon, iconSources) {
 	if (!input.value) {
 		icon.src = iconSources.lockSrc;
@@ -84,6 +106,15 @@ function updatePasswordIcon(input, icon, iconSources) {
 }
 
 
+/**
+ * Binds click and input events for password visibility toggling.
+ * @param {HTMLElement} iconBox - Clickable icon wrapper.
+ * @param {HTMLInputElement} input - Password input element.
+ * @param {HTMLImageElement} icon - Icon element to update.
+ * @param {PasswordIconSources} iconSources - Icon source map.
+ * @category Shared
+ * @subcategory UI & Init
+ */
 function bindPasswordToggleEvents(iconBox, input, icon, iconSources) {
 	iconBox.addEventListener('click', () => {
 		if (!input.value) return;
@@ -170,7 +201,7 @@ function initLogoutLinks() {
 
 /**
  * Adds a help link to profile menu for mobile layout.
- * @param {HTMLElement} profileMenu - Profile menu overlay element.
+ * @param {HTMLElement | null} profileMenu - Profile menu overlay element.
  * @category Shared
  * @subcategory UI & Init
  */
@@ -182,6 +213,12 @@ function initMobileHelpLink(profileMenu) {
 }
 
 
+/**
+ * Builds the mobile help list item for the profile menu.
+ * @returns {HTMLLIElement} List item containing the help link.
+ * @category Shared
+ * @subcategory UI & Init
+ */
 function buildMobileHelpItem() {
 	const helpLi = document.createElement('li');
 	helpLi.className = 'hover-container mobile-help-link';
@@ -194,6 +231,13 @@ function buildMobileHelpItem() {
 }
 
 
+/**
+ * Inserts the mobile help item at the top of the profile menu list.
+ * @param {HTMLElement} list - Target list element.
+ * @param {HTMLLIElement} helpItem - Help list item element.
+ * @category Shared
+ * @subcategory UI & Init
+ */
 function insertMobileHelpLink(list, helpItem) {
 	const firstItem = list.firstElementChild;
 	if (firstItem) {
