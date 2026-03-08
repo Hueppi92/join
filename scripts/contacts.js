@@ -43,12 +43,35 @@ function openContactOverlay() {
 function closeContactOverlay(immediate = false) {
 	const overlay = document.getElementById('contact-overlay');
 	if (!overlay) return;
+	releaseContactOverlayFocus(overlay);
 	if (immediate) {
 		overlay.classList.add('is-instant');
 	}
 	overlay.classList.remove('is-open');
 	overlay.setAttribute('aria-hidden', 'true');
 	document.body.classList.remove('contact-overlay-open');
+}
+
+/**
+ * Moves focus out of the contact overlay before hiding it from assistive tech.
+ * @param {HTMLElement} overlay - Contact overlay element.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+function releaseContactOverlayFocus(overlay) {
+	const activeElement = document.activeElement;
+	if (!activeElement || !overlay.contains(activeElement)) return;
+
+	if (typeof activeElement.blur === 'function') {
+		activeElement.blur();
+	}
+
+	if (overlay.contains(document.activeElement)) {
+		const addContactButton = document.getElementById('add-contact-btn');
+		if (addContactButton && typeof addContactButton.focus === 'function') {
+			addContactButton.focus();
+		}
+	}
 }
 
 /**

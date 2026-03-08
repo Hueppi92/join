@@ -430,12 +430,23 @@ function openAddTaskModalBoard(status = 'todo') {
     window.currentSelectedStatus = status;
     const modal = document.getElementById('addTaskModal');
     if (!modal) return;
+    rememberAddTaskModalFocus(modal);
     clearModalCloseTimeout(modal);
     modal.classList.remove('hidden');
     requestAnimationFrame(() => modal.classList.add('is-open'));
     modal.setAttribute('aria-hidden', 'false');
     scrollModalToTop(modal);
     if (typeof initTaskEditor === 'function') initTaskEditor();
+}
+
+/**
+ * Stores the currently focused element before opening the Add Task modal.
+ *
+ * @param {HTMLElement} modal - The modal element.
+ * @returns {void}
+ */
+function rememberAddTaskModalFocus(modal) {
+    modal._returnFocusTarget = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 }
 
 /**
@@ -485,12 +496,41 @@ function scheduleModalHide(modal) {
 function closeAddTaskModal() {
     const modal = document.getElementById('addTaskModal');
     if (modal) {
+        releaseAddTaskModalFocus(modal);
         modal.classList.remove('is-open');
         modal.setAttribute('aria-hidden', 'true');
         scheduleModalHide(modal);
         document.querySelector('.new_task')?.reset();
     }
     renderBoard();
+}
+
+/**
+ * Moves focus out of the Add Task modal before hiding it from assistive tech.
+ *
+ * @param {HTMLElement} modal - The modal element.
+ * @returns {void}
+ */
+function releaseAddTaskModalFocus(modal) {
+    const activeElement = document.activeElement;
+    if (!activeElement || !modal.contains(activeElement)) return;
+
+    if (typeof activeElement.blur === 'function') {
+        activeElement.blur();
+    }
+
+    if (!modal.contains(document.activeElement)) return;
+
+    const fallbackTarget =
+        (modal._returnFocusTarget instanceof HTMLElement && document.contains(modal._returnFocusTarget)
+            ? modal._returnFocusTarget
+            : null) ||
+        document.querySelector('.add-task') ||
+        document.querySelector('.add-column-btn');
+
+    if (fallbackTarget instanceof HTMLElement && typeof fallbackTarget.focus === 'function') {
+        fallbackTarget.focus();
+    }
 }
 
 /**
