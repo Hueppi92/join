@@ -14,7 +14,11 @@
 
   <body class="login-page">
     <script>
-      if (sessionStorage.getItem('skipSplash') === '1') {
+      const skipSplashImmediately =
+        sessionStorage.getItem('skipSplash') === '1' ||
+        sessionStorage.getItem('animationPlayed') === 'true';
+
+      if (skipSplashImmediately) {
         document.documentElement.classList.add('skip-splash');
       }
     </script>

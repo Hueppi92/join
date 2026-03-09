@@ -30,7 +30,7 @@ function runSplashAnimation() {
  */
 function handleSkippedSplash(elements) {
 	if (!shouldSkipSplash()) return false;
-	clearSkipSplash();
+	if (isLegacySkipSplashRequested()) clearSkipSplash();
 	showFinalSplashState(elements);
 	return true;
 }
@@ -272,7 +272,36 @@ function getResponsiveSplashStartScale(baseScale) {
  * @subcategory UI & Init
  */
 function shouldSkipSplash() {
+	return isLegacySkipSplashRequested() || hasPlayedLoginAnimation();
+}
+
+/**
+ * Returns whether the one-time legacy skip flag is present.
+ * @returns {boolean} True if the legacy skip flag is set.
+ * @category Login
+ * @subcategory UI & Init
+ */
+function isLegacySkipSplashRequested() {
 	return sessionStorage.getItem('skipSplash') === '1';
+}
+
+/**
+ * Returns whether the login splash animation already ran in this browser session.
+ * @returns {boolean} True if the animation was already played.
+ * @category Login
+ * @subcategory UI & Init
+ */
+function hasPlayedLoginAnimation() {
+	return sessionStorage.getItem('animationPlayed') === 'true';
+}
+
+/**
+ * Marks the login splash animation as played for this browser session.
+ * @category Login
+ * @subcategory UI & Init
+ */
+function markLoginAnimationPlayed() {
+	sessionStorage.setItem('animationPlayed', 'true');
 }
 
 /**
@@ -308,6 +337,7 @@ function finishSplashAnimation({ splashLogo, splashLogoEnd, headerLogo, splashBg
 	hideElement(splashLogo);
 	hideElement(splashLogoEnd);
 	setHeaderLogoVisibility(headerLogo, true);
+	markLoginAnimationPlayed();
 }
 
 /**
