@@ -4,7 +4,9 @@
  * @property {HTMLInputElement} emailInput - The email input field.
  * @property {HTMLInputElement} passwordInput - The password input field.
  * @property {HTMLButtonElement} submitButton - The submit button.
- * @property {HTMLElement} message - The login error message element.
+ * @property {HTMLElement} emailMessage - The login email error message element.
+ * @property {HTMLElement} passwordMessage - The login password error message element.
+ * @property {HTMLElement} authMessage - The login auth error message element.
  */
 
 /**
@@ -34,10 +36,12 @@ function getLoginFields(form) {
 	const emailInput = form.querySelector('input[name="email"]');
 	const passwordInput = form.querySelector('input[name="password"]');
 	const submitButton = form.querySelector('button[type="submit"]');
-	const message = document.getElementById('login-error-message');
-	if (!emailInput || !passwordInput || !submitButton || !message) return null;
+	const emailMessage = form.querySelector('#msg-login-email');
+	const passwordMessage = form.querySelector('#msg-login-password');
+	const authMessage = document.getElementById('login-error-message');
+	if (!emailInput || !passwordInput || !submitButton || !emailMessage || !passwordMessage || !authMessage) return null;
 
-	return { form, emailInput, passwordInput, submitButton, message };
+	return { form, emailInput, passwordInput, submitButton, emailMessage, passwordMessage, authMessage };
 }
 
 /**
@@ -48,22 +52,55 @@ function getLoginFields(form) {
  */
 function bindLoginFieldEvents(fields) {
 	const updateState = () => updateLoginButtonState(fields);
-	bindLoginInputListener(fields.emailInput, fields, updateState);
-	bindLoginInputListener(fields.passwordInput, fields, updateState);
+	initLoginMessageVisibility(fields);
+	bindLoginInputField(fields.emailInput, fields.emailMessage, fields, updateState);
+	bindLoginInputField(fields.passwordInput, fields.passwordMessage, fields, updateState);
+	bindLoginBlurField(fields.emailInput, validateLoginEmailField, fields, updateState);
+	bindLoginBlurField(fields.passwordInput, validateLoginPasswordField, fields, updateState);
 	updateLoginButtonState(fields);
+}
+
+/**
+ * Hides all inline login validation messages on initial load.
+ * @param {LoginFields} fields - Collected login form fields.
+ * @category Login
+ * @subcategory UI & Init
+ */
+function initLoginMessageVisibility(fields) {
+	[fields.emailMessage, fields.passwordMessage].forEach((message) => {
+		message.style.visibility = 'hidden';
+	});
 }
 
 /**
  * Binds a login input to reset feedback and re-evaluate submit state.
  * @param {HTMLInputElement} input - Input to observe.
+ * @param {HTMLElement} message - Field-level message element.
  * @param {LoginFields} fields - Collected login form fields.
  * @param {() => void} updateState - Callback to refresh submit state.
  * @category Login
  * @subcategory UI & Init
  */
-function bindLoginInputListener(input, fields, updateState) {
+function bindLoginInputField(input, message, fields, updateState) {
 	input.addEventListener('input', () => {
-		clearLoginFeedback(fields);
+		clearFieldError(input, message);
+		setFormMessage(fields.authMessage, '');
+		updateState();
+	});
+}
+
+/**
+ * Binds on-blur validation for a login input field.
+ * @param {HTMLInputElement} input - Input to validate.
+ * @param {(fields: LoginFields) => boolean} validateField - Field validator.
+ * @param {LoginFields} fields - Collected login form fields.
+ * @param {() => void} updateState - Callback to refresh submit state.
+ * @category Login
+ * @subcategory UI & Init
+ */
+function bindLoginBlurField(input, validateField, fields, updateState) {
+	input.addEventListener('blur', () => {
+		validateField(fields);
 		updateState();
 	});
 }
@@ -75,8 +112,9 @@ function bindLoginInputListener(input, fields, updateState) {
  * @subcategory UI & Init
  */
 function clearLoginFeedback(fields) {
-	setLoginFieldErrorState(fields, false);
-	setFormMessage(fields.message, '');
+	clearFieldError(fields.emailInput, fields.emailMessage);
+	clearFieldError(fields.passwordInput, fields.passwordMessage);
+	setFormMessage(fields.authMessage, '');
 }
 
 /**
@@ -99,7 +137,7 @@ function updateLoginButtonState(fields) {
  * @subcategory Validation
  */
 function isLoginInputValid(fields) {
-	return isEmailValid(fields.emailInput.value) && fields.passwordInput.value.trim().length > 0;
+	return isEmailValid(fields.emailInput.value) && fields.passwordInput.value.trim().length >= 6;
 }
 
 /**
@@ -132,10 +170,54 @@ async function handleLoginSubmit(event, fields) {
  * @subcategory Validation
  */
 function validateLoginBeforeSubmit(fields) {
-	if (isLoginInputValid(fields)) return true;
-	setFormMessage(fields.message, 'Please enter valid credentials.');
-	setLoginFieldErrorState(fields, true);
+	let isValid = true;
+	if (!validateLoginEmailField(fields)) isValid = false;
+	if (!validateLoginPasswordField(fields)) isValid = false;
+	if (isValid) return true;
+	setFormMessage(fields.authMessage, 'Please fix the highlighted fields.');
 	return false;
+}
+
+/**
+ * Validates login email field and shows a specific message on failure.
+ * @param {LoginFields} fields - Collected login form fields.
+ * @returns {boolean} True when the email field is valid.
+ * @category Login
+ * @subcategory Validation
+ */
+function validateLoginEmailField(fields) {
+	const email = fields.emailInput.value.trim();
+	if (!email) {
+		setFieldError(fields.emailInput, fields.emailMessage, 'Please enter your email address.');
+		return false;
+	}
+	if (!isEmailValid(email)) {
+		setFieldError(fields.emailInput, fields.emailMessage, 'Please enter a valid email address.');
+		return false;
+	}
+	clearFieldError(fields.emailInput, fields.emailMessage);
+	return true;
+}
+
+/**
+ * Validates login password field and shows a specific message on failure.
+ * @param {LoginFields} fields - Collected login form fields.
+ * @returns {boolean} True when the password field is valid.
+ * @category Login
+ * @subcategory Validation
+ */
+function validateLoginPasswordField(fields) {
+	const password = fields.passwordInput.value.trim();
+	if (!password) {
+		setFieldError(fields.passwordInput, fields.passwordMessage, 'Please enter your password.');
+		return false;
+	}
+	if (password.length < 6) {
+		setFieldError(fields.passwordInput, fields.passwordMessage, 'Password must be at least 6 characters long.');
+		return false;
+	}
+	clearFieldError(fields.passwordInput, fields.passwordMessage);
+	return true;
 }
 
 /**
@@ -173,7 +255,7 @@ function handleSuccessfulLogin(credential) {
  * @subcategory Firebase Logic
  */
 function handleFailedLogin(fields, error) {
-	setFormMessage(fields.message, getAuthErrorMessage(error));
+	setFormMessage(fields.authMessage, getAuthErrorMessage(error));
 	setLoginFieldErrorState(fields, true);
 }
 

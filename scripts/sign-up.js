@@ -154,12 +154,14 @@ function bindSignupInputField(input, message, updateState) {
  * @param {HTMLInputElement} input - Input element to validate on blur.
  * @param {(fields: SignupFields) => boolean} validateField - Field validator.
  * @param {SignupFields} fields - Full sign-up field set.
+ * @param {() => void} updateState - Callback to refresh submit state.
  * @category Sign-Up
  * @subcategory UI & Init
  */
-function bindSignupBlurField(input, validateField, fields) {
+function bindSignupBlurField(input, validateField, fields, updateState) {
 	input.addEventListener('blur', () => {
-		if (input.value.trim().length > 0) validateField(fields);
+		validateField(fields);
+		updateState();
 	});
 }
 
@@ -190,10 +192,10 @@ function bindSignupFieldEvents(fields) {
 	bindSignupInputField(fields.emailInput, fields.emailMessage, updateState);
 	bindSignupInputField(fields.passwordInput, fields.passwordMessage, updateState);
 	bindSignupInputField(fields.confirmInput, fields.confirmMessage, updateState);
-	bindSignupBlurField(fields.nameInput, validateNameField, fields);
-	bindSignupBlurField(fields.emailInput, validateEmailField, fields);
-	bindSignupBlurField(fields.passwordInput, validatePasswordField, fields);
-	bindSignupBlurField(fields.confirmInput, validateConfirmField, fields);
+	bindSignupBlurField(fields.nameInput, validateNameField, fields, updateState);
+	bindSignupBlurField(fields.emailInput, validateEmailField, fields, updateState);
+	bindSignupBlurField(fields.passwordInput, validatePasswordField, fields, updateState);
+	bindSignupBlurField(fields.confirmInput, validateConfirmField, fields, updateState);
 	bindPrivacyField(fields, updateState);
 	updateSignupButtonState(fields);
 }
@@ -218,12 +220,16 @@ function updateSignupButtonState(fields) {
  * @subcategory Validation
  */
 function isSignupInputReady(fields) {
+	const name = fields.nameInput.value.trim();
+	const email = fields.emailInput.value.trim();
+	const password = fields.passwordInput.value.trim();
+	const confirmPassword = fields.confirmInput.value.trim();
+
 	return (
-		fields.nameInput.value.trim().length > 0 &&
-		isEmailValid(fields.emailInput.value) &&
-		fields.passwordInput.value.trim().length >= 6 &&
-		fields.passwordInput.value === fields.confirmInput.value &&
-		fields.privacyInput.checked
+		name.length > 0 &&
+		isEmailValid(email) &&
+		password.length >= 6 &&
+		password === confirmPassword
 	);
 }
 
@@ -322,7 +328,7 @@ async function submitSignupWithLoading(fields) {
 async function performSignup(fields) {
 	const credential = await firebase.auth().createUserWithEmailAndPassword(
 		fields.emailInput.value.trim(),
-		fields.passwordInput.value
+		fields.passwordInput.value.trim()
 	);
 	await persistSignupUser(credential, fields);
 	sessionStorage.removeItem('guestLogin');
@@ -439,6 +445,7 @@ function validateNameField(fields) {
 		setFieldError(fields.nameInput, fields.nameMessage, 'Please enter a name.');
 		return false;
 	}
+	clearFieldError(fields.nameInput, fields.nameMessage);
 	return true;
 }
 
@@ -450,10 +457,16 @@ function validateNameField(fields) {
  * @subcategory Validation
  */
 function validateEmailField(fields) {
-	if (!isEmailValid(fields.emailInput.value)) {
+	const email = fields.emailInput.value.trim();
+	if (!email) {
+		setFieldError(fields.emailInput, fields.emailMessage, 'Please enter your email address.');
+		return false;
+	}
+	if (!isEmailValid(email)) {
 		setFieldError(fields.emailInput, fields.emailMessage, 'Please enter a valid email address.');
 		return false;
 	}
+	clearFieldError(fields.emailInput, fields.emailMessage);
 	return true;
 }
 
@@ -465,10 +478,16 @@ function validateEmailField(fields) {
  * @subcategory Validation
  */
 function validatePasswordField(fields) {
-	if (fields.passwordInput.value.trim().length < 6) {
+	const password = fields.passwordInput.value.trim();
+	if (!password) {
+		setFieldError(fields.passwordInput, fields.passwordMessage, 'Please enter a password.');
+		return false;
+	}
+	if (password.length < 6) {
 		setFieldError(fields.passwordInput, fields.passwordMessage, 'Password must be at least 6 characters long.');
 		return false;
 	}
+	clearFieldError(fields.passwordInput, fields.passwordMessage);
 	return true;
 }
 
@@ -480,10 +499,17 @@ function validatePasswordField(fields) {
  * @subcategory Validation
  */
 function validateConfirmField(fields) {
-	if (fields.passwordInput.value !== fields.confirmInput.value) {
+	const password = fields.passwordInput.value.trim();
+	const confirmPassword = fields.confirmInput.value.trim();
+	if (!confirmPassword) {
+		setFieldError(fields.confirmInput, fields.confirmMessage, 'Please confirm your password.');
+		return false;
+	}
+	if (password !== confirmPassword) {
 		setFieldError(fields.confirmInput, fields.confirmMessage, 'Passwords do not match.');
 		return false;
 	}
+	clearFieldError(fields.confirmInput, fields.confirmMessage);
 	return true;
 }
 
@@ -499,6 +525,7 @@ function validatePrivacyField(fields) {
 		setFieldError(fields.privacyInput, fields.privacyMessage, 'Please accept the privacy policy.');
 		return false;
 	}
+	clearFieldError(fields.privacyInput, fields.privacyMessage);
 	return true;
 }
 
