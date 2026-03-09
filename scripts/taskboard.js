@@ -611,8 +611,8 @@ async function editTask(taskId) {
     fillContactDropdown(allContacts);
     refreshEditSubtaskUI();
     renderEditContactBadges();
+    initEditSubtaskEnterKey(); // <-- neu
 }
-
 /**
  * Adds the currently selected contact in the dropdown to the edit list.
  *
@@ -760,6 +760,19 @@ async function filterTasks(term) {
             filteredColumns[task.status] += getCardTemplate(task, taskId);
         }
     });
+
+    const noResults = Object.values(filteredColumns).every(html => html === '');
+    if (noResults && term.length > 0) {
+        BOARD_STATUSES.forEach(status => {
+            const col = document.querySelector(`#${status} .task-list`);
+            if (col) col.innerHTML = '';
+        });
+        // Zeige "Keine Ergebnisse"-Message – z.B. in der ersten Spalte oder als globale Message
+        const firstCol = document.querySelector(`#todo .task-list`);
+        if (firstCol) firstCol.innerHTML = `<div class="empty-msg">No tasks found for "${term}"</div>`;
+        return;
+    }
+
     renderColumnHTML(filteredColumns);
 }
 
@@ -839,12 +852,32 @@ function refreshEditSubtaskUI() {
     if (!list) return;
     list.innerHTML = currentEditSubtasks.map((st, index) => `
         <li class="edit-subtask-item">
-            <span>• ${st.title}</span>
-            <img src="../assets/icons/delete.svg" onclick="deleteSubtaskFromEdit(${index})" alt="Delete">
+            <span class="subtask-title">${st.title}</span>
+            <div class="subtask-actions">
+                <img src="../assets/icons/edit.svg" onclick="startSubtaskEdit(${index})" alt="Edit">
+                <img src="../assets/icons/delete.svg" onclick="deleteSubtaskFromEdit(${index})" alt="Delete">
+            </div>
         </li>
     `).join('');
 }
+function startSubtaskEdit(index) {
+    const items = document.querySelectorAll('.edit-subtask-item');
+    const item = items[index];
+    if (!item) return;
+    const titleSpan = item.querySelector('.subtask-title');
+    const currentTitle = currentEditSubtasks[index].title;
+    titleSpan.outerHTML = `<input class="subtask-edit-input" value="${currentTitle}" 
+        onblur="finishSubtaskEdit(${index}, this.value)"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}
+                   if(event.key==='Escape'){event.preventDefault();refreshEditSubtaskUI();}">`;
+    item.querySelector('.subtask-edit-input')?.focus();
+}
 
+function finishSubtaskEdit(index, newTitle) {
+    const trimmed = newTitle.trim();
+    if (trimmed) currentEditSubtasks[index].title = trimmed;
+    refreshEditSubtaskUI();
+}
 /**
  * Sets the priority selection in edit mode and updates button classes.
  *
@@ -1028,6 +1061,16 @@ function moveTaskToStatus(taskId, newStatus) {
  */
 function handleOverlayClick(event) {
     if (event.target.id === 'task-overlay') closeTaskDetail();
+}
+function initEditSubtaskEnterKey() {
+    const input = document.getElementById('edit-subtask-input');
+    if (!input) return;
+    input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            addSubtaskInEdit();
+        }
+    });
 }
 
 /* ==========================================================================

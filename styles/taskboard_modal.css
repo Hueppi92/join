@@ -1,0 +1,263 @@
+/* ==========================================================================
+   TASK BOARD — task-board-modal.css
+   Inhalt: Add Task Modal, Priorität, Dropdown, Subtasks, Media Queries
+   ========================================================================== */
+
+/* ==========================================================================
+   1. ADD TASK MODAL — Container & Layout
+   ========================================================================== */
+#addTaskModal .modal-content {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 48px 56px;
+    width: min(960px, calc(100vw - 32px));
+    min-width: 320px;
+    max-height: 92vh;
+    max-height: calc(100dvh - 32px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    box-sizing: border-box;
+}
+
+.modal-title { font-size: 47px; font-weight: 700; margin: 0 0 32px; flex-shrink: 0; }
+
+#addTaskModal .editor_wrapper {
+    display: flex;
+    gap: 48px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 4px;
+    align-items: stretch;
+}
+
+#addTaskModal .new_task,
+#addTaskModal .task_settings { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+#addTaskModal .editor_divider { width: 1px; background: #D1D1D1; flex-shrink: 0; align-self: stretch; min-height: 380px; }
+
+/* ==========================================================================
+   2. FORM FELDER
+   ========================================================================== */
+#addTaskModal .left_row { display: flex; flex-direction: column; margin-bottom: 20px; }
+
+#addTaskModal .new_task .left_row > label,
+#addTaskModal .task_settings .settings_block > label {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--dark-blue);
+    margin-bottom: 8px;
+    display: block;
+}
+
+#addTaskModal .new_task input,
+#addTaskModal .new_task textarea,
+#addTaskModal .task_settings input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #D1D1D1;
+    border-radius: 10px;
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+    background: var(--white);
+    box-sizing: border-box;
+    transition: border-color 0.15s;
+}
+
+#addTaskModal .description_box textarea    { min-height: 120px; resize: none; }
+#addTaskModal .left_single_row             { position: relative; }
+
+#addTaskModal .calendar_icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+#addTaskModal .settings_block                  { margin-bottom: 20px; }
+#addTaskModal .left_row.error .left_single_row { border-color: #E60026; }
+#addTaskModal .left_row.error .error_text      { display: block; }
+
+/* ==========================================================================
+   3. PRIORITÄT BUTTONS
+   ========================================================================== */
+
+/* Modal */
+#addTaskModal .priority_row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: nowrap; }
+
+#addTaskModal .prio {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 8px;
+    border-radius: 10px;
+    border: 1px solid #D1D1D1;
+    background: var(--white);
+    cursor: pointer;
+    font-size: 16px;
+    font-family: inherit;
+    color: var(--text-main);
+    transition: all 0.15s;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#addTaskModal .prio img     { width: 14px; height: 14px; }
+#addTaskModal .prio div     { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; line-height: 0; }
+#addTaskModal .prio div img { width: 10px; height: auto; }
+
+/* Edit Overlay */
+.priority-row-edit { display: flex; gap: 8px; margin-top: 6px; flex-wrap: nowrap; }
+
+.prio-btn-edit {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 8px;
+    border-radius: 10px;
+    border: 1px solid var(--separator-color);
+    background: var(--white);
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text-main);
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+
+.prio-btn-edit img { width: 16px; }
+
+/* Aktive Zustände — gemeinsam für Modal und Edit */
+#addTaskModal .prio.urgent_btn.active,
+.prio-btn-edit.active-urgent { background-color: #FF3D00; color: white; border-color: #FF3D00; }
+
+#addTaskModal .prio.medium_btn.active,
+.prio-btn-edit.active-medium { background-color: #FFAB00; color: white; border-color: #FFAB00; }
+
+#addTaskModal .prio.low_btn.active,
+.prio-btn-edit.active-low    { background-color: #7AE229; color: white; border-color: #7AE229; }
+
+#addTaskModal .prio.urgent_btn.active img,
+#addTaskModal .prio.medium_btn.active img,
+#addTaskModal .prio.low_btn.active img,
+#addTaskModal .prio.active div img,
+.prio-btn-edit.active-urgent img,
+.prio-btn-edit.active-medium img,
+.prio-btn-edit.active-low img { filter: brightness(0) invert(1); }
+
+/* ==========================================================================
+   4. ASSIGNED DROPDOWN
+   ========================================================================== */
+#addTaskModal .select_native { position: relative; width: 100%; max-width: 100%; }
+
+#addTaskModal .select_native::after {
+    content: "";
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    z-index: 30;
+    width: 24px;
+    height: 24px;
+    background: url(../assets/icons/arrow_drop_down.png) no-repeat center;
+    filter: brightness(0) saturate(100%) invert(17%) sepia(19%) saturate(1020%) hue-rotate(176deg) brightness(95%) contrast(93%);
+    pointer-events: none;
+    transition: transform 180ms ease;
+    transform: translateY(-50%);
+}
+
+#addTaskModal .select_native.open::after { transform: translateY(-50%) rotate(180deg); }
+#addTaskModal .selector_input            { display: flex; align-items: center; }
+
+#addTaskModal .selector_input input {
+    font-size: 20px;
+    width: 100%;
+    height: 48px;
+    padding: 0 48px 0 16px;
+    background: #fff;
+    border: 1px solid #D1D1D1;
+    border-radius: 10px;
+    outline: none;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--text-main);
+    transition: border-color 0.15s;
+}
+
+#addTaskModal .selector_input input::placeholder       { color: black; }
+#addTaskModal .selector_input input:focus::placeholder { color: transparent; }
+
+#addTaskModal .selector_dropdown {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 20;
+    width: 100%;
+    max-height: 0;
+    gap: 2px;
+    background: #fff;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    overflow-y: auto;
+    scrollbar-width: none;
+    transition: max-height 180ms ease;
+}
+
+#addTaskModal .selector_dropdown.open            { max-height: 220px; overflow-y: auto; z-index: 40; }
+#addTaskModal .selector_dropdown::-webkit-scrollbar { display: none; }
+
+#addTaskModal .dropdown_item {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    gap: 12px;
+    cursor: pointer;
+    font-weight: 400;
+}
+
+#addTaskModal .dropdown_item span     { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#addTaskModal .dropdown_item:hover    { background: #f6f7f8; }
+#addTaskModal .dropdown_item.selected { color: #fff; background: #2A3647; border-radius: 8px; }
+
+#addTaskModal .dropdown_item input[type="checkbox"] {
+    margin-left: auto;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    flex-shrink: 0;
+    cursor: pointer;
+    accent-color: var(--dark-blue);
+}
+
+#addTaskModal .dropdown_avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    color: white;
+    background: #29ABE2;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+#addTaskModal .assigned_avatars { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+/* ==========================================================================

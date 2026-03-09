@@ -1,0 +1,82 @@
+/* ==========================================================================
+   TASK BOARD — task-board-responsive.css
+   Inhalt: Media Queries
+   ========================================================================== */
+
+@media (max-width: 1200px) {
+    .board-container { padding: 116px 24px 32px 24px; }
+    .board-header h1 { font-size: 48px; }
+    .board           { gap: 16px; }
+}
+
+@media (max-width: 1024px) {
+    .board-container        { margin-left: 80px; width: calc(100% - 80px); padding: 96px 20px 28px 20px; }
+    .board-header h1        { font-size: 40px; }
+    .board                  { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .search-container input { width: 160px; }
+}
+
+@media (max-width: 992px) {
+    main             { height: auto; min-height: 0; overflow-y: auto; overflow-x: hidden; }
+    .board-container { margin-left: 0; width: 100%; height: auto; min-height: 100%; overflow-y: visible; padding: 16px 20px 20px; }
+}
+
+@media (max-width: 768px) {
+    .board-container        { margin-left: 0; width: 100%; padding: 16px 16px 20px; }
+    .board-header           { flex-direction: column; align-items: stretch; gap: 12px; margin-bottom: 20px; }
+    .board-header h1        { font-size: 36px; }
+    .search-add             { gap: 10px; width: 100%; }
+    .search-container       { flex: 1; }
+    .search-container input { width: 100%; min-width: 0; }
+    .add-task               { font-size: 15px; padding: 10px 16px; }
+    .board                  { grid-template-columns: 1fr; gap: 20px; }
+    .column-header h2       { font-size: 22px; }
+    .move-to-wrapper        { display: flex; align-items: center; }
+
+    #addTaskModal .modal-content  { padding: 28px 20px 20px; border-radius: 20px; max-height: 95vh; max-height: calc(100dvh - 32px); }
+    .modal-title                  { font-size: 28px; margin-bottom: 16px; }
+    #addTaskModal .editor_wrapper { flex-direction: column; gap: 0; }
+    #addTaskModal .editor_divider { display: none; }
+    #addTaskModal .new_task,
+    #addTaskModal .task_settings  { width: 100%; }
+    #addTaskModal .task_footer    { flex-direction: column; gap: 10px; align-items: stretch; }
+    #addTaskModal .footer_actions { width: 100%; flex-direction: row; }
+    #addTaskModal .clear_btn,
+    #addTaskModal .create_btn     { flex: 1; text-align: center; height: 48px; font-size: 16px; }
+
+    .overlay-card      { max-width: calc(100vw - 24px); padding: 28px 20px; border-radius: 20px; max-height: 88vh; }
+    .detail-title      { font-size: 28px; }
+    .save-btn          { width: 100%; align-self: stretch; }
+    .priority-row-edit { gap: 6px; }
+    .prio-btn-edit     { font-size: 12px; padding: 9px 4px; gap: 4px; }
+    .prio-btn-edit img { width: 14px; }
+}
+
+@media (max-width: 576px) {
+    #addTaskModal .footer_actions { flex-direction: row !important; }
+}
+
+@media (max-width: 480px) {
+    .board-container  { margin-left: 0; width: 100%; padding: 12px 12px 16px; }
+    .board-header h1  { font-size: 30px; }
+    .card             { padding: 14px; border-radius: 16px; }
+    .badge            { font-size: 13px; padding: 3px 10px; }
+
+    #addTaskModal .modal-content { padding: 24px 14px; border-radius: 16px; }
+    .overlay-card                { padding: 24px 14px; }
+    .detail-title                { font-size: 24px; }
+
+    .detail-info-row,
+    .detail-prio-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .info-label      { min-width: unset; font-size: 13px; color: var(--text-gray); font-weight: 400; }
+
+    .prio-btn-edit     { font-size: 11px; padding: 8px 2px; gap: 3px; }
+    .prio-btn-edit img { width: 13px; }
+}
+
+@media (max-width: 360px) {
+    .board-container  { margin-left: 0; width: 100%; padding: 10px 10px 16px; }
+    .search-add       { flex-wrap: wrap; }
+    .search-container { width: 100%; }
+    .add-task         { width: 100%; justify-content: center; }
+}

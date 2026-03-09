@@ -1,0 +1,158 @@
+
+#addTaskModal .subtask_input {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #D1D1D1;
+    border-radius: 10px;
+}
+
+#addTaskModal .subtask_input:focus-within { border-color: var(--light-blue); }
+
+#addTaskModal .subtask_input input {
+    flex: 1;
+    height: 100%;
+    padding: 0 48px 0 16px;
+    font-family: inherit;
+    font-size: 20px;
+    line-height: 120%;
+    border: none;
+    border-radius: 10px;
+    outline: none;
+    background: transparent;
+}
+
+#addTaskModal .subtask_actions {
+    position: absolute;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.12s;
+}
+
+#addTaskModal .subtask_input.has-text .subtask_actions { opacity: 1; pointer-events: auto; }
+#addTaskModal .subtask_actions button                  { border: none; background: none; cursor: pointer; font-size: 18px; }
+#addTaskModal .separator                               { width: 1px; height: 16px; background: #D1D1D1; }
+
+#addTaskModal .subtask_list {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 0;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    max-height: 136px;
+    overflow-y: auto;
+    gap: 6px;
+    scrollbar-width: none;
+}
+
+#addTaskModal .subtask_list::-webkit-scrollbar { display: none; }
+
+#addTaskModal .subtask_list li {
+    min-height: 32px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #F6F7F8;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #2A3647;
+    overflow-y: hidden;
+}
+
+#addTaskModal .subtask_list li:hover                         { background: #EEEEEE; }
+#addTaskModal .subtask_list li.editing                       { background: white; border-bottom: 1px solid #29ABE2; border-radius: 0; }
+#addTaskModal .subtask_list li.editing .subtask_item_actions { opacity: 1; }
+
+#addTaskModal .subtask_item_actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0;
+    transition: opacity 0.12s;
+}
+
+#addTaskModal .subtask_item_actions button             { font-size: 18px; color: #A8A8A8; }
+#addTaskModal .subtask_list li:hover .subtask_item_actions { opacity: 1; }
+#addTaskModal .subtask_text                            { flex: 1; display: flex; }
+
+#addTaskModal .subtask_edit_input {
+    width: 100%;
+    height: 28px;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 16px;
+}
+
+/* ==========================================================================
+   6. MODAL FOOTER
+   ========================================================================== */
+#addTaskModal .task_footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    margin-top: 16px;
+    border-top: 1px solid var(--separator-color);
+    flex-shrink: 0;
+}
+
+#addTaskModal .task_footer p  { font-size: 13px; color: var(--text-gray); margin: 0; }
+#addTaskModal .footer_actions { display: flex; gap: 12px; }
+
+#addTaskModal .clear_btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 56px;
+    padding: 0 16px;
+    border-radius: 10px;
+    border: 1px solid #2A3647;
+    background: #F6F7F8;
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: 400;
+    color: #2A3647;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+#addTaskModal .clear_btn:hover {
+    background: #fff;
+    border-color: #29ABE2;
+    color: #29ABE2;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transform: translateY(-1px);
+}
+
+#addTaskModal .create_btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 56px;
+    padding: 0 16px;
+    border-radius: 10px;
+    background: #2A3647;
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+#addTaskModal .create_btn:hover { background: #29ABE2; box-shadow: 0 4px 8px rgba(0,0,0,0.3); transform: translateY(-1px); }
+
+/* ==========================================================================
