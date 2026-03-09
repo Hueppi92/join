@@ -242,21 +242,10 @@ function getTaskDetailTemplate(task, id) {
     <div class="detail-section"><h3 class="section-title">Subtasks</h3>
       <div class="subtask-list">${renderSubtaskItems(task.subtasks, id)}</div>
     </div>
- <div class="detail-actions">
-  <div class="move-to-wrapper">
-    <select class="move-to-select" onchange="moveTaskToStatus('${id}', this.value); this.value=''">
-      <option value="" disabled selected>Move to …</option>
-      ${BOARD_STATUSES.filter(s => s !== task.status).map(s =>
-        `<option value="${s}">${s.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</option>`
-      ).join('')}
-    </select>
-  </div>
-  <div class="detail-action-btns">
-    <button class="action-btn" onclick="deleteTask('${id}')"><img src="../assets/icons/delete_text.svg" alt="Delete"> Delete</button>
-    <div class="action-divider"></div>
-    <button class="action-btn" onclick="editTask('${id}')"><img src="../assets/icons/edit_text.svg" alt="Edit"> Edit</button>
-  </div>
-</div>
+  <div class="detail-actions">
+  <button class="action-btn" onclick="deleteTask('${id}')"><img src="../assets/icons/delete_text.svg" alt="Delete"></button>
+  <div class="action-divider"></div>
+  <button class="action-btn" onclick="editTask('${id}')"><img src="../assets/icons/edit_text.svg" alt="Edit"></button>
   <div class="move-to-wrapper">
     <select class="move-to-select" onchange="moveTaskToStatus('${id}', this.value); this.value=''">
       <option value="" disabled selected>Move to …</option>
