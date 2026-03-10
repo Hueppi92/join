@@ -33,6 +33,24 @@
 	transition: background var(--transition);
 }
 
+@media (max-width: 768px) {
+	.signup-card {
+		padding-top: 72px;
+	}
+
+	.signup-back {
+		top: 24px;
+		left: 24px;
+	}
+}
+
+@media (max-width: 420px) {
+	.signup-back {
+		top: 20px;
+		left: 20px;
+	}
+}
+
 .signup-back img {
 	width: 32px;
 	height: 32px;
