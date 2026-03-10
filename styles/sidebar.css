@@ -254,6 +254,10 @@ aside > img {
     display: none;
 }
 
+.mobile-footer-link {
+    display: none;
+}
+
 .hover-container:hover {
     background-color: var(--bg-color-secondary);
 }
@@ -405,6 +409,29 @@ aside > img {
 
     .mobile-help-link {
         display: flex;
+    }
+
+    .mobile-footer-link {
+        display: flex;
+    }
+
+    .logout-footer-nav {
+        justify-content: flex-start;
+        gap: 4px;
+    }
+
+    .logout-footer-nav .sidebar-navigation-item {
+        flex: 0 0 auto;
+        min-width: max-content;
+        padding-inline: 8px;
+    }
+
+    .logout-footer-nav .sidebar-navigation-item:first-child {
+        padding-inline: 12px;
+    }
+
+    .logout-footer-nav .sidebar-navigation-item:nth-child(2) {
+        margin-left: auto;
     }
 }
 
