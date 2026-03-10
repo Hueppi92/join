@@ -9,7 +9,6 @@
 const SUMMARY_CACHE_KEY = "join_summary_cache_v1";
 
 /**
- * 
  * Main initialization function for the summary page.
  * Fetches user information and tasks to render the initial dashboard state.
  *
@@ -30,6 +29,9 @@ async function loadSummary() {
         renderSummary({});
     }
 
+    // Mobile Greeting nach initialem Render (Name aus Cache oder "Guest")
+    showMobileGreetingIfNeeded();
+
     try {
         const userIdPromise = resolveActiveUserId();
         const tasksPromise = getTasks();
@@ -39,6 +41,9 @@ async function loadSummary() {
         renderUserName(userName);
         renderSummary(tasks);
         writeSummaryCache({ userName, tasks, updatedAt: Date.now() });
+
+        // Overlay-Name aktualisieren falls es noch sichtbar ist
+        updateMobileGreetingName(userName);
     } catch (error) {
         console.error("Error in loadSummary:", error);
     }
@@ -189,9 +194,8 @@ function renderSummary(tasks) {
  * @returns {void}
  */
 function setGreeting() {
-    var today = new Date();
-    var curHr = today.getHours();
-    let msg = (curHr < 12) ? 'Good Morning,' : (curHr < 17) ? 'Good Afternoon,' : 'Good Evening,';
+    const curHr = new Date().getHours();
+    const msg = curHr < 12 ? 'Good Morning,' : curHr < 17 ? 'Good Afternoon,' : 'Good Evening,';
     document.getElementById("greet").innerHTML = msg;
 }
 
@@ -244,6 +248,71 @@ function renderNextDeadline(tasks) {
     document.getElementById("next-deadline").innerText = task
         ? task.dueDate
         : "No upcoming deadlines";
+}
+
+// ─────────────────────────────────────────────────────────────
+//  MOBILE GREETING OVERLAY
+// ─────────────────────────────────────────────────────────────
+
+/** Referenz auf das Overlay-Element, damit updateMobileGreetingName drauf zugreifen kann */
+let _mobileGreetingOverlay = null;
+
+/**
+ * Zeigt auf Mobile (≤ 992px) ein Vollbild-Begrüßungs-Overlay,
+ * das nach 2s ausblendet und das Board darunter freigibt.
+ * Liest Greeting-Text und Namen direkt aus dem DOM (bereits befüllt).
+ *
+ * @returns {void}
+ */
+function showMobileGreetingIfNeeded() {
+    if (window.innerWidth > 992) return;
+
+    const greetText = document.getElementById('greet')?.innerHTML || '';
+    const nameText  = document.getElementById('user-name')?.innerText || '';
+
+    // Overlay bauen
+    const overlay = document.createElement('div');
+    overlay.className = 'mobile-greeting-overlay';
+    overlay.innerHTML = `
+        <h2 class="overlay-greet">${greetText}</h2>
+        <span class="user-name overlay-name">${nameText}</span>
+    `;
+    document.body.appendChild(overlay);
+    _mobileGreetingOverlay = overlay;
+
+    // Board zunächst unsichtbar
+    const board   = document.querySelector('.dashboard-wrapper');
+    const header  = document.querySelector('.summary-header');
+    if (board)  board.classList.add('board-hidden');
+    if (header) header.classList.add('board-hidden');
+
+    // Overlay im nächsten Frame einblenden (CSS-Transition greift)
+    requestAnimationFrame(() => overlay.classList.add('visible'));
+
+    // Nach 2s Fade + 0.7s Animation → Board einblenden, Overlay entfernen
+    // Gesamtdauer: 2s Pause + 0.7s CSS-Fade = 2700ms
+    setTimeout(() => {
+        if (board)  { board.classList.remove('board-hidden');  board.classList.add('board-visible'); }
+        if (header) { header.classList.remove('board-hidden'); header.classList.add('board-visible'); }
+
+        overlay.addEventListener('animationend', () => {
+            overlay.remove();
+            _mobileGreetingOverlay = null;
+        }, { once: true });
+    }, 2700);
+}
+
+/**
+ * Aktualisiert den Namen im Overlay, falls es noch sichtbar ist
+ * (z.B. wenn Firebase den echten Namen nach "Guest" liefert).
+ *
+ * @param {string} name - Der endgültige Benutzername.
+ * @returns {void}
+ */
+function updateMobileGreetingName(name) {
+    if (!_mobileGreetingOverlay) return;
+    const nameEl = _mobileGreetingOverlay.querySelector('.overlay-name');
+    if (nameEl) nameEl.innerText = name;
 }
 
 // Initial call to start the page logic

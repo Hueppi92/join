@@ -6,33 +6,30 @@
     --white: #ffffff;
 }
 
+/* ─────────────────────────────────────────────
+   BASE PAGE
+───────────────────────────────────────────── */
 .summary-page {
     font-family: "Inter", sans-serif;
     background-color: var(--bg-color);
     margin: 0;
-    display: block;
-    justify-content: initial;
-    align-items: initial;
     min-height: 100vh;
-    overflow-y: hidden;
-    overflow-x: hidden;
 }
 
+/* ─────────────────────────────────────────────
+   CONTENT CONTAINER (desktop: sidebar offset)
+───────────────────────────────────────────── */
 .content-container {
-    position: relative;
-    width: auto;
-    max-width: none;
-    min-height: 100vh;
-    height: 100vh;
     margin-left: 328px;
-    padding: 0 40px 40px 40px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
+    margin-top:96px;
+    padding: 40px;
+    min-height: 100vh;
+    box-sizing: border-box;
 }
 
-/* Header */
+/* ─────────────────────────────────────────────
+   SUMMARY HEADER
+───────────────────────────────────────────── */
 .summary-header {
     display: flex;
     align-items: center;
@@ -52,6 +49,7 @@
     height: 60px;
     background-color: var(--light-blue);
     border-radius: 2px;
+    flex-shrink: 0;
 }
 
 .summary-header p {
@@ -59,11 +57,14 @@
     margin: 0;
 }
 
-/* Layout */
+/* ─────────────────────────────────────────────
+   DASHBOARD LAYOUT
+───────────────────────────────────────────── */
 .dashboard-wrapper {
     display: flex;
     align-items: center;
     justify-content: flex-start;
+    gap: 0;
 }
 
 .metrics-section {
@@ -75,7 +76,9 @@
     padding-right: 80px;
 }
 
-/* Cards */
+/* ─────────────────────────────────────────────
+   CARDS
+───────────────────────────────────────────── */
 .card {
     background: var(--white);
     border-radius: 30px;
@@ -84,6 +87,7 @@
     align-items: center;
     transition: all 0.15s ease-in-out;
     cursor: pointer;
+    box-sizing: border-box;
 }
 
 .card:hover {
@@ -91,14 +95,14 @@
     transform: scale(1.02);
 }
 
-.card:hover .number, 
-.card:hover .label, 
+.card:hover .number,
+.card:hover .label,
 .card:hover .date {
     color: var(--white);
 }
 
-/* Rows */
-.row-top, .row-bottom {
+.row-top,
+.row-bottom {
     display: flex;
     gap: 25px;
 }
@@ -109,6 +113,7 @@
     gap: 20px;
     height: 120px;
     padding: 20px;
+    min-width: 0;
 }
 
 .mini-card {
@@ -118,13 +123,14 @@
     height: 120px;
     padding: 20px;
     text-align: center;
+    min-width: 0;
 }
 
-/* Urgent Card Specifics */
+/* Urgent Card */
 .urgent-card {
     padding: 28px 48px;
     justify-content: space-between;
-    gap: 0;
+    gap: 12px;
 }
 
 .urgent-left {
@@ -143,12 +149,14 @@
     width: 2px;
     height: 102px;
     background-color: #D1D1D1;
+    flex-shrink: 0;
 }
 
 .urgent-right {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    min-width: 0;
 }
 
 /* Icon Hover Logic */
@@ -158,13 +166,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .icon-hover { display: none; }
 .card:hover .icon-standard { display: none; }
 .card:hover .icon-hover { display: block; }
 
-/* Typography */
+/* ─────────────────────────────────────────────
+   TYPOGRAPHY
+───────────────────────────────────────────── */
 .number {
     font-size: 48px;
     font-weight: 700;
@@ -187,9 +198,12 @@
     font-size: 21px;
     font-weight: 700;
     margin-bottom: 5px;
+    white-space: nowrap;
 }
 
-/* Greeting */
+/* ─────────────────────────────────────────────
+   GREETING
+───────────────────────────────────────────── */
 .greeting-section h2 {
     font-size: 47px;
     font-weight: 400;
@@ -200,126 +214,125 @@
     font-size: 64px;
     font-weight: 700;
     color: var(--light-blue);
+    display: block;
 }
 
-@media (max-width: 992px) {
-    .summary-page {
-        display: block;
-        align-items: stretch;
-        overflow: hidden;
-    }
+/* ─────────────────────────────────────────────
+   MOBILE GREETING OVERLAY
+   Appears over full screen, fades out → reveals board
+───────────────────────────────────────────── */
+.mobile-greeting-overlay {
+    display: none; /* shown via JS on mobile */
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background-color: var(--bg-color);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 32px;
+    box-sizing: border-box;
+    pointer-events: none;
+}
 
+.mobile-greeting-overlay.visible {
+    display: flex;
+    animation: greetingFadeOut 0.7s ease-in-out 2s forwards;
+}
+
+.mobile-greeting-overlay h2 {
+    font-size: clamp(28px, 8vw, 48px);
+    font-weight: 400;
+    color: var(--dark-blue);
+    margin: 0 0 12px 0;
+}
+
+.mobile-greeting-overlay .user-name {
+    font-size: clamp(32px, 10vw, 56px);
+    font-weight: 700;
+    color: var(--light-blue);
+}
+
+@keyframes greetingFadeOut {
+    0%   { opacity: 1; }
+    100% { opacity: 0; display: none; }
+}
+
+/* Board hidden during greeting, revealed after */
+.board-hidden {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.board-visible {
+    opacity: 1;
+}
+
+/* ─────────────────────────────────────────────
+   RESPONSIVE — fluid between 430px–992px
+───────────────────────────────────────────── */
+@media (max-width: 992px) {
     .summary-page .content-container {
-        position: fixed;
-        top: var(--mobile-header-height);
-        right: 0;
-        bottom: var(--mobile-footer-height);
-        left: 0;
-        max-width: none;
         margin-left: 0;
-        margin-top: 0;
-        min-height: 0;
-        height: auto;
         padding: 24px 20px calc(20px + env(safe-area-inset-bottom));
-        overflow-y: auto;
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior: contain;
+        min-height: calc(100vh - var(--mobile-header-height, 80px) - var(--mobile-footer-height, 60px));
     }
 
     .summary-header {
         padding-top: 0;
     }
-}
-
-@media (max-width: 430px) {
-    .summary-page {
-        display: block;
-        align-items: stretch;
-    }
-
-    .summary-page .content-container {
-        max-width: none;
-        margin-left: 0;
-        padding: 20px 20px calc(16px + env(safe-area-inset-bottom));
-        box-sizing: border-box;
-    }
-
-    .summary-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-        margin-bottom: 28px;
-        padding-top: 24px;
-    }
 
     .summary-header h1 {
-        order: 1;
-        font-size: 48px;
+        font-size: clamp(40px, 9vw, 72px);
     }
 
     .summary-header p {
-        order: 2;
-        font-size: 24px;
+        font-size: clamp(18px, 3.5vw, 27px);
     }
 
-    .divider {
-        order: 3;
-        width: 90px;
-        height: 3px;
+    .metrics-section {
+        max-width: 100%;
+        padding-right: 0;
+        gap: clamp(14px, 3vw, 25px);
     }
 
     .dashboard-wrapper {
         display: block;
     }
 
-    .metrics-section {
-        gap: 16px;
-        max-width: none;
-        padding-right: 0;
+    .greeting-section {
+        display: none;
     }
 
     .row-top,
     .row-bottom {
-        gap: 12px;
-    }
-
-    .card {
-        border-radius: 24px;
+        gap: clamp(10px, 2.5vw, 25px);
     }
 
     .small-card {
-        gap: 10px;
-        height: 110px;
-        padding: 14px 10px;
+        height: clamp(100px, 16vw, 130px);
+        gap: clamp(10px, 2vw, 20px);
+        padding: clamp(12px, 2vw, 20px) clamp(10px, 2vw, 20px);
     }
 
     .mini-card {
-        height: 122px;
-        padding: 12px 8px;
+        height: clamp(100px, 16vw, 130px);
+        padding: clamp(10px, 2vw, 20px) clamp(8px, 1.5vw, 20px);
     }
 
     .urgent-card {
-        gap: 12px;
-        padding: 16px;
+        padding: clamp(16px, 3vw, 28px) clamp(16px, 4vw, 48px);
+        gap: clamp(8px, 2vw, 12px);
     }
 
     .urgent-left {
-        gap: 10px;
-    }
-
-    .v-divider {
-        height: 76px;
-    }
-
-    .urgent-right {
-        min-width: 0;
-        flex: 1;
+        gap: clamp(10px, 2vw, 20px);
     }
 
     .icon-container {
-        width: 46px;
-        height: 46px;
+        width: clamp(44px, 8vw, 69px);
+        height: clamp(44px, 8vw, 69px);
     }
 
     .icon-container svg {
@@ -327,105 +340,90 @@
         height: 100%;
     }
 
+    .v-divider {
+        height: clamp(60px, 12vw, 102px);
+    }
+
     .number {
-        font-size: 42px;
+        font-size: clamp(32px, 7vw, 48px);
     }
 
     .date {
-        font-size: 22px;
-        margin-bottom: 3px;
+        font-size: clamp(16px, 3.5vw, 21px);
     }
 
     .label {
-        text-align: center;
-    }
-
-    .urgent-right .label {
-        text-align: left;
-    }
-
-    .greeting-section {
-        display: none;
+        font-size: clamp(13px, 2vw, 16px);
     }
 }
 
-@media (max-width: 320px) {
+/* ─────────────────────────────────────────────
+   SMALL PHONES — extra tweaks below 360px
+───────────────────────────────────────────── */
+@media (max-width: 360px) {
     .summary-page .content-container {
         padding: 16px 12px calc(12px + env(safe-area-inset-bottom));
     }
 
     .summary-header {
-        padding-top: 20px;
         gap: 6px;
         margin-bottom: 20px;
     }
 
     .summary-header h1 {
-        font-size: 40px;
+        font-size: 36px;
     }
 
     .summary-header p {
-        font-size: 18px;
-        line-height: 1.25;
+        font-size: 16px;
     }
 
     .divider {
-        width: 112px;
+        width: 3px;
+        height: 60px;
+    }
+
+    .v-divider {
+        width: 1px;
+        height: 52px;
+    }
+
+    .urgent-card {
+        padding: 12px;
+    }
+
+    .mini-card .label {
+        font-size: 11px;
+        line-height: 1.2;
+    }
+
+    .number {
+        font-size: 30px;
+    }
+}
+
+/* ─────────────────────────────────────────────
+   LANDSCAPE MOBILE
+───────────────────────────────────────────── */
+@media (max-width: 992px) and (orientation: landscape) {
+    .summary-header {
+        margin-bottom: 20px;
+    }
+
+    .summary-header h1 {
+        font-size: clamp(32px, 5vh, 56px);
     }
 
     .metrics-section {
         gap: 12px;
     }
 
-    .row-top,
-    .row-bottom {
-        gap: 8px;
-    }
-
-    .card {
-        border-radius: 20px;
-    }
-
-    .small-card {
-        gap: 6px;
-        height: 100px;
-        padding: 10px 8px;
-    }
-
+    .small-card,
     .mini-card {
-        height: 116px;
-        padding: 8px 6px;
+        height: clamp(80px, 14vh, 110px);
     }
 
     .urgent-card {
-        gap: 8px;
-        padding: 12px;
-    }
-
-    .urgent-left {
-        gap: 8px;
-    }
-
-    .v-divider {
-        width: 1px;
-        height: 60px;
-    }
-
-    .number {
-        font-size: 36px;
-    }
-
-    .label {
-        font-size: 14px;
-        line-height: 1.2;
-    }
-
-    .date {
-        font-size: 16px;
-        margin-bottom: 2px;
-    }
-
-    .mini-card .label {
-        font-size: 11px;
+        padding: 12px 24px;
     }
 }
