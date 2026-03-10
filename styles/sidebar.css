@@ -6,6 +6,9 @@
     --white: #ffffff;
     --mobile-header-height: 80px;
     --mobile-footer-height: 80px;
+    --content-left-offset: 232px;
+    --content-horizontal-padding: 40px;
+    --content-max-width: 960px;
 }
 
 body {
@@ -42,6 +45,16 @@ header h2 {
     display: flex;
     align-items: center;
     gap: 16px;
+}
+
+@media (min-width: 1200px) {
+    .header-btn {
+        right: max(40px, calc(100vw - (var(--content-left-offset) + var(--content-horizontal-padding) + var(--content-max-width))));
+    }
+
+    #profile-menu.profile-overlay {
+        right: max(20px, calc(100vw - (var(--content-left-offset) + var(--content-horizontal-padding) + var(--content-max-width) + 20px)));
+    }
 }
 
 .profile-btn {

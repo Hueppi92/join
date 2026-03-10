@@ -18,6 +18,11 @@ body {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 }
+
+.content > * {
+  width: min(100%, var(--content-max-width, 960px));
+}
+
 .help-content {
     display: flex;
     justify-content: space-between;

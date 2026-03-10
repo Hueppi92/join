@@ -16,7 +16,7 @@
 }
 
 .privacy-policy-content > * {
-    width: min(100%, 960px);
+    width: min(100%, var(--content-max-width, 960px));
 }
 
 @media (max-width: 992px) {
