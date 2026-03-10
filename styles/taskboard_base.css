@@ -6,8 +6,8 @@
 /* ==========================================================================
    1. GLOBALS & UTILITIES
    ========================================================================== */
-html, body { height: 100%; }
-body        { overflow: hidden; }
+
+
 main {
     position: fixed;
     top: 96px;
@@ -54,13 +54,13 @@ input:focus-visible {
    ========================================================================== */
 .board-container {
     margin-left: 348px;
-    width: calc(80% - 232px);
+  max-width:900px;
     margin-top: 0;
     padding: 100px 0 32px;
     box-sizing: border-box;
     min-height: 100%;
     height: auto;
-    overflow: visible;
+    
 }
 
 .board-header {
