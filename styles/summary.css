@@ -289,6 +289,7 @@
 @media (max-width: 992px) {
     .summary-page .content-container {
         margin-left: 0;
+        margin-top:0;
         padding: 24px 20px calc(20px + env(safe-area-inset-bottom));
         min-height: calc(100vh - var(--mobile-header-height, 80px) - var(--mobile-footer-height, 60px));
     }

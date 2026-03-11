@@ -1,7 +1,86 @@
 /* ==========================================================================
    TASK BOARD — task-board-responsive.css
-   Inhalt: Media Queries
+   Inhalt: Move-to Card Menu + Media Queries
    ========================================================================== */
+
+/* --- CARD FOOTER --- */
+.card-footer-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+}
+
+/* --- MOVE-TO BUTTON (auf der Card) --- */
+.card-move-to {
+    display: none; /* Desktop: versteckt */
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10;
+}
+
+.move-to-btn {
+    background: #fff;
+    border: 1.5px solid #D1D7DB;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.move-to-btn:hover        { background: #f0f0f0; border-color: #aaa; }
+.move-to-btn img          { width: 20px; height: 20px; object-fit: contain; }
+
+/* --- MOVE-TO POPUP MENÜ --- */
+.move-to-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: #2A3647;
+    color: #fff;
+    border-radius: 16px;
+    padding: 12px 0 8px;
+    min-width: 148px;
+    z-index: 200;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.28);
+}
+
+.move-to-menu.open { display: block; }
+
+.move-to-title {
+    font-size: 15px;
+    font-weight: 700;
+    padding: 0 16px 10px;
+    color: #fff;
+    letter-spacing: 0.01em;
+}
+
+.move-to-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 16px;
+    font-size: 15px;
+    font-weight: 400;
+    cursor: pointer;
+    border-radius: 10px;
+    margin: 0 6px;
+    transition: background 0.12s;
+    color: #fff;
+}
+
+.move-to-item:hover { background: #3d5166; }
+
+.move-to-arrow {
+    font-size: 15px;
+    line-height: 1;
+    opacity: 0.85;
+}
 
 @media (max-width: 1200px) {
     .board-container { padding: 116px 24px 32px 24px; }
@@ -20,6 +99,7 @@
 @media (max-width: 992px) {
     main             { height: auto; min-height: 0; overflow-y: auto; overflow-x: hidden; }
     .board-container { margin-left: 0; width: 100%; height: auto; min-height: 100%; overflow-y: visible; padding: 16px 20px 20px; }
+    body             { overflow-y: auto !important; }
 }
 
 @media (max-width: 768px) {
@@ -30,9 +110,18 @@
     .search-container       { flex: 1; }
     .search-container input { width: 100%; min-width: 0; }
     .add-task               { font-size: 15px; padding: 10px 16px; }
-    .board                  { grid-template-columns: 1fr; gap: 20px; }
+    .board                  { grid-template-columns: 1fr; gap: 20px; padding-bottom: 40px; }
+    .column                 { height: auto !important; min-height: 0 !important; }
     .column-header h2       { font-size: 22px; }
-    
+    .task-list              { flex-direction: row; -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory; padding-bottom: 8px; gap: 12px; height: auto !important; min-height: 0 !important; }
+    .card                   { min-width: 255px; max-width: 255px; scroll-snap-align: start; flex-shrink: 0; }
+    .card .description      { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-move-to           { display: flex; }
+    .card:has(.move-to-menu.open) { pointer-events: none; }
+    .card:has(.move-to-menu.open) .move-to-btn,
+    .card:has(.move-to-menu.open) .move-to-menu,
+    .card:has(.move-to-menu.open) .move-to-item { pointer-events: auto; }
+    .board                  { padding-bottom: 40px; }
 
     #addTaskModal .modal-content  { padding: 28px 20px 20px; border-radius: 20px; max-height: 95vh; max-height: calc(100dvh - 32px); }
     .modal-title                  { font-size: 28px; margin-bottom: 16px; }
@@ -51,7 +140,11 @@
     .priority-row-edit { gap: 6px; }
     .prio-btn-edit     { font-size: 12px; padding: 9px 4px; gap: 4px; }
     .prio-btn-edit img { width: 14px; }
+
+    .detail-actions   { flex-wrap: wrap; gap: 8px; }
+    .move-to-select   { font-size: 12px; padding: 5px 8px; }
 }
+
 
 @media (max-width: 576px) {
     #addTaskModal .footer_actions { flex-direction: row !important; }
@@ -73,7 +166,13 @@
 
     .prio-btn-edit     { font-size: 11px; padding: 8px 2px; gap: 3px; }
     .prio-btn-edit img { width: 13px; }
+
+    .detail-actions  { flex-direction: column; align-items: stretch; }
+    .action-btn      { justify-content: center; }
+    .action-divider  { display: none; }
+    .move-to-select  { width: 100%; box-sizing: border-box; }
 }
+
 
 @media (max-width: 360px) {
     .board-container  { margin-left: 0; width: 100%; padding: 10px 10px 16px; }

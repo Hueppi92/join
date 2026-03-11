@@ -3,16 +3,8 @@
  */
 
 /**
- * Erzeugt das HTML-Template für eine Task-Karte.
- * @param {Object} task - Das Task-Objekt.
- * @returns {string} HTML-String.
- */
-/**
  * Ensures that a value is returned as an array.
  * Automatically converts Firebase objects (key-value) into an array.
- *
- * @param {Array|Object|null} data - The value to normalize.
- * @returns {Array} Array containing the values from data.
  */
 function ensureArray(data) {
   return Array.isArray(data) ? data : Object.values(data || {});
@@ -20,9 +12,6 @@ function ensureArray(data) {
 
 /**
  * Calculates the completion progress of a task's subtasks.
- *
- * @param {Array|Object|null} subtasksRaw - Raw subtask data.
- * @returns {{done: number, total: number, percent: number}} Progress data.
  */
 function getProgressData(subtasksRaw) {
   const st = ensureArray(subtasksRaw);
@@ -33,10 +22,6 @@ function getProgressData(subtasksRaw) {
 
 /**
  * Formats an ISO date string (YYYY-MM-DD) into European format (DD.MM.YYYY).
- * Returns a placeholder if no date is provided.
- *
- * @param {string} [dueDate=""] - The date string to format in ISO format.
- * @returns {string} Date in DD.MM.YYYY format or "--.--.----".
  */
 function formatDate(dueDate = "") {
   if (!dueDate) return "--.--.----";
@@ -45,9 +30,6 @@ function formatDate(dueDate = "") {
 
 /**
  * Generates a CSS-compatible class name from a category text string.
- *
- * @param {string} [category=""] - The category text of the task.
- * @returns {string} Lowercase CSS class name with hyphens.
  */
 function buildCategoryClass(category = "") {
   return (category || "User Story").toLowerCase().replace(/\s+/g, "-");
@@ -55,26 +37,11 @@ function buildCategoryClass(category = "") {
 
 /** --- USER BADGE HELPERS --- **/
 
-/**
- * Resolves the initials to display for a user.
- * Prefers existing initials; otherwise calculates them from the name.
- *
- * @param {Object} u - User badge object with optional name and initials properties.
- * @returns {string} Initials of the user.
- */
 function resolveUserInitials(u) {
   const name = u.name || "";
   return u.initials || getInitials(name);
 }
 
-/**
- * Generates the HTML string for a single user badge on a task card.
- * Badges are displayed overlapping side by side.
- *
- * @param {Object} u - User badge object with name, initials, and color properties.
- * @param {number} index - Position of the badge in the list (determines z-index and offset).
- * @returns {string} HTML string for the badge.
- */
 function renderCardBadge(u, index) {
   const ml = index === 0 ? "0" : "-12px";
   return `<div class="user-badge" style="background-color:${u.color || "#2A3647"};z-index:${10 - index};margin-left:${ml};">
@@ -82,13 +49,6 @@ function renderCardBadge(u, index) {
   </div>`;
 }
 
-/**
- * Generates the HTML string for a user badge in the task detail view,
- * including the full name of the user.
- *
- * @param {Object} u - User badge object with name, initials, and color properties.
- * @returns {string} HTML string for the detail badge with name.
- */
 function renderDetailBadge(u) {
   const name = u.name || "Unknown";
   const displayName = String(u.id || "").startsWith("self_") ? `${name} (You)` : name;
@@ -99,41 +59,28 @@ function renderDetailBadge(u) {
   </div>`;
 }
 
-/**
- * Renders a list of user badges for a task card or the detail view.
- *
- * @param {Array|Object} users - List of assigned user objects.
- * @param {number} [limit=3] - Maximum number of badges to display (card view only).
- * @param {boolean} [isDetail=false] - True for detail view (with name), false for card view.
- * @returns {string} HTML string with all badge elements.
- */
-function renderContactBadges(users, limit = 3, isDetail = false) {
+function renderContactBadges(users, limit = 4, isDetail = false) {
   const list = ensureArray(users).filter((u) => u && typeof u === "object");
   if (isDetail) return list.map(renderDetailBadge).join("");
-  return list.slice(0, limit).map(renderCardBadge).join("");
+
+  const visible = list.slice(0, limit);
+  const remaining = list.length - visible.length;
+
+  let html = visible.map(renderCardBadge).join("");
+
+  if (remaining > 0) {
+    html += `<div class="user-badge user-badge--more" style="z-index:1;margin-left:-12px;">+${remaining}</div>`;
+  }
+
+  return html;
 }
 
 /** --- SUBTASK HELPERS --- **/
 
-/**
- * Resolves the display title of a subtask, regardless of its storage format.
- *
- * @param {string|Object|null} s - Raw subtask entry (string or object with title property).
- * @param {number} i - Index of the subtask (used for fallback label).
- * @returns {string} Display title of the subtask.
- */
 function resolveSubtaskTitle(s, i) {
   return typeof s === "object" ? s.title || `Subtask ${i + 1}` : s;
 }
 
-/**
- * Renders the subtask list for the task detail view as an HTML string.
- * Each subtask is clickable and toggles its completed status.
- *
- * @param {Array|Object|null} subtasksRaw - Raw subtask data.
- * @param {string} taskId - The Firebase ID of the task.
- * @returns {string} HTML string of the subtask list or "No subtasks".
- */
 function renderSubtaskItems(subtasksRaw, taskId) {
   const st = ensureArray(subtasksRaw);
   if (st.length === 0) return "No subtasks";
@@ -149,13 +96,6 @@ function renderSubtaskItems(subtasksRaw, taskId) {
 
 /** --- PROGRESS BAR HTML --- **/
 
-/**
- * Generates the HTML string for the progress indicator on a task card.
- * Returns an empty string if no subtasks are present.
- *
- * @param {Array|Object|null} subtasksRaw - Raw subtask data.
- * @returns {string} HTML string of the progress bar or empty string.
- */
 function renderProgressBar(subtasksRaw) {
   const { done, total, percent } = getProgressData(subtasksRaw);
   if (total === 0) return "";
@@ -167,13 +107,6 @@ function renderProgressBar(subtasksRaw) {
 
 /** --- PRIORITY BUTTONS HTML --- **/
 
-/**
- * Generates the HTML string for the three priority buttons in the edit form.
- * The currently active button receives the corresponding CSS class.
- *
- * @param {string} currentPrio - The currently set priority ('urgent', 'medium', or 'low').
- * @returns {string} HTML string with all three priority buttons.
- */
 function renderPrioButtons(currentPrio) {
   return ["urgent", "medium", "low"].map((p) => {
     const active = currentPrio === p ? `active-${p}` : "";
@@ -184,11 +117,67 @@ function renderPrioButtons(currentPrio) {
   }).join("");
 }
 
+/** --- MOVE-TO MENU --- **/
+
+/**
+ * Renders the move-to context menu items for a card.
+ * Only shows statuses different from the current task status.
+ *
+ * @param {string} id - Task Firebase ID.
+ * @param {string} currentStatus - Current status of the task.
+ * @returns {string} HTML string of the menu items.
+ */
+function renderMoveToItems(id, currentStatus) {
+  const labels = {
+    "todo":           "To-do",
+    "in-progress":    "In Progress",
+    "await-feedback": "Await Feedback",
+    "done":           "Done",
+  };
+
+  const currentIndex = BOARD_STATUSES.indexOf(currentStatus);
+
+  return BOARD_STATUSES
+    .filter(s => s !== currentStatus)
+    .map(s => {
+      const targetIndex = BOARD_STATUSES.indexOf(s);
+      const arrow = targetIndex < currentIndex ? "↑" : "↓";
+      const label = labels[s] || s;
+      return `<div class="move-to-item" onclick="event.stopPropagation();moveTaskToStatus('${id}','${s}');closeAllMoveToMenus()">
+        <span class="move-to-arrow">${arrow}</span>${label}
+      </div>`;
+    }).join("");
+}
+
+/**
+ * Closes all open move-to menus on the board.
+ */
+function closeAllMoveToMenus() {
+  document.querySelectorAll(".move-to-menu").forEach(m => m.classList.remove("open"));
+}
+
+/**
+ * Toggles the move-to menu for a specific card.
+ *
+ * @param {Event} e - The click event.
+ * @param {string} id - Task Firebase ID.
+ */
+function toggleMoveToMenu(e, id) {
+  e.stopPropagation();
+  const menu = document.getElementById(`move-to-menu-${id}`);
+  const isOpen = menu.classList.contains("open");
+  closeAllMoveToMenus();
+  if (!isOpen) menu.classList.add("open");
+}
+
+// Close all menus when clicking anywhere on the document
+document.addEventListener("click", closeAllMoveToMenus);
+
 /** --- MAIN TEMPLATES --- **/
 
 /**
  * Generates the HTML for a task card on the board.
- * The card is drag-and-drop enabled and opens the detail view on click.
+ * Includes a move-to context menu button (mobile).
  *
  * @param {Object} task - The normalized task object from Firebase.
  * @param {string} id - The Firebase ID of the task.
@@ -198,7 +187,9 @@ function getCardTemplate(task, id) {
   const prio = (task.priority || "low").toLowerCase();
   const catClass = buildCategoryClass(task.category);
   const catText = task.category || "User Story";
-  return `<div class="card" draggable="true" onclick="event.stopPropagation();openTaskDetail('${id}')" ondragstart="event.dataTransfer.setData('text/plain','${id}')">
+  const currentStatus = task.status || "todo";
+
+  return `<div class="card" draggable="true" onclick="event.stopPropagation();openTaskDetail('${id}')" ondragstart="event.dataTransfer.setData('text/plain','${id}')" style="position:relative;">
     <div class="badge ${catClass}">${catText}</div>
     <div class="card-content">
       <h2 class="card-title">${task.title || "No Title"}</h2>
@@ -206,19 +197,25 @@ function getCardTemplate(task, id) {
     </div>
     ${renderProgressBar(task.subtasks)}
     <div class="card-footer">
-      <div class="assigned-to-container">${renderContactBadges(task.assignedTo)}</div>
-      <div class="prio-icon"><img src="../assets/icons/prio-${prio}.svg" alt="${prio}" onerror="this.style.display='none'"></div>
+      <div class="assigned-to-container">${renderContactBadges(task.assignedTo, 4)}</div>
+      <div class="card-footer-right">
+        <div class="prio-icon"><img src="../assets/icons/prio-${prio}.svg" alt="${prio}" onerror="this.style.display='none'"></div>
+      </div>
+    </div>
+    <div class="card-move-to">
+      <button class="move-to-btn" onclick="toggleMoveToMenu(event,'${id}')" aria-label="Move task">
+        <img src="../assets/icons/move-to-icon.png" alt="Move to">
+      </button>
+      <div class="move-to-menu" id="move-to-menu-${id}">
+        <div class="move-to-title">Move to</div>
+        ${renderMoveToItems(id, currentStatus)}
+      </div>
     </div>
   </div>`;
 }
 
 /**
  * Generates the HTML for the task detail view in the overlay.
- * Contains all task information as well as action buttons for delete and edit.
- *
- * @param {Object} task - The normalized task object from Firebase.
- * @param {string} id - The Firebase ID of the task.
- * @returns {string} HTML string of the detail view.
  */
 function getTaskDetailTemplate(task, id) {
   const prio = (task.priority || "low").toLowerCase();
@@ -242,29 +239,16 @@ function getTaskDetailTemplate(task, id) {
     <div class="detail-section"><h3 class="section-title">Subtasks</h3>
       <div class="subtask-list">${renderSubtaskItems(task.subtasks, id)}</div>
     </div>
-  <div class="detail-actions">
-  <button class="action-btn" onclick="deleteTask('${id}')"><img src="../assets/icons/delete_text.svg" alt="Delete"></button>
-  <div class="action-divider"></div>
-  <button class="action-btn" onclick="editTask('${id}')"><img src="../assets/icons/edit_text.svg" alt="Edit"></button>
-  <div class="move-to-wrapper">
-    <select class="move-to-select" onchange="moveTaskToStatus('${id}', this.value); this.value=''">
-      <option value="" disabled selected>Move to …</option>
-      ${BOARD_STATUSES.filter(s => s !== task.status).map(s =>
-        `<option value="${s}">${s.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</option>`
-      ).join('')}
-    </select>
-  </div>
-</div>
+    <div class="detail-actions">
+      <button class="action-btn" onclick="deleteTask('${id}')"><img src="../assets/icons/delete_text.svg" alt="Delete"></button>
+      <div class="action-divider"></div>
+      <button class="action-btn" onclick="editTask('${id}')"><img src="../assets/icons/edit_text.svg" alt="Edit"></button>
+    </div>
   </div>`;
 }
 
 /**
  * Generates the HTML for the task edit form in the overlay.
- * Contains input fields for all editable task properties.
- *
- * @param {Object} task - The normalized task object from Firebase.
- * @param {string} id - The Firebase ID of the task.
- * @returns {string} HTML string of the edit form.
  */
 function getEditTaskTemplate(task, id) {
   const curr = (task.priority || "low").toLowerCase();

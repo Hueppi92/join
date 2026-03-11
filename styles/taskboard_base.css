@@ -204,6 +204,7 @@ input:focus-visible {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    position: relative;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -250,5 +251,10 @@ input:focus-visible {
     border: 2px solid var(--white);
     cursor:pointer;
 }
-
+.user-badge--more {
+    background-color: #2A3647;
+    color: #fff;
+    font-size: 12px;
+    cursor: default;
+}
 .prio-icon img { width: 24px; height: 24px; }
