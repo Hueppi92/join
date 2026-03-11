@@ -426,6 +426,8 @@ body {
     padding: 12px 16px;
     gap: 12px;
 
+    color: black;
+
     cursor: pointer;
 }
 
@@ -603,6 +605,7 @@ body {
 }
 
 .error {
+    color: #E60026;
     font-size: 14px;
 }
 
