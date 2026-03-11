@@ -83,7 +83,7 @@
 .detail-section { margin: 20px 0; }
 .section-title  { font-size: 16px; font-weight: 700; margin: 0 0 12px; }
 
-.assigned-list                          { display: flex; flex-direction: column; gap: 8px; }
+.assigned-list                          { display: flex; flex-direction: column; gap: 8px; padding-left:24px; }
 .assigned-user-badge-container          { display: flex; align-items: center; gap: 12px; }
 .assigned-user-badge-container .user-badge { width: 40px; height: 40px; min-width: 40px; }
 .assigned-user-badge-container span     { font-size: 15px; }
@@ -92,7 +92,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 8px;
+    padding: 8px 8px 8px 32px;
     border-radius: 10px;
     cursor: pointer;
     transition: background 0.1s;

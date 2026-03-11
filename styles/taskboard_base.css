@@ -248,6 +248,7 @@ input:focus-visible {
     font-size: 13px;
     font-weight: 700;
     border: 2px solid var(--white);
+    cursor:pointer;
 }
 
 .prio-icon img { width: 24px; height: 24px; }
