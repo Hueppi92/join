@@ -86,6 +86,8 @@ function resetPriority() {
  */
 function resetErrorStates() {
     document.querySelectorAll(".left_row").forEach(r => r.classList.remove("error"));
+    let categoryWrapper = document.getElementById("categorySelectWrapper");
+    categoryWrapper.classList.remove("error");
 }
 
 /**

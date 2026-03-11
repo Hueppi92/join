@@ -183,8 +183,6 @@ function buildContactTemplate(id, name, displayName, color, initials) {
  * @returns {void}
  */
 function setupContactDropdownListeners(dropdown, searchInput) {
-    searchInput.addEventListener("focus", () => dropdown.classList.add("open"));
-
     dropdown.addEventListener("change", e => {
         let item = e.target.closest(".dropdown_item");
         if (!item) return;
@@ -226,10 +224,26 @@ function updateAssignedDisplay() {
  */
 function updateAssignedAvatars() {
     let container = document.getElementById("assignedAvatars");
-    let checked = getCheckedAssignedContacts();
+    let checked = Array.from(getCheckedAssignedContacts());
 
     container.innerHTML = "";
-    checked.forEach(cb => container.appendChild(createAvatar(cb)));
+
+    const MAX_VISIBLE = 5;
+
+    checked.slice(0, MAX_VISIBLE).forEach(cb => {
+        container.appendChild(createAvatar(cb));
+    });
+
+    let remaining = checked.length - MAX_VISIBLE;
+
+    if (remaining > 0) {
+        let more = document.createElement("div");
+        more.className = "dropdown_avatar avatar_more";
+        more.textContent = `+${remaining}`;
+        more.style.backgroundColor = "#2A3647";
+
+        container.appendChild(more);
+    }
 }
 
 /**
@@ -303,7 +317,7 @@ function setupAssignedSearch() {
 
     if (!searchInput || !dropdown) return;
 
-    wrapper.addEventListener("click", (e) => {e.stopPropagation();toggleAssignedDropdown(wrapper, dropdown);searchInput.focus();});
+    wrapper.addEventListener("click", (e) => { e.stopPropagation(); toggleAssignedDropdown(wrapper, dropdown); searchInput.focus(); });
     document.addEventListener("click", e => handleAssignedOutsideClick(e, wrapper, dropdown));
     searchInput.addEventListener("input", () => filterAssignedContacts(searchInput, dropdown));
     dropdown.addEventListener("change", handleAssignedSelectionChange);
@@ -332,6 +346,10 @@ function handleAssignedOutsideClick(e, wrapper, dropdown) {
     if (!wrapper.contains(e.target)) {
         dropdown.classList.remove("open");
         wrapper.classList.remove("open");
+
+        let searchInput = document.getElementById("assignedSearch");
+        searchInput.value = "";
+        searchInput.placeholder = "Select contacts to assign";
     }
 }
 
@@ -385,10 +403,21 @@ function setupCategoryDropdown() {
 
     if (!wrapper || !input || !dropdown) return;
 
-    wrapper.addEventListener("click", (e) => {e.stopPropagation();toggleCategoryDropdown(wrapper, dropdown);input.focus();});
+    wrapper.addEventListener("click", (e) => { e.stopPropagation(); toggleCategoryDropdown(wrapper, dropdown); });
 
     dropdown.querySelectorAll(".dropdown_item")
-        .forEach(item => item.addEventListener("click", () => selectCategory(item, input, dropdown)));
+        .forEach(item => {
+
+            item.addEventListener("mousedown", (e) => {
+                e.preventDefault();
+            });
+
+            item.addEventListener("click", (e) => {
+                e.stopPropagation();
+                selectCategory(item, input, dropdown);
+            });
+
+        });
 
     document.addEventListener("click", e =>
         handleCategoryOutsideClick(e, wrapper, dropdown)
@@ -418,8 +447,12 @@ function openCategoryDropdown(dropdown) {
 function selectCategory(item, input, dropdown) {
     input.value = item.textContent;
     input.dataset.value = item.dataset.value;
+
+    let wrapper = document.getElementById("categorySelectWrapper");
+    wrapper.classList.remove("error");
+
     dropdown.classList.remove("open");
-    dropdown.closest(".select_native")?.classList.remove("open");
+    wrapper.classList.remove("open");
 }
 
 /**
@@ -432,8 +465,16 @@ function selectCategory(item, input, dropdown) {
  */
 function handleCategoryOutsideClick(e, wrapper, dropdown) {
     if (!wrapper.contains(e.target)) {
+        let wasOpen = wrapper.classList.contains("open");
+
         dropdown.classList.remove("open");
         wrapper.classList.remove("open");
+
+        let input = document.getElementById("categoryInput");
+
+        if (wasOpen && !input.dataset.value) {
+            wrapper.classList.add("error");
+        }
     }
 }
 

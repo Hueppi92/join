@@ -84,6 +84,10 @@ body {
     display: block;
 }
 
+.category-select.error + .error_text {
+    display: block;
+}
+
 .left_row.error .left_single_row {
     border-color: #E60026;
 }
@@ -187,7 +191,6 @@ body {
     height: auto;
     margin-bottom: 8px;
     gap: 6px;
-
 }
 
 /* =========================================================
@@ -241,7 +244,7 @@ body {
 }
 
 .prio div img {
-    width: 12px;
+    width: 16px;
     height: auto;
 
     filter: brightness(0) invert(1);
@@ -358,6 +361,10 @@ body {
     gap: 8px;
 }
 
+.category-select.error input {
+    border-color: #E60026;
+}
+
 .selector_dropdown {
     display: flex;
     flex-direction: column;
@@ -405,6 +412,11 @@ body {
     color: white;
     background: #29ABE2;
     border-radius: 50%;
+}
+
+.avatar_more {
+    background: #2A3647;
+    font-weight: 600;
 }
 
 .dropdown_item {
@@ -591,7 +603,6 @@ body {
 }
 
 .error {
-    color: red;
     font-size: 14px;
 }
 
