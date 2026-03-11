@@ -17,8 +17,6 @@
     height: 100vh;
     max-width: 1200px;
     overflow: hidden;
-
-    
 }
 
 /* ─────────────────────────────────────────────
@@ -50,19 +48,28 @@
     font-size: 72px;
     margin: 0;
     color: var(--dark-blue);
+    white-space: nowrap;
 }
 
+.header-divider-and-p {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+}
+
+.summary-header p {
+    font-size: 27px;
+    margin: 0;
+}
+
+/* Vertical divider (desktop) */
 .divider {
     width: 3px;
     height: 60px;
     background-color: var(--light-blue);
     border-radius: 2px;
     flex-shrink: 0;
-}
-
-.summary-header p {
-    font-size: 27px;
-    margin: 0;
 }
 
 /* ─────────────────────────────────────────────
@@ -230,7 +237,7 @@
    Appears over full screen, fades out → reveals board
 ───────────────────────────────────────────── */
 .mobile-greeting-overlay {
-    display: none; /* shown via JS on mobile */
+    display: none;
     position: fixed;
     inset: 0;
     z-index: 200;
@@ -267,7 +274,6 @@
     100% { opacity: 0; display: none; }
 }
 
-/* Board hidden during greeting, revealed after */
 .board-hidden {
     opacity: 0;
     transition: opacity 0.5s ease-in-out;
@@ -289,14 +295,32 @@
 
     .summary-header {
         padding-top: 0;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        margin-bottom: 30px;
     }
 
     .summary-header h1 {
-        font-size: clamp(40px, 9vw, 72px);
+        font-size: clamp(32px, 9vw, 72px);
+        white-space: nowrap;
     }
 
     .summary-header p {
-        font-size: clamp(18px, 3.5vw, 27px);
+        font-size: clamp(14px, 3.5vw, 20px);
+    }
+
+    /* Switch to horizontal divider on mobile */
+    .divider {
+        width: 50px;
+        height: 3px;
+    }
+
+    /* Stack "Key Metrics" text + divider vertically on mobile */
+    .header-divider-and-p {
+        flex-direction: column-reverse;
+        align-items: flex-start;
+        gap: 6px;
     }
 
     .metrics-section {
@@ -361,52 +385,7 @@
     }
 
     .label {
-        font-size: clamp(13px, 2vw, 16px);
-    }
-}
-
-/* ─────────────────────────────────────────────
-   SMALL PHONES — extra tweaks below 360px
-───────────────────────────────────────────── */
-@media (max-width: 360px) {
-    .summary-page .content-container {
-        padding: 16px 12px calc(12px + env(safe-area-inset-bottom));
-    }
-
-    .summary-header {
-        gap: 6px;
-        margin-bottom: 20px;
-    }
-
-    .summary-header h1 {
-        font-size: 36px;
-    }
-
-    .summary-header p {
-        font-size: 16px;
-    }
-
-    .divider {
-        width: 3px;
-        height: 60px;
-    }
-
-    .v-divider {
-        width: 1px;
-        height: 52px;
-    }
-
-    .urgent-card {
-        padding: 12px;
-    }
-
-    .mini-card .label {
-        font-size: 11px;
-        line-height: 1.2;
-    }
-
-    .number {
-        font-size: 30px;
+        font-size: clamp(16px, 2vw, 16px);
     }
 }
 
@@ -435,3 +414,5 @@
         padding: 12px 24px;
     }
 }
+
+/* Remove the old mobile column-reverse rule - no longer needed */
