@@ -54,7 +54,7 @@ input:focus-visible {
    ========================================================================== */
 .board-container {
     margin-left: 348px;
-  max-width:900px;
+  max-width:1360px;
     margin-top: 0;
     padding: 100px 0 32px;
     box-sizing: border-box;
