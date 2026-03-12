@@ -512,7 +512,59 @@ function toNormalizedContact(id, value) {
 		createdAt: value?.createdAt || 0,
 	};
 }
+/**
+ * Initializes validation for the name input field.
+ * Prevents entry of numbers and special characters, allowing only letters and hyphens.
+ * @category Contacts
+ * @subcategory UI & Validation
+ */
+function initNameValidation() {
+    const nameInput =document.getElementById("name-input") ||document.querySelector('input[name="name"]');
+    if (!nameInput) return;
 
+    nameInput.addEventListener('input', (e) => {
+        const input = e.target;
+        const cursorPosition = input.selectionStart;
+
+        // Allows letters (including German umlauts), spaces, and hyphens. 
+        // Removes everything else, especially numbers.
+        const newValue = input.value.replace(/[^a-zA-ZäöüÄÖÜß \-]/g, '');
+
+        if (input.value !== newValue) {
+            input.value = newValue;
+            input.setSelectionRange(cursorPosition, cursorPosition);
+        }
+    });
+}
+document.addEventListener('DOMContentLoaded', initNameValidation);
+
+/**
+ * Initializes validation for the phone input field.
+ * Prevents entry of non-numeric characters (except the plus sign) on all devices.
+ * * @category Contacts
+ * @subcategory UI & Validation
+ */
+function initPhoneValidation() {
+    const phoneInput = document.getElementById('phone-input') || document.querySelector('input[name="phone"]');
+    if (!phoneInput) return;
+    /**
+     * Listens for input events to filter out disallowed characters in real-time.
+     */
+    phoneInput.addEventListener('input', (e) => {
+        const input = e.target;
+        const cursorPosition = input.selectionStart;       
+        // Remove everything that is NOT a digit (0-9) or a plus sign (+)
+        const newValue = input.value.replace(/[^0-9+]/g, '');        
+        if (input.value !== newValue) {
+            input.value = newValue;
+            // Restore cursor position to prevent jumping while typing
+            input.setSelectionRange(cursorPosition, cursorPosition);
+        }
+    });
+}
+
+// Rufe die Funktion beim Laden der Seite auf
+document.addEventListener('DOMContentLoaded', initPhoneValidation);
 /**
  * Converts a contact map object into list form.
  * @param {Record<string, {name?: string, email?: string, phone?: string, createdAt?: number}>} contactsMap - Contacts map.
