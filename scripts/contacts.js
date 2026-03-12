@@ -423,6 +423,35 @@ function initializeContactFormSubmit(fields) {
 }
 
 /**
+ * Prepares the contact form for edit mode.
+ * @param {ReturnType<typeof getContactFields>} fields - Contact form fields.
+ * @param {string} contactId - Contact id.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+function prepareEditContactForm(fields, contactId) {
+	fields.form.dataset.mode = 'edit';
+	fields.form.dataset.contactId = contactId || '';
+	clearContactErrors(fields);
+	setContactFormMessage('');
+}
+
+/**
+ * Loads contact data into the edit form and updates avatar state.
+ * @param {ReturnType<typeof getContactFields>} fields - Contact form fields.
+ * @param {string} contactId - Contact id.
+ * @param {{name?: string, email?: string, phone?: string} | null} contact - Optional contact data.
+ * @returns {Promise<void>} Resolves after form hydration completes.
+ * @category Contacts
+ * @subcategory UI & Init
+ */
+async function hydrateEditContactForm(fields, contactId, contact) {
+	const data = contact || (await fetchContact(contactId));
+	applyContactToForm(fields, data);
+	updateContactAvatar(getContactOverlayElements(), data?.name || '', true);
+}
+
+/**
  * Opens the overlay in edit mode with contact data.
  * @param {string} contactId - Contact id.
  * @param {{name?: string, email?: string, phone?: string} | null} contact - Contact data.
@@ -434,16 +463,12 @@ async function openEditContactOverlay(contactId, contact) {
 	setContactOverlayMode('edit');
 	const fields = getContactFields();
 	if (fields) {
-		fields.form.dataset.mode = 'edit';
-		fields.form.dataset.contactId = contactId || '';
-		clearContactErrors(fields);
-		setContactFormMessage('');
-		const data = contact || (await fetchContact(contactId));
-		applyContactToForm(fields, data);
-		updateContactAvatar(getContactOverlayElements(), data?.name || '', true);
+		prepareEditContactForm(fields, contactId);
+		await hydrateEditContactForm(fields, contactId, contact);
 	}
 	openContactOverlay();
 }
+
 window.contactsOverlay = {
 	openEditContactOverlay,
 };
