@@ -1,4 +1,4 @@
-const MOBILE_CONTACTS_BREAKPOINT_QUERY = '(max-width: 992px)';
+const MOBILE_CONTACTS_BREAKPOINT_QUERY = '(max-width: 768px)';
 
 /**
  * Returns whether contacts mobile layout is active.
@@ -66,6 +66,13 @@ function setMobileContactActionMenuState(isOpen) {
 	const trigger = document.getElementById('mobile-contact-detail-menu-btn');
 	if (!menu || !trigger) return;
 	const shouldOpen = Boolean(isOpen) && document.body?.classList.contains('contacts-mobile-details-open');
+	if (!shouldOpen && menu.contains(document.activeElement) && typeof trigger.focus === 'function') {
+		try {
+			trigger.focus({ preventScroll: true });
+		} catch (error) {
+			trigger.focus();
+		}
+	}
 	menu.classList.toggle('is-open', shouldOpen);
 	menu.setAttribute('aria-hidden', shouldOpen ? 'false' : 'true');
 	trigger.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');

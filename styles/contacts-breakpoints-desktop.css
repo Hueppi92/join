@@ -1,21 +1,13 @@
-/* ─────────────────────────────────────────────
-   769px – 992px:
-   Sidebar ist bereits Bottom-Nav.
-   Viewport zu schmal für 2 Spalten →
-   gleiches Verhalten wie Mobile (≤768px):
-   nur Kontaktliste, Details auf Klick.
-───────────────────────────────────────────── */
+/* 769px - 992px: tablet layout with visible list and details columns. */
 @media (min-width: 769px) and (max-width: 992px) {
-
-  /* Kontaktliste: volle Breite, scrollbar */
   .contacts-section {
-    position: relative;
-    top: auto;
-    left: auto;
-    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: min(320px, 42vw);
     height: 100%;
-    border-right: none;
-    background: transparent;
+    border-right: 1px solid #d1d1d1;
+    background: #ffffff;
     overflow: hidden;
   }
 
@@ -25,166 +17,88 @@
     flex-direction: column;
   }
 
-  .contacts-header {
-    height: 0;
-  }
-
   .contacts-list {
     flex: 1;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    padding: 12px 0 24px;
+    padding: 8px 0 20px;
   }
 
   .contact-group-title {
-    margin: 0 32px 10px;
+    margin: 0 16px 10px;
     padding: 8px 0 12px;
   }
 
   .contact-box {
     width: auto;
-    margin: 0 20px 8px;
+    margin: 0 12px 8px;
     padding: 12px;
   }
 
   .contact-logo {
-    margin-right: 0;
+    margin-right: 12px;
   }
 
-  /* Details standardmäßig versteckt */
+  .contact-btn {
+    width: calc(100% - 24px);
+    margin: 12px;
+    min-height: 52px;
+    font-size: 18px;
+  }
+
   .contact-details-section {
-    display: none;
-    position: relative;
-    top: auto;
-    left: auto;
-    right: auto;
-    bottom: auto;
-  }
-
-  /* Details sichtbar wenn Klasse gesetzt */
-  body.contacts-mobile-details-open .contacts-section {
-    display: none;
-  }
-
-  body.contacts-mobile-details-open .contact-details-section {
+    position: absolute;
+    top: 0;
+    left: calc(min(320px, 42vw) + 24px);
+    right: 20px;
+    bottom: 0;
     display: flex;
-    width: 100%;
-    height: 100%;
-    padding: 8px 20px 24px;
-    gap: 32px;
-    background: transparent;
+    padding: 20px 0;
+    gap: 24px;
     overflow-y: auto;
     overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    flex-direction: column;
   }
 
-  /* Add-contact Button als FAB über Bottom-Nav */
-  .contact-btn {
-    position: fixed;
-    right: 16px;
-    bottom: calc(var(--mobile-footer-height, 80px) + 12px);
-    width: 56px;
-    min-height: 56px;
-    height: 56px;
-    margin: 0;
-    padding: 0;
-    border-radius: 50%;
-    border: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
-    z-index: 16;
+  .contact-details-headline,
+  .contact-details-headline-text {
+    gap: 16px;
   }
 
-  .contact-btn span {
-    display: none;
+  .contact-details-headline h1 {
+    font-size: 44px;
   }
 
-  .contact-btn img {
-    width: 32px;
-    height: 32px;
-    content: url('../assets/icons/person_add.svg');
-    filter: none;
+  .contact-details-headline p {
+    font-size: 22px;
   }
 
-  /* Back-Button in Detailansicht */
-  body.contacts-mobile-details-open .mobile-contact-back-btn {
-    position: absolute;
-    top: 10px;
-    right: 0;
-    width: 32px;
-    height: 32px;
-    border: none;
-    border-radius: 50%;
-    background: transparent;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    padding: 0;
+  .contact-details-headline-divider {
+    height: 46px;
   }
 
-  body.contacts-mobile-details-open .mobile-contact-back-btn img {
-    width: 20px;
-    height: 20px;
+  .contact-details-profile {
+    gap: 14px;
   }
 
-  body.contacts-mobile-details-open .contact-details-headline {
-    width: 100%;
-    position: relative;
-    align-items: flex-start;
+  .contact-details-avatar {
+    width: 86px;
+    height: 86px;
+    font-size: 33px;
   }
 
-  body.contacts-mobile-details-open .contact-details-headline-text {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
+  .contact-details-name {
+    font-size: 34px;
   }
 
-  body.contacts-mobile-details-open .contact-details-actions {
-    display: none;
+  .contact-details-actions {
+    gap: 10px;
+    flex-wrap: wrap;
   }
 
-  /* FAB Menü */
-  body.contacts-mobile-details-open .mobile-contact-detail-menu-btn {
-    position: fixed;
-    right: 12px;
-    bottom: calc(var(--mobile-footer-height, 80px) + 12px);
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    border: none;
-    background: #2a3647;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    padding: 0;
-    z-index: 20;
+  .mobile-contact-back-btn,
+  .mobile-contact-detail-menu-btn,
+  .mobile-contact-detail-menu {
+    display: none !important;
   }
 
-  body.contacts-mobile-details-open .mobile-contact-detail-menu {
-    position: fixed;
-    right: 12px;
-    bottom: calc(var(--mobile-footer-height, 80px) + 12px);
-    min-width: 116px;
-    background: #ffffff;
-    border-radius: 20px 20px 0 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    transform: translateX(130%);
-    opacity: 0;
-    pointer-events: none;
-    transition: transform 220ms ease-out, opacity 220ms ease-out;
-    z-index: 21;
-  }
-
-  body.contacts-mobile-details-open .mobile-contact-detail-menu.is-open {
-    transform: translateX(0);
-    opacity: 1;
-    pointer-events: auto;
-  }
 }
