@@ -1,8 +1,6 @@
 @media (min-width: 577px) and (max-width: 992px) {
   .contact-overlay {
     align-items: center;
-    /* Padding berücksichtigt Header und Bottom-Nav */
-    padding: var(--mobile-header-height, 80px) 12px var(--mobile-footer-height, 80px);
   }
 
   .contact-overlay__panel {
@@ -47,10 +45,6 @@
   .contact-overlay__close {
     top: 14px;
     right: 14px;
-  }
-
-  .contact-overlay__close img {
-    filter: brightness(0) invert(1);
   }
 
   .contact-overlay__panel-right {
