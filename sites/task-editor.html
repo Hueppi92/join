@@ -61,9 +61,9 @@
             <span class="error">*</span>
           </label>
 
-          <div class="left_single_row">
-            <input id="dateInput" type="date" min="2024-01-01" required>
-          </div>
+        <div class="left_single_row">
+    <input id="dateInput" type="date" required onfocus="setMinDateToToday()">
+</div>
 
           <small class="error_text">This field is required</small>
         </div>
@@ -111,7 +111,7 @@
               <input type="text" id="assignedSearch" placeholder="Select contacts to assign" autocomplete="off" />
             </div>
 
-            <div class="selector_dropdown" id="assignedDropdown" role="listbox">
+            <div class="selector_dropdown" onclick="event.stopPropagation()" id="assignedDropdown" role="listbox">
             </div>
           </div>
 

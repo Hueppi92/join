@@ -161,6 +161,19 @@ function handleCreateTaskClick(e, form) {
 }
 
 /**
+ * Sets minDate to today for the date input field to prevent selecting past dates.
+ *
+ * @returns {void}
+ */
+function setMinDateToToday() {
+    let dateInput = document.getElementById("dateInput");
+    if (!dateInput) return;
+
+    let today = new Date().toISOString().split("T")[0];
+    dateInput.min = today;
+}
+
+/**
  * Builds the task object from the current form values.
  * Collects all relevant input fields and generates a structured
  * task object ready for database storage.

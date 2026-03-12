@@ -50,7 +50,8 @@ function resetAssignedUsers() {
 
     document.querySelectorAll("#assignedDropdown input[type='checkbox']")
         .forEach(cb => cb.checked = false);
-
+    document.querySelectorAll(".dropdown_item")
+        .forEach(item => item.classList.remove("selected"));
     document.getElementById("assignedAvatars").innerHTML = "";
 }
 
