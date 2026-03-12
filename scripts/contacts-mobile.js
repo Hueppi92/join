@@ -1,4 +1,4 @@
-const MOBILE_CONTACTS_BREAKPOINT_QUERY = '(max-width: 768px)';
+const MOBILE_CONTACTS_BREAKPOINT_QUERY = '(max-width: 992px)';
 
 /**
  * Returns whether contacts mobile layout is active.
