@@ -24,12 +24,13 @@
         <button id="profile-btn" class="profile-btn"></button>
       </div>
     </header>
+
     <main class="content-container">
       <section class="summary-header">
         <h1>Join 360</h1>
         <div class="header-divider-and-p">
-        <div class="divider"></div>
-        <p>Key Metrics at a Glance</p>
+          <div class="divider"></div>
+          <p>Key Metrics at a Glance</p>
         </div>
       </section>
 
@@ -55,13 +56,7 @@
                     width="33"
                     height="33"
                   >
-                    <rect
-                      x="18.5"
-                      y="18.5"
-                      width="32"
-                      height="32"
-                      fill="#D9D9D9"
-                    />
+                    <rect x="18.5" y="18.5" width="32" height="32" fill="#D9D9D9" />
                   </mask>
                   <g mask="url(#mask_todo)">
                     <path
@@ -87,13 +82,7 @@
                     width="33"
                     height="33"
                   >
-                    <rect
-                      x="18.5"
-                      y="18.5"
-                      width="32"
-                      height="32"
-                      fill="#D9D9D9"
-                    />
+                    <rect x="18.5" y="18.5" width="32" height="32" fill="#D9D9D9" />
                   </mask>
                   <g mask="url(#mask_todo_h)">
                     <path
@@ -152,6 +141,7 @@
               </div>
             </div>
           </div>
+
           <div class="card urgent-card" onclick="window.location.href='./taskboard.html'">
             <div class="urgent-left">
               <div class="icon-container">
@@ -220,68 +210,57 @@
           <span class="user-name" id="user-name">...</span>
         </div>
       </div>
+    </main>
 
-      <aside>
-        <img src="../assets/img/join_logo.svg" alt="Join Logo" />
-        <nav class="sidebar-navigation">
-          <div class="sidebar-navigation-item active">
-            <a href="./summary.html"
-              ><img
-                src="../assets/icons/summary_icon.svg"
-                alt="Summary Icon"
-              />Summary</a
-            >
-          </div>
-          <div class="sidebar-navigation-item">
-            <a href="./task-editor.html"
-              ><img
-                src="../assets/icons/addTask_icon.svg"
-                alt="Add Task Icon"
-              />Add Task</a
-            >
-          </div>
-          <div class="sidebar-navigation-item">
-            <a href="./taskboard.html"
-              ><img
-                src="../assets/icons/board_icon.svg"
-                alt="Board Icon"
-              />Board</a
-            >
-          </div>
-          <div class="sidebar-navigation-item">
-            <a href="./contacts.html"
-              ><img
-                src="../assets/icons/contacts_icon.svg"
-                alt="Contacts Icon"
-              />Contacts</a
-            >
-          </div>
-        </nav>
-        <div class="sidebar-legal-links">
-          <div class="center">
-            <div class="active-links">
-              <div class="nav-links">
-                <a href="./privacy-policy.html">Privacy Policy</a>
-              </div>
+    <aside>
+      <img src="../assets/img/join_logo.svg" alt="Join Logo" />
+      <nav class="sidebar-navigation">
+        <div class="sidebar-navigation-item active">
+          <a href="./summary.html"
+            ><img src="../assets/icons/summary_icon.svg" alt="Summary Icon" />Summary</a
+          >
+        </div>
+        <div class="sidebar-navigation-item">
+          <a href="./task-editor.html"
+            ><img src="../assets/icons/addTask_icon.svg" alt="Add Task Icon" />Add Task</a
+          >
+        </div>
+        <div class="sidebar-navigation-item">
+          <a href="./taskboard.html"
+            ><img src="../assets/icons/board_icon.svg" alt="Board Icon" />Board</a
+          >
+        </div>
+        <div class="sidebar-navigation-item">
+          <a href="./contacts.html"
+            ><img src="../assets/icons/contacts_icon.svg" alt="Contacts Icon" />Contacts</a
+          >
+        </div>
+      </nav>
+      <div class="sidebar-legal-links">
+        <div class="center">
+          <div class="active-links">
+            <div class="nav-links">
+              <a href="./privacy-policy.html">Privacy Policy</a>
             </div>
-            <div class="active-links">
-              <div class="nav-links">
-                <a href="./legal-notice.html">Legal notice</a>
-              </div>
+          </div>
+          <div class="active-links">
+            <div class="nav-links">
+              <a href="./legal-notice.html">Legal notice</a>
             </div>
           </div>
         </div>
-      </aside>
-      <div id="profile-menu" class="profile-overlay">
-        <nav class="profile-menu">
-          <ul class="flex-container">
-            <li class="hover-container"><a href="./legal-notice.html">Legal Notice</a></li>
-            <li class="hover-container"><a href="./privacy-policy.html">Privacy Policy</a></li>
-            <li class="hover-container"><a href="../index.html" data-logout="1">Log out</a></li>
-          </ul>
-        </nav>
       </div>
-    </main>
+    </aside>
+
+    <div id="profile-menu" class="profile-overlay">
+      <nav class="profile-menu">
+        <ul class="flex-container">
+          <li class="hover-container"><a href="./legal-notice.html">Legal Notice</a></li>
+          <li class="hover-container"><a href="./privacy-policy.html">Privacy Policy</a></li>
+          <li class="hover-container"><a href="../index.html" data-logout="1">Log out</a></li>
+        </ul>
+      </nav>
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>

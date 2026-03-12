@@ -234,7 +234,6 @@
 
 /* ─────────────────────────────────────────────
    MOBILE GREETING OVERLAY
-   Appears over full screen, fades out → reveals board
 ───────────────────────────────────────────── */
 .mobile-greeting-overlay {
     display: none;
@@ -271,7 +270,7 @@
 
 @keyframes greetingFadeOut {
     0%   { opacity: 1; }
-    100% { opacity: 0; display: none; }
+    100% { opacity: 0; }
 }
 
 .board-hidden {
@@ -284,14 +283,27 @@
 }
 
 /* ─────────────────────────────────────────────
-   RESPONSIVE — fluid between 430px–992px
+   RESPONSIVE — Mobile (max 992px)
 ───────────────────────────────────────────── */
 @media (max-width: 992px) {
+
+    /* ── Kernfix:
+       position:fixed + top/bottom statt height/margin.
+       Dadurch ist der scrollbare Bereich exakt zwischen
+       Header (80px oben) und Bottom-Nav (80px unten). ── */
     .summary-page .content-container {
-        margin-left: 0;
-        margin-top:0;
-        padding: 24px 20px calc(20px + env(safe-area-inset-bottom));
-        min-height: calc(100vh - var(--mobile-header-height, 80px) - var(--mobile-footer-height, 60px));
+        position: fixed;
+        top: var(--mobile-header-height, 80px);
+        bottom: var(--mobile-footer-height, 80px);
+        left: 0;
+        right: 0;
+        height: auto;
+        margin: 0;
+        padding: 24px 20px;
+        box-sizing: border-box;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
     }
 
     .summary-header {
@@ -311,13 +323,11 @@
         font-size: clamp(14px, 3.5vw, 20px);
     }
 
-    /* Switch to horizontal divider on mobile */
     .divider {
         width: 50px;
         height: 3px;
     }
 
-    /* Stack "Key Metrics" text + divider vertically on mobile */
     .header-divider-and-p {
         flex-direction: column-reverse;
         align-items: flex-start;
@@ -386,7 +396,7 @@
     }
 
     .label {
-        font-size: clamp(16px, 2vw, 16px);
+        font-size: clamp(12px, 2vw, 16px);
     }
 }
 
@@ -415,5 +425,3 @@
         padding: 12px 24px;
     }
 }
-
-/* Remove the old mobile column-reverse rule - no longer needed */
