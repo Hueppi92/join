@@ -1,6 +1,5 @@
 /* ==========================================================================
    TASK BOARD — taskboard_responsive.css
-   Inhalt: Move-to Card Menu + Media Queries
    ========================================================================== */
 
 /* --- CARD FOOTER --- */
@@ -11,9 +10,9 @@
     position: relative;
 }
 
-/* --- MOVE-TO BUTTON (auf der Card) --- */
+/* --- MOVE-TO BUTTON --- */
 .card-move-to {
-    display: none; /* Desktop: versteckt */
+    display: none;
     position: absolute;
     top: 12px;
     right: 12px;
@@ -35,7 +34,7 @@
 .move-to-btn:hover        { background: #f0f0f0; border-color: #aaa; }
 .move-to-btn img          { width: 20px; height: 20px; object-fit: contain; }
 
-/* --- MOVE-TO POPUP MENÜ --- */
+/* --- MOVE-TO POPUP --- */
 .move-to-menu {
     display: none;
     position: absolute;
@@ -83,7 +82,33 @@
 }
 
 /* ─────────────────────────────────────────────
-   1200px → leicht kompaktere Abstände
+   1400px+: padding-right damit Inhalt nicht
+   an den Rand stößt
+───────────────────────────────────────────── */
+@media (min-width: 1400px) {
+    .board-container {
+        padding-right: 40px;
+    }
+}
+
+/* ─────────────────────────────────────────────
+   1025px – 1400px: Übergangsbereich
+   margin-left und padding fluid anpassen
+───────────────────────────────────────────── */
+@media (min-width: 1025px) and (max-width: 1400px) {
+    .board-container {
+        margin-left: clamp(260px, 28vw, 348px);
+        padding-left: clamp(16px, 2vw, 32px);
+        padding-right: clamp(24px, 3vw, 48px);
+        padding-top: 100px;
+    }
+
+    .board-header h1 { font-size: clamp(44px, 5vw, 64px); }
+    .board           { gap: clamp(12px, 1.5vw, 20px); }
+}
+
+/* ─────────────────────────────────────────────
+   1200px
 ───────────────────────────────────────────── */
 @media (max-width: 1200px) {
     .board-container { padding: 116px 24px 32px 24px; margin-bottom: 80px; }
@@ -93,12 +118,11 @@
 
 /* ─────────────────────────────────────────────
    993px – 1024px: GAP-FIX
-   Sidebar ist noch volle Desktop-Leiste (232px),
-   aber der Viewport ist knapp — margin anpassen.
+   Sidebar noch volle Desktop-Leiste (232px)
 ───────────────────────────────────────────── */
 @media (min-width: 993px) and (max-width: 1024px) {
     .board-container {
-        margin-left: 252px;          /* 232px Sidebar + 20px gap */
+        margin-left: 252px;
         width: calc(100% - 252px);
         padding: 96px 16px 28px 16px;
         margin-bottom: 80px;
@@ -110,12 +134,8 @@
 }
 
 /* ─────────────────────────────────────────────
-   ≤ 1024px (ohne den Gap-Bereich oben)
+   ≤ 992px: Mobile — Bottom-Nav
 ───────────────────────────────────────────── */
-@media (max-width: 1024px) and (min-width: 993px) {
-    /* Wird durch den Block oben abgedeckt */
-}
-
 @media (max-width: 992px) {
     main             { height: auto; min-height: 0; overflow-y: auto; overflow-x: hidden; }
     .board-container { margin-left: 0; width: 100%; height: auto; min-height: 100%; overflow-y: visible; padding: 16px 20px 20px; margin-bottom: 80px; }

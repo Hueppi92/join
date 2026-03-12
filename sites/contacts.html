@@ -31,58 +31,8 @@
         <button id="profile-btn" class="profile-btn" type="button" aria-label="Profile menu"></button>
       </div>
     </header>
+
     <main>
-      <aside>
-        <img src="../assets/img/join_logo.svg" alt="Join Logo" />
-        <nav class="sidebar-navigation" aria-label="Main navigation">
-          <div class="sidebar-navigation-item">
-            <a href="./summary.html"
-              ><img
-                src="../assets/icons/summary_icon.svg"
-                alt="Summary Icon"
-              />Summary</a
-            >
-          </div>
-          <div class="sidebar-navigation-item">
-            <a href="./task-editor.html"
-              ><img
-                src="../assets/icons/addTask_icon.svg"
-                alt="Add Task Icon"
-              />Add Task</a
-            >
-          </div>
-          <div class="sidebar-navigation-item">
-            <a href="./taskboard.html"
-              ><img
-                src="../assets/icons/board_icon.svg"
-                alt="Board Icon"
-              />Board</a
-            >
-          </div>
-          <div class="sidebar-navigation-item active">
-            <a href="./contacts.html"
-              ><img
-                src="../assets/icons/contacts_icon.svg"
-                alt="Contacts Icon"
-              />Contacts</a
-            >
-          </div>
-        </nav>
-        <div class="sidebar-legal-links">
-          <div class="center">
-            <div class="active-links">
-              <div class="nav-links">
-                <a href="./privacy-policy.html">Privacy Policy</a>
-              </div>
-            </div>
-            <div class="active-links">
-              <div class="nav-links">
-                <a href="./legal-notice.html">Legal notice</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </aside>
       <section class="contacts-section">
         <div class="contacts-container">
           <div class="contacts-header">
@@ -157,29 +107,17 @@
               <form class="contact-overlay__form" novalidate>
                 <label class="contact-overlay__field">
                   <input type="text" name="name" placeholder="Name" aria-label="Contact name" />
-                  <img
-                    src="../assets/icons/person.svg"
-                    alt=""
-                    aria-hidden="true"
-                  />
+                  <img src="../assets/icons/person.svg" alt="" aria-hidden="true" />
                   <p class="field-message contact-overlay__message" data-field="name"></p>
                 </label>
                 <label class="contact-overlay__field">
                   <input type="email" name="email" placeholder="Email" aria-label="Contact email" />
-                  <img
-                    src="../assets/icons/mail.svg"
-                    alt=""
-                    aria-hidden="true"
-                  />
+                  <img src="../assets/icons/mail.svg" alt="" aria-hidden="true" />
                   <p class="field-message contact-overlay__message" data-field="email"></p>
                 </label>
                 <label class="contact-overlay__field">
                   <input type="tel" name="phone" placeholder="Phone" aria-label="Contact phone" />
-                  <img
-                    src="../assets/icons/call.svg"
-                    alt=""
-                    aria-hidden="true"
-                  />
+                  <img src="../assets/icons/call.svg" alt="" aria-hidden="true" />
                   <p class="field-message contact-overlay__message" data-field="phone"></p>
                 </label>
                 <div class="contact-overlay__actions">
@@ -199,18 +137,8 @@
                     data-contact-overlay-close
                   >
                     Cancel
-                    <img
-                      class="icon-default"
-                      src="../assets/icons/cancel.svg"
-                      alt=""
-                      aria-hidden="true"
-                    />
-                    <img
-                      class="icon-hover"
-                      src="../assets/icons/cancel_hover.svg"
-                      alt=""
-                      aria-hidden="true"
-                    />
+                    <img class="icon-default" src="../assets/icons/cancel.svg" alt="" aria-hidden="true" />
+                    <img class="icon-hover" src="../assets/icons/cancel_hover.svg" alt="" aria-hidden="true" />
                   </button>
                   <button
                     id="contact-overlay-submit-btn"
@@ -218,11 +146,7 @@
                     class="contact-overlay__btn contact-overlay__btn--primary"
                   >
                     <span data-role="contact-submit-label">Create contact</span>
-                    <img
-                      src="../assets/icons/check.svg"
-                      alt=""
-                      aria-hidden="true"
-                    />
+                    <img src="../assets/icons/check.svg" alt="" aria-hidden="true" />
                   </button>
                 </div>
                 <p class="contact-overlay__form-message is-hidden" data-role="contact-form-message"></p>
@@ -234,16 +158,50 @@
       <div id="contact-success-toast" class="contact-toast" role="status" aria-live="polite" aria-hidden="true">
         Contact successfully created
       </div>
-      <div id="profile-menu" class="profile-overlay">
-        <nav class="profile-menu" aria-label="Profile menu links">
-          <ul class="flex-container">
-            <li class="hover-container"><a href="./legal-notice.html">Legal Notice</a></li>
-            <li class="hover-container"><a href="./privacy-policy.html">Privacy Policy</a></li>
-            <li class="hover-container"><a href="../index.html" data-logout="1">Log out</a></li>
-          </ul>
-        </nav>
-      </div>
     </main>
+
+    <aside>
+      <img src="../assets/img/join_logo.svg" alt="Join Logo" />
+      <nav class="sidebar-navigation" aria-label="Main navigation">
+        <div class="sidebar-navigation-item">
+          <a href="./summary.html"
+            ><img src="../assets/icons/summary_icon.svg" alt="Summary Icon" />Summary</a>
+        </div>
+        <div class="sidebar-navigation-item">
+          <a href="./task-editor.html"
+            ><img src="../assets/icons/addTask_icon.svg" alt="Add Task Icon" />Add Task</a>
+        </div>
+        <div class="sidebar-navigation-item">
+          <a href="./taskboard.html"
+            ><img src="../assets/icons/board_icon.svg" alt="Board Icon" />Board</a>
+        </div>
+        <div class="sidebar-navigation-item active">
+          <a href="./contacts.html"
+            ><img src="../assets/icons/contacts_icon.svg" alt="Contacts Icon" />Contacts</a>
+        </div>
+      </nav>
+      <div class="sidebar-legal-links">
+        <div class="center">
+          <div class="active-links">
+            <div class="nav-links"><a href="./privacy-policy.html">Privacy Policy</a></div>
+          </div>
+          <div class="active-links">
+            <div class="nav-links"><a href="./legal-notice.html">Legal notice</a></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div id="profile-menu" class="profile-overlay">
+      <nav class="profile-menu" aria-label="Profile menu links">
+        <ul class="flex-container">
+          <li class="hover-container"><a href="./legal-notice.html">Legal Notice</a></li>
+          <li class="hover-container"><a href="./privacy-policy.html">Privacy Policy</a></li>
+          <li class="hover-container"><a href="../index.html" data-logout="1">Log out</a></li>
+        </ul>
+      </nav>
+    </div>
+
     <script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>

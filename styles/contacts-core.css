@@ -95,6 +95,7 @@ body {
   min-width: 0;
   flex: 1;
 }
+
 .contact-box {
   padding: 12px;
   width: 300px;
@@ -112,17 +113,33 @@ body {
   color: #ffffff;
 }
 
+/* Desktop */
 body main {
-  margin-left: 232px; /* Platz fuer die Sidebar */
-  margin-top: 96px; /* Platz fuer den Header */
-  height: calc(100vh - 96px); /* Volle Hoehe minus Header */
-  overflow: hidden; /* Verhindert Scrollen der Hauptseite */
+  margin-left: 232px;
+  margin-top: 96px;
+  height: calc(100vh - 96px);
+  overflow: hidden;
   position: relative;
   top: auto;
   right: auto;
   bottom: auto;
   left: auto;
 }
+
+/* Mobile: fixed top/bottom statt height-Berechnung */
+@media (max-width: 992px) {
+  body main {
+    position: fixed;
+    top: var(--mobile-header-height, 80px);
+    bottom: var(--mobile-footer-height, 80px);
+    left: 0;
+    right: 0;
+    margin: 0;
+    height: auto;
+    overflow: hidden;
+  }
+}
+
 .contact-btn {
   cursor: pointer;
   width: 300px;
@@ -389,4 +406,3 @@ body main {
 .contact-overlay__field input:focus {
   border-color: var(--primary-hover, #29abe2);
 }
-

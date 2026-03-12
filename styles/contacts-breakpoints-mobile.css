@@ -6,13 +6,7 @@
     overflow: hidden;
   }
 
-  body main {
-    margin-left: 0;
-    margin-top: 80px;
-    height: calc(100vh - 160px);
-    height: calc(100dvh - 160px);
-    overflow: hidden;
-  }
+  /* body main wird in contacts-core.css per @media (max-width: 992px) gehandelt */
 
   .contacts-section {
     position: relative;
@@ -38,7 +32,7 @@
   .contacts-list {
     flex: 1;
     overflow-y: auto;
-    padding: 12px 0 110px;
+    padding: 12px 0 24px; /* war: 110px — nicht nötig da main fixed ist */
   }
 
   .contact-group-title {
@@ -73,7 +67,7 @@
     bottom: auto;
     width: 100%;
     height: 100%;
-    padding: 8px 10px 110px;
+    padding: 8px 10px 24px; /* war: 110px */
     gap: 32px;
     background: transparent;
     overflow-y: auto;
@@ -172,7 +166,7 @@
   body.contacts-mobile-details-open .mobile-contact-detail-menu-btn {
     position: fixed;
     right: 12px;
-    bottom: 92px;
+    bottom: calc(var(--mobile-footer-height, 80px) + 12px); /* war: 92px */
     width: 56px;
     height: 56px;
     border-radius: 50%;
@@ -228,7 +222,7 @@
   body.contacts-mobile-details-open .mobile-contact-detail-menu {
     position: fixed;
     right: 12px;
-    bottom: 92px;
+    bottom: calc(var(--mobile-footer-height, 80px) + 12px); /* war: 92px */
     min-width: 116px;
     background: #ffffff;
     border-radius: 20px 20px 0 20px;
@@ -298,7 +292,7 @@
   .contact-btn {
     position: fixed;
     right: 16px;
-    bottom: 90px;
+    bottom: calc(var(--mobile-footer-height, 80px) + 12px); /* war: 90px */
     width: 56px;
     min-height: 56px;
     height: 56px;
@@ -321,4 +315,3 @@
     filter: none;
   }
 }
-

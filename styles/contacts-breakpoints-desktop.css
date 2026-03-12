@@ -1,58 +1,190 @@
-@media (max-width: 992px) {
-  body main {
-    margin-left: 0;
-    margin-top: 80px;
-    height: calc(100vh - 160px);
-    height: calc(100dvh - 160px);
-  }
+/* ─────────────────────────────────────────────
+   769px – 992px:
+   Sidebar ist bereits Bottom-Nav.
+   Viewport zu schmal für 2 Spalten →
+   gleiches Verhalten wie Mobile (≤768px):
+   nur Kontaktliste, Details auf Klick.
+───────────────────────────────────────────── */
+@media (min-width: 769px) and (max-width: 992px) {
 
+  /* Kontaktliste: volle Breite, scrollbar */
   .contacts-section {
-    left: 0;
-    top: 80px;
-    width: 320px;
-    height: calc(100vh - 160px);
-    height: calc(100dvh - 160px);
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    height: 100%;
+    border-right: none;
+    background: transparent;
+    overflow: hidden;
   }
 
+  .contacts-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .contacts-header {
+    height: 0;
+  }
+
+  .contacts-list {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 12px 0 24px;
+  }
+
+  .contact-group-title {
+    margin: 0 32px 10px;
+    padding: 8px 0 12px;
+  }
+
+  .contact-box {
+    width: auto;
+    margin: 0 20px 8px;
+    padding: 12px;
+  }
+
+  .contact-logo {
+    margin-right: 0;
+  }
+
+  /* Details standardmäßig versteckt */
   .contact-details-section {
-    top: 80px;
-    left: 320px;
-    width: calc(100vw - 320px);
+    display: none;
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+  }
+
+  /* Details sichtbar wenn Klasse gesetzt */
+  body.contacts-mobile-details-open .contacts-section {
+    display: none;
+  }
+
+  body.contacts-mobile-details-open .contact-details-section {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    padding: 8px 20px 24px;
+    gap: 32px;
+    background: transparent;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    flex-direction: column;
+  }
+
+  /* Add-contact Button als FAB über Bottom-Nav */
+  .contact-btn {
+    position: fixed;
+    right: 16px;
+    bottom: calc(var(--mobile-footer-height, 80px) + 12px);
+    width: 56px;
+    min-height: 56px;
+    height: 56px;
+    margin: 0;
+    padding: 0;
+    border-radius: 50%;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    z-index: 16;
+  }
+
+  .contact-btn span {
+    display: none;
+  }
+
+  .contact-btn img {
+    width: 32px;
+    height: 32px;
+    content: url('../assets/icons/person_add.svg');
+    filter: none;
+  }
+
+  /* Back-Button in Detailansicht */
+  body.contacts-mobile-details-open .mobile-contact-back-btn {
+    position: absolute;
+    top: 10px;
     right: 0;
-    bottom: 80px;
-    padding: 32px 20px 24px;
-    gap: 28px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
   }
 
-  .contact-details-headline,
-  .contact-details-headline-text {
-    gap: 16px;
+  body.contacts-mobile-details-open .mobile-contact-back-btn img {
+    width: 20px;
+    height: 20px;
   }
 
-  .contact-details-headline h1 {
-    font-size: 47px;
+  body.contacts-mobile-details-open .contact-details-headline {
+    width: 100%;
+    position: relative;
+    align-items: flex-start;
   }
 
-  .contact-details-headline p {
-    font-size: 20px;
+  body.contacts-mobile-details-open .contact-details-headline-text {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
   }
 
-  .contact-details-avatar {
-    width: 84px;
-    height: 84px;
-    font-size: 30px;
+  body.contacts-mobile-details-open .contact-details-actions {
+    display: none;
   }
 
-  .contact-details-name {
-    font-size: 32px;
+  /* FAB Menü */
+  body.contacts-mobile-details-open .mobile-contact-detail-menu-btn {
+    position: fixed;
+    right: 12px;
+    bottom: calc(var(--mobile-footer-height, 80px) + 12px);
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    background: #2a3647;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    z-index: 20;
   }
 
-  .contact-details-info-title,
-  .contact-details-label,
-  .contact-details-email,
-  .contact-details-phone,
-  .contact-details-action {
-    font-size: 18px;
+  body.contacts-mobile-details-open .mobile-contact-detail-menu {
+    position: fixed;
+    right: 12px;
+    bottom: calc(var(--mobile-footer-height, 80px) + 12px);
+    min-width: 116px;
+    background: #ffffff;
+    border-radius: 20px 20px 0 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transform: translateX(130%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 220ms ease-out, opacity 220ms ease-out;
+    z-index: 21;
+  }
+
+  body.contacts-mobile-details-open .mobile-contact-detail-menu.is-open {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
   }
 }
-
