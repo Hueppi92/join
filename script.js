@@ -9,6 +9,7 @@ function isEmailValid(value) {
 	return /^\S+@\S+\.\S+$/.test((value || '').trim());
 }
 
+
 /**
  * Sets the error state for a field.
  * @param {HTMLInputElement} input - Input element to mark as invalid.
@@ -24,6 +25,7 @@ function setFieldError(input, message, text) {
 	message.style.visibility = 'visible';
 }
 
+
 /**
  * Clears the error state for a field.
  * @param {HTMLInputElement} input - Input element to clear.
@@ -38,6 +40,7 @@ function clearFieldError(input, message) {
 	message.style.visibility = 'hidden';
 }
 
+
 /**
  * Enables password visibility toggles globally.
  * @category Shared
@@ -46,6 +49,7 @@ function clearFieldError(input, message) {
 function initPasswordToggles() {
 	document.querySelectorAll('input[type="password"]').forEach(setupPasswordToggle);
 }
+
 
 /**
  * Wires a password input with toggle icons.
@@ -124,6 +128,7 @@ function bindPasswordToggleEvents(iconBox, input, icon, iconSources) {
 	input.addEventListener('input', () => updatePasswordIcon(input, icon, iconSources));
 }
 
+
 /**
  * Returns whether Firebase auth is available.
  * @returns {boolean} True if Firebase auth is available.
@@ -133,6 +138,7 @@ function bindPasswordToggleEvents(iconBox, input, icon, iconSources) {
 function hasFirebaseAuth() {
 	return typeof firebase !== 'undefined' && typeof firebase.auth === 'function';
 }
+
 
 /**
  * Clears session markers for the current user.
@@ -146,6 +152,7 @@ function clearUserSession() {
 	sessionStorage.removeItem('skipSplash');
 }
 
+
 /**
  * Resolves the login path based on current page location.
  * @returns {string} Login page path.
@@ -155,6 +162,7 @@ function clearUserSession() {
 function getLoginPath() {
 	return window.location.pathname.includes('/sites/') ? '../index.html' : './index.html';
 }
+
 
 /**
  * Signs the current user out if Firebase auth is available.
@@ -171,6 +179,7 @@ async function signOutIfPossible() {
 	}
 }
 
+
 /**
  * Handles logging out and redirects to login.
  * @returns {Promise<void>} Resolves after redirect is triggered.
@@ -182,6 +191,7 @@ async function handleLogout() {
 	clearUserSession();
 	window.location.href = getLoginPath();
 }
+
 
 /**
  * Wires logout links to clear auth state safely.
@@ -198,6 +208,7 @@ function initLogoutLinks() {
 		})
 	);
 }
+
 
 /**
  * Adds a help link to profile menu for mobile layout.
@@ -246,6 +257,7 @@ function insertMobileHelpLink(list, helpItem) {
 	}
 	list.appendChild(helpItem);
 }
+
 
 /**
  * Initializes the profile menu toggle functionality.

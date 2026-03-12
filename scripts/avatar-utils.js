@@ -25,6 +25,7 @@ function normalizeAvatarName(name) {
 	return String(name || '').trim().toLowerCase();
 }
 
+
 /**
  * Computes a small deterministic hash for a normalized name.
  * @param {string} value - Normalized name.

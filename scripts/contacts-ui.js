@@ -13,6 +13,7 @@ function isOwnAccountContact(contact) {
   return contact?.id?.startsWith(SELF_CONTACT_ID_PREFIX);
 }
 
+
 /**
  * Creates a badge node that marks own-account contacts.
  * @returns {HTMLSpanElement} Badge element.
@@ -26,6 +27,7 @@ function createYouBadgeNode() {
   badge.setAttribute("aria-label", "This is your account");
   return badge;
 }
+
 
 /**
  * Creates the contact name node used in list rows.
@@ -41,6 +43,7 @@ function createContactNameNode(contact) {
   if (isOwnAccountContact(contact)) name.appendChild(createYouBadgeNode());
   return name;
 }
+
 
 /**
  * Returns initials for a contact name.
@@ -59,6 +62,7 @@ function getContactInitials(name) {
   return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
 
+
 /**
  * Returns the visual group letter for a contact name.
  * @param {string} name - Contact name.
@@ -73,6 +77,7 @@ function getContactGroupLetter(name) {
   return /[A-ZÄÖÜ]/.test(firstCharacter) ? firstCharacter : "#";
 }
 
+
 /**
  * Restarts the contact details slide-in animation.
  * @param {HTMLElement} detailsRef - Details container element.
@@ -86,6 +91,7 @@ function animateContactDetails(detailsRef) {
   detailsRef.classList.add("is-entering");
 }
 
+
 /**
  * Creates the default placeholder for the empty details view.
  * @returns {HTMLParagraphElement} Placeholder element.
@@ -98,6 +104,7 @@ function createContactDetailsPlaceholder() {
   placeholder.textContent = "Select a contact to view details.";
   return placeholder;
 }
+
 
 /**
  * Creates a contact details action button.
@@ -116,6 +123,7 @@ function createContactDetailsAction(label, iconPath, onClick) {
   button.addEventListener("click", onClick);
   return button;
 }
+
 
 /**
  * Builds the details action row for a contact.
@@ -145,6 +153,7 @@ function createContactDetailsActions(contact) {
   return actions;
 }
 
+
 /**
  * Builds the details profile section with avatar and actions.
  * @param {{id: string, name?: string, email?: string, phone?: string}} contact - Contact data.
@@ -163,6 +172,7 @@ function createContactDetailsProfile(contact) {
   profile.appendChild(createContactDetailsProfileInfo(contact));
   return profile;
 }
+
 
 /**
  * Builds the textual profile info block for details view.
@@ -183,6 +193,7 @@ function createContactDetailsProfileInfo(contact) {
   return profileInfo;
 }
 
+
 /**
  * Creates either a mailto link or plain text for contact email.
  * @param {string} emailValue - Email value.
@@ -197,6 +208,7 @@ function createContactDetailsEmailNode(emailValue) {
   if (emailValue) emailNode.href = `mailto:${emailValue}`;
   return emailNode;
 }
+
 
 /**
  * Creates a labeled paragraph used in details info sections.
@@ -213,6 +225,7 @@ function createContactDetailsLabel(text, className = "contact-details-label") {
   return label;
 }
 
+
 /**
  * Creates the contact information section for details view.
  * @param {{email?: string, phone?: string}} contact - Contact data.
@@ -226,6 +239,7 @@ function createContactDetailsInfo(contact) {
   appendContactDetailsInfoContent(info, contact);
   return info;
 }
+
 
 /**
  * Appends labeled email/phone content to the details info section.
@@ -252,6 +266,7 @@ function appendContactDetailsInfoContent(info, contact) {
   info.appendChild(phone);
 }
 
+
 /**
  * Renders the placeholder content into the details container.
  * @param {HTMLElement} detailsRef - Details container.
@@ -262,6 +277,7 @@ function renderContactDetailsPlaceholder(detailsRef) {
   detailsRef.appendChild(createContactDetailsPlaceholder());
   scheduleContactDetailsSectionScrollabilitySync();
 }
+
 
 /**
  * Renders profile and info blocks for the selected contact.
@@ -274,6 +290,7 @@ function renderContactDetailsContent(detailsRef, contact) {
   detailsRef.appendChild(createContactDetailsProfile(contact));
   detailsRef.appendChild(createContactDetailsInfo(contact));
 }
+
 
 /**
  * Renders selected contact details on the right side.
@@ -298,6 +315,7 @@ function renderContactDetails(contact, options = {}) {
   scheduleContactDetailsSectionScrollabilitySync();
 }
 
+
 /**
  * Creates the empty-state list entry shown when no contacts exist.
  * @returns {HTMLParagraphElement} Empty-state node.
@@ -310,6 +328,7 @@ function createEmptyContactsListItem() {
   empty.textContent = "No contacts yet.";
   return empty;
 }
+
 
 /**
  * Groups contacts by display letter for sectioned rendering.
@@ -326,6 +345,7 @@ function groupContactsByLetter(contacts) {
     return groups;
   }, new Map());
 }
+
 
 /**
  * Creates the text block (name + email) for a list row.
@@ -346,6 +366,7 @@ function createContactListInfo(contact) {
   return info;
 }
 
+
 /**
  * Binds click and keyboard selection behavior to a contact row.
  * @param {HTMLElement} box - Clickable list item element.
@@ -362,6 +383,7 @@ function bindContactSelection(box, contactId) {
   });
 }
 
+
 /**
  * Creates the avatar node for a contact list row.
  * @param {{name?: string}} contact - Contact data.
@@ -376,6 +398,7 @@ function createContactAvatarNode(contact) {
   avatar.textContent = getContactInitials(contact.name);
   return avatar;
 }
+
 
 /**
  * Creates one interactive contact box for the list.
@@ -397,6 +420,7 @@ function createContactBox(contact) {
   return box;
 }
 
+
 /**
  * Wraps a contact box into a list item container.
  * @param {{id: string, name?: string, email?: string}} contact - Contact data.
@@ -411,6 +435,7 @@ function createContactListItem(contact) {
   return item;
 }
 
+
 /**
  * Normalizes and sorts incoming contacts for rendering.
  * @param {Array<{id: string, name: string, email: string, phone: string}>} contacts - Contact list input.
@@ -421,6 +446,7 @@ function createContactListItem(contact) {
 function getSortedContactsInput(contacts) {
   return sortContactsByName(Array.isArray(contacts) ? contacts : []);
 }
+
 
 /**
  * Appends one grouped section (title + entries) to the list fragment.
@@ -440,6 +466,7 @@ function appendContactGroup(fragment, groupLetter, groupContacts) {
   );
 }
 
+
 /**
  * Selects a contact and updates list + details.
  * @param {string} contactId - Contact id.
@@ -456,6 +483,7 @@ function selectContact(contactId) {
     setMobileContactDetailsState(true);
   }
 }
+
 
 /**
  * Renders contacts into the contacts list.
@@ -480,6 +508,7 @@ function renderContacts(contacts) {
   listRef.appendChild(fragment);
 }
 
+
 /**
  * Applies contacts to the page state and renders list + details.
  * @param {Array<{id: string, name: string, email: string, phone: string, createdAt?: number}>} contacts - Contacts to apply.
@@ -501,6 +530,7 @@ function applyContactsState(contacts) {
   setMobileContactActionMenuState(false);
   setMobileContactDetailsState(Boolean(selectedContact));
 }
+
 
 /**
  * Loads contacts from Firebase and renders them into the contacts page.

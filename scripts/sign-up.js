@@ -28,6 +28,7 @@ function initSignupBackButton() {
 	});
 }
 
+
 /**
  * Initializes Firebase registration handling for the sign-up form.
  * @category Sign-Up
@@ -44,6 +45,7 @@ function initSignupForm() {
 	form.addEventListener('submit', (event) => handleSignupSubmit(event, fields));
 }
 
+
 /**
  * Collects sign-up form fields and related message elements.
  * @param {HTMLFormElement} form - The sign-up form element.
@@ -57,6 +59,7 @@ function getSignupFields(form) {
 	return { form, ...fields };
 }
 
+
 /**
  * Combines all sign-up input and message elements.
  * @param {HTMLFormElement} form - The sign-up form element.
@@ -69,6 +72,7 @@ function collectSignupFields(form) {
 	const messageFields = collectSignupMessageFields(form);
 	return { ...inputFields, ...messageFields };
 }
+
 
 /**
  * Collects sign-up input elements.
@@ -88,6 +92,7 @@ function collectSignupInputFields(form) {
 	};
 }
 
+
 /**
  * Collects sign-up message elements.
  * @param {HTMLFormElement} form - The sign-up form element.
@@ -105,6 +110,7 @@ function collectSignupMessageFields(form) {
 	};
 }
 
+
 /**
  * Checks whether required sign-up nodes are missing.
  * @param {Record<string, HTMLElement | HTMLInputElement | HTMLButtonElement | null>} fields - Collected field map.
@@ -115,6 +121,7 @@ function collectSignupMessageFields(form) {
 function hasMissingSignupField(fields) {
 	return Object.values(fields).some((value) => !value);
 }
+
 
 /**
  * Hides all inline validation messages on initial load.
@@ -134,6 +141,7 @@ function initMessageVisibility(fields) {
 	});
 }
 
+
 /**
  * Binds input handling for one sign-up field.
  * @param {HTMLInputElement} input - Input element to bind.
@@ -148,6 +156,7 @@ function bindSignupInputField(input, message, updateState) {
 		updateState();
 	});
 }
+
 
 /**
  * Binds blur validation for one sign-up input.
@@ -165,6 +174,7 @@ function bindSignupBlurField(input, validateField, fields, updateState) {
 	});
 }
 
+
 /**
  * Binds privacy checkbox behavior and button state updates.
  * @param {SignupFields} fields - Collected sign-up form fields.
@@ -178,6 +188,7 @@ function bindPrivacyField(fields, updateState) {
 		updateState();
 	});
 }
+
 
 /**
  * Binds events to update sign-up form button state.
@@ -200,6 +211,7 @@ function bindSignupFieldEvents(fields) {
 	updateSignupButtonState(fields);
 }
 
+
 /**
  * Enables/disables the sign-up button based on form validity.
  * @param {SignupFields} fields - Collected sign-up form fields.
@@ -211,6 +223,7 @@ function updateSignupButtonState(fields) {
 	const isLoading = fields.submitButton.dataset.loading === '1';
 	fields.submitButton.disabled = isLoading || !isValid;
 }
+
 
 /**
  * Checks if required inputs are filled and valid.
@@ -233,6 +246,7 @@ function isSignupInputReady(fields) {
 	);
 }
 
+
 /**
  * Clears all inline sign-up validation errors.
  * @param {SignupFields} fields - Collected sign-up form fields.
@@ -246,6 +260,7 @@ function clearSignupFieldErrors(fields) {
 	clearFieldError(fields.confirmInput, fields.confirmMessage);
 	clearFieldError(fields.privacyInput, fields.privacyMessage);
 }
+
 
 /**
  * Builds user data for persistence after successful sign-up.
@@ -265,6 +280,7 @@ function buildSignupUserData(fields, userId) {
 		createdAt: Date.now(),
 	};
 }
+
 
 /**
  * Persists a newly created user profile in Firebase auth and database.
@@ -286,6 +302,7 @@ async function persistSignupUser(credential, fields) {
 	});
 }
 
+
 /**
  * Handles Firebase sign-up submission.
  * @param {SubmitEvent} event - The form submit event.
@@ -299,6 +316,7 @@ async function handleSignupSubmit(event, fields) {
 	if (!validateSignupFields(fields)) return;
 	await submitSignupWithLoading(fields);
 }
+
 
 /**
  * Wraps sign-up submission with loading-state handling.
@@ -317,6 +335,7 @@ async function submitSignupWithLoading(fields) {
 		setLoadingState(fields, false);
 	}
 }
+
 
 /**
  * Performs Firebase account creation and post-signup redirects.
@@ -337,6 +356,7 @@ async function performSignup(fields) {
 	showSuccessAnimation();
 }
 
+
 /**
  * Displays the success overlay and redirects back to login.
  * @category Sign-Up
@@ -354,6 +374,7 @@ function showSuccessAnimation() {
 	setTimeout(redirectToLoginWithSplashSkip, 1000);
 }
 
+
 /**
  * Starts the success message animation in the overlay.
  * @param {HTMLElement} overlay - Success overlay element.
@@ -365,6 +386,7 @@ function animateSignupSuccessMessage(overlay) {
 	if (message) message.classList.add('slide-in-bottom');
 }
 
+
 /**
  * Redirects back to login while keeping splash animation disabled once.
  * @category Sign-Up
@@ -374,6 +396,7 @@ function redirectToLoginWithSplashSkip() {
 	sessionStorage.setItem('skipSplash', '1');
 	window.location.href = '../index.html';
 }
+
 
 /**
  * Sets the loading state for the sign-up form.
@@ -387,6 +410,7 @@ function setLoadingState(fields, isLoading) {
 	updateSignupButtonState(fields);
 }
 
+
 /**
  * Maps Firebase auth errors to readable messages.
  * @param {unknown} error - Firebase auth error.
@@ -399,6 +423,7 @@ function getAuthErrorMessage(error) {
 	if (!error || typeof error !== 'object' || !('code' in error)) return fallback;
 	return getSignupAuthErrorMessages()[error.code] || fallback;
 }
+
 
 /**
  * Returns the auth error code to message map for sign-up.
@@ -415,6 +440,7 @@ function getSignupAuthErrorMessages() {
 		'auth/weak-password': 'Password is too weak. Please use at least 6 characters.',
 	};
 }
+
 
 /**
  * Validates sign-up inputs and shows inline errors.
@@ -433,6 +459,7 @@ function validateSignupFields(fields) {
 	return isValid;
 }
 
+
 /**
  * Validates the name field.
  * @param {SignupFields} fields - Collected sign-up form fields.
@@ -448,6 +475,7 @@ function validateNameField(fields) {
 	clearFieldError(fields.nameInput, fields.nameMessage);
 	return true;
 }
+
 
 /**
  * Validates the email field.
@@ -470,6 +498,7 @@ function validateEmailField(fields) {
 	return true;
 }
 
+
 /**
  * Validates the password field.
  * @param {SignupFields} fields - Collected sign-up form fields.
@@ -490,6 +519,7 @@ function validatePasswordField(fields) {
 	clearFieldError(fields.passwordInput, fields.passwordMessage);
 	return true;
 }
+
 
 /**
  * Validates the confirm password field.
@@ -512,6 +542,7 @@ function validateConfirmField(fields) {
 	clearFieldError(fields.confirmInput, fields.confirmMessage);
 	return true;
 }
+
 
 /**
  * Validates the privacy checkbox.

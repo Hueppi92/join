@@ -23,6 +23,7 @@ function createSelfContactId(userId) {
 	return `${SELF_CONTACT_PREFIX}${userId}`;
 }
 
+
 /**
  * Checks whether a contact id belongs to an own-account contact.
  * @param {string} contactId - Contact id.
@@ -33,6 +34,7 @@ function createSelfContactId(userId) {
 function isSelfContactId(contactId) {
 	return typeof contactId === 'string' && contactId.startsWith(SELF_CONTACT_PREFIX);
 }
+
 
 /**
  * Extracts the Firebase user id from an own-account contact id.
@@ -45,6 +47,7 @@ function extractSelfUserId(contactId) {
 	if (!isSelfContactId(contactId)) return '';
 	return contactId.slice(SELF_CONTACT_PREFIX.length);
 }
+
 
 /**
  * Resolves the current user id for contacts data operations.
@@ -63,6 +66,7 @@ async function resolveCurrentUserIdForContacts() {
 	return sessionStorage.getItem('userId');
 }
 
+
 /**
  * Maps a user profile into a synthetic own-account contact object.
  * @param {string} userId - Firebase user id.
@@ -80,6 +84,7 @@ function toOwnAccountContact(userId, userProfile) {
 		createdAt: userProfile?.createdAt || 0,
 	};
 }
+
 
 /**
  * Fetches the current user's profile as a contact-like entry.
@@ -101,6 +106,7 @@ async function fetchOwnAccountContact() {
 	}
 }
 
+
 /**
  * Appends own-account contact when not already present.
  * @param {Array<{id: string}>} contacts - Contact list.
@@ -114,6 +120,7 @@ function mergeOwnAccountContact(contacts, ownAccountContact) {
 	if (contacts.some((contact) => contact.id === ownAccountContact.id)) return contacts;
 	return [...contacts, ownAccountContact];
 }
+
 
 /**
  * Updates the user profile behind an own-account contact.
@@ -133,6 +140,7 @@ async function updateOwnAccountContact(contactId, contact) {
 	};
 	await db.ref(`users/${userId}`).update(payload);
 }
+
 
 /**
  * Fetches own-account contact fields by synthetic contact id.
@@ -158,6 +166,7 @@ async function fetchOwnAccountContactById(contactId) {
 	}
 }
 
+
 /**
  * Reads local contacts map from localStorage.
  * @returns {Record<string, {name?: string, email?: string, phone?: string, createdAt?: number}>} Local contacts map.
@@ -175,6 +184,7 @@ function readLocalContactsMap() {
 	}
 }
 
+
 /**
  * Writes local contacts map into localStorage.
  * @param {Record<string, {name?: string, email?: string, phone?: string, createdAt?: number}>} contactsMap - Contacts map to persist.
@@ -188,6 +198,7 @@ function writeLocalContactsMap(contactsMap) {
 		return;
 	}
 }
+
 
 /**
  * Normalizes one cached contact item.
@@ -206,6 +217,7 @@ function normalizeCachedContact(item) {
 	};
 }
 
+
 /**
  * Validates whether an unknown item can be treated as cached contact data.
  * @param {unknown} item - Candidate cache item.
@@ -216,6 +228,7 @@ function normalizeCachedContact(item) {
 function isValidCachedContact(item) {
 	return item && typeof item === 'object' && typeof item.id === 'string';
 }
+
 
 /**
  * Parses serialized contact cache into normalized list data.
@@ -229,6 +242,7 @@ function parseContactsCache(rawValue) {
 	if (!Array.isArray(parsed)) return [];
 	return parsed.filter(isValidCachedContact).map(normalizeCachedContact);
 }
+
 
 /**
  * Reads cached contact list from localStorage.
@@ -246,6 +260,7 @@ function readContactsCache() {
 	}
 }
 
+
 /**
  * Writes contact list cache to localStorage.
  * @param {Array<{id: string, name: string, email: string, phone: string, createdAt?: number}>} contacts - Contact list to cache.
@@ -260,6 +275,7 @@ function writeContactsCache(contacts) {
 	}
 }
 
+
 /**
  * Generates a local contact id.
  * @returns {string} Local contact id.
@@ -269,6 +285,7 @@ function writeContactsCache(contacts) {
 function createLocalContactId() {
 	return `local_${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
 }
+
 
 /**
  * Saves a new contact to the database.
@@ -290,6 +307,7 @@ async function saveContact(contact) {
 	contactsMap[createLocalContactId()] = contact;
 	writeLocalContactsMap(contactsMap);
 }
+
 
 /**
  * Updates an existing contact in the database.
@@ -319,6 +337,7 @@ async function updateContact(contactId, contact) {
 	writeLocalContactsMap(contactsMap);
 }
 
+
 /**
  * Normalizes assignment entries from task assignment structures.
  * @param {unknown} entry - Raw assignment entry.
@@ -336,6 +355,7 @@ function normalizeAssignmentIdentity(entry) {
 	};
 }
 
+
 /**
  * Checks whether an assignment entry references a deleted contact.
  * @param {unknown} entry - Assignment entry.
@@ -351,6 +371,7 @@ function assignmentMatchesDeletedContact(entry, contactId, contactData) {
 	return normalized.id && normalized.id === contactId;
 }
 
+
 /**
  * Normalizes assigned entries from array/object task structures.
  * @param {unknown} assignedRaw - Raw task assignment data.
@@ -363,6 +384,7 @@ function normalizeAssignedEntries(assignedRaw) {
 	if (assignedRaw && typeof assignedRaw === 'object') return Object.values(assignedRaw);
 	return [];
 }
+
 
 /**
  * Builds Firebase update paths to remove a deleted contact from task assignments.
@@ -387,6 +409,7 @@ function buildTaskAssignmentCleanupUpdates(tasks, contactId, contactData) {
 	return updates;
 }
 
+
 /**
  * Removes a deleted contact from taskUsers map updates.
  * @param {Record<string, Record<string, unknown>>} taskUsersMap - taskUsers map.
@@ -403,6 +426,7 @@ function applyTaskUsersCleanup(taskUsersMap, contactId, updates) {
 		updates[`taskUsers/${taskId}`] = Object.keys(nextUserMap).length ? nextUserMap : null;
 	});
 }
+
 
 /**
  * Removes deleted contact references from tasks and taskUsers.
@@ -433,6 +457,7 @@ async function cleanupDeletedContactAssignments(contactId, contactData) {
 	await db.ref().update(updates);
 }
 
+
 /**
  * Deletes a contact from the database.
  * @param {string} contactId - Contact id.
@@ -458,6 +483,7 @@ async function deleteContact(contactId) {
 	writeLocalContactsMap(contactsMap);
 }
 
+
 /**
  * Fetches a contact by id.
  * @param {string} contactId - Contact id.
@@ -482,6 +508,7 @@ async function fetchContact(contactId) {
 	return contactsMap[contactId] || null;
 }
 
+
 /**
  * Sorts contacts by name for stable list rendering.
  * @param {Array<{id: string, name: string, email: string, phone: string, createdAt?: number}>} contacts - Contact list.
@@ -494,6 +521,7 @@ function sortContactsByName(contacts) {
 		String(a?.name || '').localeCompare(String(b?.name || ''), 'de', { sensitivity: 'base' })
 	);
 }
+
 
 /**
  * Normalizes one contact map entry to render-safe fields.
@@ -512,6 +540,8 @@ function toNormalizedContact(id, value) {
 		createdAt: value?.createdAt || 0,
 	};
 }
+
+
 /**
  * Initializes validation for the name input field.
  * Prevents entry of numbers and special characters, allowing only letters and hyphens.
@@ -576,6 +606,7 @@ function mapContactsObjectToList(contactsMap) {
 	return Object.entries(contactsMap || {}).map(([id, value]) => toNormalizedContact(id, value));
 }
 
+
 /**
  * Reads contacts from Firebase or falls back to local storage.
  * @returns {Promise<Record<string, {name?: string, email?: string, phone?: string, createdAt?: number}>>} Contacts map.
@@ -591,6 +622,7 @@ async function readContactsSource() {
 		return readLocalContactsMap();
 	}
 }
+
 
 /**
  * Fetches all contacts from Firebase.
@@ -608,6 +640,7 @@ async function fetchContacts() {
 	return sortedContacts;
 }
 
+
 /**
  * Compares two contacts by rendered fields.
  * @param {{id: string, name: string, email: string, phone: string, createdAt?: number}} leftContact - First contact.
@@ -624,6 +657,7 @@ function areContactsEqualByFields(leftContact, rightContact) {
 	if (leftContact.phone !== rightContact.phone) return false;
 	return (leftContact.createdAt || 0) === (rightContact.createdAt || 0);
 }
+
 
 /**
  * Compares two contact lists by relevant rendered fields.

@@ -21,6 +21,7 @@ function getContactOverlayElements() {
 	};
 }
 
+
 /**
  * Opens the add contact overlay.
  * @category Contacts
@@ -34,6 +35,7 @@ function openContactOverlay() {
 	overlay.setAttribute('aria-hidden', 'false');
 	document.body.classList.add('contact-overlay-open');
 }
+
 
 /**
  * Closes the add contact overlay.
@@ -51,6 +53,7 @@ function closeContactOverlay(immediate = false) {
 	overlay.setAttribute('aria-hidden', 'true');
 	document.body.classList.remove('contact-overlay-open');
 }
+
 
 /**
  * Moves focus out of the contact overlay before hiding it from assistive tech.
@@ -74,6 +77,7 @@ function releaseContactOverlayFocus(overlay) {
 	}
 }
 
+
 /**
  * Shows a temporary success toast after creating a contact.
  * @category Contacts
@@ -89,6 +93,7 @@ function showSuccessToast() {
 		toast.setAttribute('aria-hidden', 'true');
 	}, 2000);
 }
+
 
 /**
  * Collects contact form fields.
@@ -112,6 +117,7 @@ function getContactFields() {
 	return { form, nameInput, emailInput, phoneInput, submitButton, messages };
 }
 
+
 /**
  * Clears validation errors for contact fields.
  * @param {ReturnType<typeof getContactFields>} fields - Contact form fields.
@@ -124,6 +130,7 @@ function clearContactErrors(fields) {
 	clearFieldError(fields.emailInput, fields.messages.email);
 	clearFieldError(fields.phoneInput, fields.messages.phone);
 }
+
 
 /**
  * Sets the overlay form message.
@@ -138,6 +145,7 @@ function setContactFormMessage(text) {
 	elements.formMessage.classList.toggle('is-hidden', !text);
 }
 
+
 /**
  * Computes a stable avatar color for a contact name.
  * @param {string} name - Contact name.
@@ -148,6 +156,7 @@ function setContactFormMessage(text) {
 function getContactAvatarColor(name) {
 	return getAvatarColorFromName(name);
 }
+
 
 /**
  * Updates the avatar for add/edit modes.
@@ -175,6 +184,7 @@ function updateContactAvatar(elements, name, useInitials) {
 	elements.avatar.style.backgroundColor = getContactAvatarColor(name);
 }
 
+
 /**
  * Updates overlay copy and actions for add/edit modes.
  * @param {'add' | 'edit'} mode - Overlay mode.
@@ -199,6 +209,7 @@ function setContactOverlayMode(mode) {
 	}
 }
 
+
 /**
  * Applies contact data to the form fields.
  * @param {ReturnType<typeof getContactFields>} fields - Contact form fields.
@@ -212,6 +223,7 @@ function applyContactToForm(fields, contact) {
 	fields.emailInput.value = contact?.email || '';
 	fields.phoneInput.value = contact?.phone || '';
 }
+
 
 /**
  * Validates contact form fields and shows errors.
@@ -238,6 +250,7 @@ function validateContactFields(fields) {
 	return isValid;
 }
 
+
 /**
  * Binds field events to clear validation messages.
  * @param {ReturnType<typeof getContactFields>} fields - Contact form fields.
@@ -257,6 +270,7 @@ function bindContactFieldEvents(fields) {
 	});
 }
 
+
 /**
  * Refreshes the contact list using external renderer if available.
  * @returns {Promise<void>} Resolves after refresh completes.
@@ -268,6 +282,7 @@ async function refreshContactsList() {
 		await window.loadContacts({ preferCache: false });
 	}
 }
+
 
 /**
  * Resets the add-contact form to its default state.
@@ -285,6 +300,7 @@ function prepareAddContactForm(fields) {
 	setContactFormMessage('');
 }
 
+
 /**
  * Builds a normalized payload from current form values.
  * @param {ReturnType<typeof getContactFields>} fields - Contact form fields.
@@ -299,6 +315,7 @@ function getContactFormPayload(fields) {
 	const color = getContactAvatarColor(name);
 	return { name, email, phone, color };
 }
+
 
 /**
  * Persists contact form data for add/edit modes.
@@ -319,6 +336,7 @@ async function persistContactForm(mode, contactId, payload) {
 	return true;
 }
 
+
 /**
  * Deletes the current contact from the edit overlay context.
  * @param {ReturnType<typeof getContactFields>} fields - Contact form fields.
@@ -334,6 +352,7 @@ async function handleDeleteContactFromOverlay(fields) {
 	fields.form.reset();
 	closeContactOverlay(true);
 }
+
 
 /**
  * Submits contact form data and handles follow-up UI state.
@@ -354,6 +373,7 @@ async function submitContactForm(fields) {
 	if (mode !== 'edit') showSuccessToast();
 	return true;
 }
+
 
 /**
  * Initializes the add contact overlay interactions.
@@ -379,6 +399,7 @@ function initContactOverlay() {
 	});
 }
 
+
 /**
  * Initializes the add contact form submission.
  * @category Contacts
@@ -394,6 +415,7 @@ function initContactForm() {
 	}
 	initializeContactFormSubmit(fields);
 }
+
 
 /**
  * Binds the contact form submit handler.
@@ -422,6 +444,7 @@ function initializeContactFormSubmit(fields) {
 	});
 }
 
+
 /**
  * Prepares the contact form for edit mode.
  * @param {ReturnType<typeof getContactFields>} fields - Contact form fields.
@@ -435,6 +458,7 @@ function prepareEditContactForm(fields, contactId) {
 	clearContactErrors(fields);
 	setContactFormMessage('');
 }
+
 
 /**
  * Loads contact data into the edit form and updates avatar state.
@@ -450,6 +474,7 @@ async function hydrateEditContactForm(fields, contactId, contact) {
 	applyContactToForm(fields, data);
 	updateContactAvatar(getContactOverlayElements(), data?.name || '', true);
 }
+
 
 /**
  * Opens the overlay in edit mode with contact data.

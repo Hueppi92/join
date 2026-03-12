@@ -25,6 +25,7 @@ function initLoginForm() {
 	form.addEventListener('submit', (event) => handleLoginSubmit(event, fields));
 }
 
+
 /**
  * Collects login form fields.
  * @param {HTMLFormElement} form - The login form element.
@@ -44,6 +45,7 @@ function getLoginFields(form) {
 	return { form, emailInput, passwordInput, submitButton, emailMessage, passwordMessage, authMessage };
 }
 
+
 /**
  * Binds events to update login form button state.
  * @param {LoginFields} fields - Collected login form fields.
@@ -60,6 +62,7 @@ function bindLoginFieldEvents(fields) {
 	updateLoginButtonState(fields);
 }
 
+
 /**
  * Hides all inline login validation messages on initial load.
  * @param {LoginFields} fields - Collected login form fields.
@@ -71,6 +74,7 @@ function initLoginMessageVisibility(fields) {
 		message.style.visibility = 'hidden';
 	});
 }
+
 
 /**
  * Binds a login input to reset feedback and re-evaluate submit state.
@@ -89,6 +93,7 @@ function bindLoginInputField(input, message, fields, updateState) {
 	});
 }
 
+
 /**
  * Binds on-blur validation for a login input field.
  * @param {HTMLInputElement} input - Input to validate.
@@ -105,6 +110,7 @@ function bindLoginBlurField(input, validateField, fields, updateState) {
 	});
 }
 
+
 /**
  * Clears current login error states and messages.
  * @param {LoginFields} fields - Collected login form fields.
@@ -116,6 +122,7 @@ function clearLoginFeedback(fields) {
 	clearFieldError(fields.passwordInput, fields.passwordMessage);
 	setFormMessage(fields.authMessage, '');
 }
+
 
 /**
  * Enables/disables the login button based on form validity.
@@ -129,6 +136,7 @@ function updateLoginButtonState(fields) {
 	fields.submitButton.disabled = isLoading || !isValid;
 }
 
+
 /**
  * Validates login inputs.
  * @param {LoginFields} fields - Collected login form fields.
@@ -139,6 +147,7 @@ function updateLoginButtonState(fields) {
 function isLoginInputValid(fields) {
 	return isEmailValid(fields.emailInput.value) && fields.passwordInput.value.trim().length >= 6;
 }
+
 
 /**
  * Handles Firebase login submission.
@@ -162,6 +171,7 @@ async function handleLoginSubmit(event, fields) {
 	}
 }
 
+
 /**
  * Performs pre-submit validation and sets UI feedback on failure.
  * @param {LoginFields} fields - Collected login form fields.
@@ -177,6 +187,7 @@ function validateLoginBeforeSubmit(fields) {
 	setFormMessage(fields.authMessage, 'Please fix the highlighted fields.');
 	return false;
 }
+
 
 /**
  * Validates login email field and shows a specific message on failure.
@@ -199,6 +210,7 @@ function validateLoginEmailField(fields) {
 	return true;
 }
 
+
 /**
  * Validates login password field and shows a specific message on failure.
  * @param {LoginFields} fields - Collected login form fields.
@@ -220,6 +232,7 @@ function validateLoginPasswordField(fields) {
 	return true;
 }
 
+
 /**
  * Sends email/password credentials to Firebase auth.
  * @param {LoginFields} fields - Collected login form fields.
@@ -232,6 +245,7 @@ async function signInWithCredentials(fields) {
 	const password = fields.passwordInput.value;
 	return firebase.auth().signInWithEmailAndPassword(email, password);
 }
+
 
 /**
  * Applies session flags and redirects after successful login.
@@ -247,6 +261,7 @@ function handleSuccessfulLogin(credential) {
 	window.location.href = './sites/summary.html';
 }
 
+
 /**
  * Shows authentication errors in the login form.
  * @param {LoginFields} fields - Collected login form fields.
@@ -258,6 +273,7 @@ function handleFailedLogin(fields, error) {
 	setFormMessage(fields.authMessage, getAuthErrorMessage(error));
 	setLoginFieldErrorState(fields, true);
 }
+
 
 /**
  * Sets error state on login inputs.
@@ -271,6 +287,7 @@ function setLoginFieldErrorState(fields, hasError) {
 	fields.passwordInput.classList.toggle('input-error', hasError);
 }
 
+
 /**
  * Sets the loading state for the login form.
  * @param {LoginFields} fields - Collected login form fields.
@@ -282,6 +299,7 @@ function setLoadingState(fields, isLoading) {
 	fields.submitButton.dataset.loading = isLoading ? '1' : '0';
 	updateLoginButtonState(fields);
 }
+
 
 /**
  * Updates the form message.
@@ -295,6 +313,7 @@ function setFormMessage(message, text) {
 	message.classList.toggle('is-hidden', !text);
 }
 
+
 /**
  * Maps Firebase auth errors to readable messages.
  * @param {unknown} error - Firebase auth error.
@@ -307,6 +326,7 @@ function getAuthErrorMessage(error) {
 	if (!error || typeof error !== 'object' || !('code' in error)) return fallback;
 	return getLoginAuthErrorMessages()[error.code] || fallback;
 }
+
 
 /**
  * Returns the auth error code to message map for login.
@@ -326,6 +346,7 @@ function getLoginAuthErrorMessages() {
 	};
 }
 
+
 /**
  * Wires the guest login button to open the summary page.
  * @category Login
@@ -337,6 +358,7 @@ function initGuestLogin() {
 
 	guestButton.addEventListener('click', handleGuestLogin);
 }
+
 
 /**
  * Navigates to the summary page for guest access.

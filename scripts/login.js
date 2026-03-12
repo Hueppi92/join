@@ -95,6 +95,7 @@ function startSplashLogoAnimations(elements, context) {
 	return [logoAnimation, endLogoAnimation];
 }
 
+
 /**
  * Applies device-specific splash logo variant.
  * @param {{splashLogo: HTMLElement, splashLogoEnd: HTMLElement}} elements - Splash logo elements.
@@ -107,6 +108,7 @@ function setSplashTheme({ splashLogo, splashLogoEnd }) {
 	splashLogo.src = isMobile ? './assets/img/join_logo.svg' : './assets/img/join_logo_dark.svg';
 	splashLogoEnd.src = './assets/img/join_logo_dark.svg';
 }
+
 
 /**
  * Gets the required splash elements.
@@ -124,6 +126,7 @@ function getSplashElements() {
 	return { splashLogo, splashLogoEnd, headerLogo, splashBg };
 }
 
+
 /**
  * Prepares the splash logo position and scale.
  * @param {HTMLElement} splashLogo - The splash logo element.
@@ -136,6 +139,7 @@ function prepareSplashLogo(splashLogo, startScale) {
 	splashLogo.style.top = '50%';
 	splashLogo.style.transform = `translate(-50%, -50%) scale(${startScale})`;
 }
+
 
 /**
  * Computes the delta from splash center to header center.
@@ -154,6 +158,7 @@ function getCenterDelta(splashLogo, endRect) {
 
 	return { x: endCenterX - startCenterX, y: endCenterY - startCenterY };
 }
+
 
 /**
  * Animates the splash logo toward the header logo.
@@ -197,6 +202,7 @@ function buildSplashAnimationKeyframes(startScale, endScale, delta, fromOpacity,
 	];
 }
 
+
 /**
  * Returns shared timing options for splash logo animations.
  * @returns {KeyframeAnimationOptions} Animation options.
@@ -211,6 +217,7 @@ function getSplashAnimationOptions() {
 		fill: 'forwards',
 	};
 }
+
 
 /**
  * Calculates the exact end scale so splash logo matches header logo size.
@@ -227,6 +234,7 @@ function getSplashEndScale(splashLogo, endRect) {
 
 	return endRect.height / baseHeight;
 }
+
 
 /**
  * Calculates the start scale based on the login title and buttons height.
@@ -248,6 +256,7 @@ function getSplashStartScale(logoHeight) {
 	return Math.max(1, targetHeight / logoHeight);
 }
 
+
 /**
  * Applies responsive tuning to the splash start scale.
  * Keeps desktop behavior unchanged and reduces mobile start size slightly.
@@ -265,6 +274,7 @@ function getResponsiveSplashStartScale(baseScale) {
 	return Math.max(1, baseScale * mobileFactor);
 }
 
+
 /**
  * Returns whether the splash should be skipped (e.g. coming from sign-up).
  * @returns {boolean} True if the splash should be skipped.
@@ -274,6 +284,7 @@ function getResponsiveSplashStartScale(baseScale) {
 function shouldSkipSplash() {
 	return isLegacySkipSplashRequested() || hasPlayedLoginAnimation();
 }
+
 
 /**
  * Returns whether the one-time legacy skip flag is present.
@@ -285,6 +296,7 @@ function isLegacySkipSplashRequested() {
 	return sessionStorage.getItem('skipSplash') === '1';
 }
 
+
 /**
  * Returns whether the login splash animation already ran in this browser session.
  * @returns {boolean} True if the animation was already played.
@@ -295,6 +307,7 @@ function hasPlayedLoginAnimation() {
 	return sessionStorage.getItem('animationPlayed') === 'true';
 }
 
+
 /**
  * Marks the login splash animation as played for this browser session.
  * @category Login
@@ -304,6 +317,7 @@ function markLoginAnimationPlayed() {
 	sessionStorage.setItem('animationPlayed', 'true');
 }
 
+
 /**
  * Clears the skip flag to allow next page loads to animate normally.
  * @category Login
@@ -312,6 +326,7 @@ function markLoginAnimationPlayed() {
 function clearSkipSplash() {
 	sessionStorage.removeItem('skipSplash');
 }
+
 
 /**
  * Shows the final state immediately without animations.
@@ -326,6 +341,7 @@ function showFinalSplashState({ splashLogo, splashLogoEnd, headerLogo, splashBg 
 	setHeaderLogoVisibility(headerLogo, true);
 }
 
+
 /**
  * Finalizes the animation by swapping the logos after animations finish.
  * @param {SplashElements} elements - Required splash elements.
@@ -339,6 +355,7 @@ function finishSplashAnimation({ splashLogo, splashLogoEnd, headerLogo, splashBg
 	setHeaderLogoVisibility(headerLogo, true);
 	markLoginAnimationPlayed();
 }
+
 
 /**
  * Fades out the overlay background.
@@ -359,6 +376,7 @@ function fadeOutOverlay(splashBg, delay = 0, duration = 1000) {
 	});
 }
 
+
 /**
  * Waits for both animations to finish before finalizing the splash.
  * @param {Animation[]} logoAnimations - Splash logo animations.
@@ -373,6 +391,7 @@ function syncAnimationEnd(logoAnimations, overlayAnimation, elements) {
 	Promise.all([...logoFinished, overlayFinished]).then(() => finishSplashAnimation(elements));
 }
 
+
 /**
  * Hides an element if it exists.
  * @param {HTMLElement} element - The element to hide.
@@ -383,6 +402,7 @@ function hideElement(element) {
 	if (!element) return;
 	element.style.display = 'none';
 }
+
 
 /**
  * Sets header logo visibility.

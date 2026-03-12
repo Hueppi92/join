@@ -10,6 +10,7 @@ function isMobileContactsLayout() {
 	return window.matchMedia(MOBILE_CONTACTS_BREAKPOINT_QUERY).matches;
 }
 
+
 /**
  * Updates desktop details panel scrollability based on real overflow.
  * @category Contacts
@@ -26,6 +27,7 @@ function syncContactDetailsSectionScrollability() {
 	detailsSection.classList.toggle('is-scrollable', hasOverflow);
 }
 
+
 /**
  * Schedules a scrollability sync after current layout updates.
  * @category Contacts
@@ -34,6 +36,7 @@ function syncContactDetailsSectionScrollability() {
 function scheduleContactDetailsSectionScrollabilitySync() {
 	window.requestAnimationFrame(syncContactDetailsSectionScrollability);
 }
+
 
 /**
  * Toggles mobile contact details view.
@@ -51,6 +54,7 @@ function setMobileContactDetailsState(isOpen) {
 	scheduleContactDetailsSectionScrollabilitySync();
 }
 
+
 /**
  * Toggles the mobile floating contact action menu.
  * @param {boolean} isOpen - Whether the menu should be open.
@@ -67,6 +71,7 @@ function setMobileContactActionMenuState(isOpen) {
 	trigger.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
 }
 
+
 /**
  * Returns the currently selected contact.
  * @returns {{id: string, name: string, email: string, phone: string, createdAt?: number} | null} Selected contact.
@@ -76,6 +81,7 @@ function setMobileContactActionMenuState(isOpen) {
 function getSelectedContact() {
 	return contactsState.find((contact) => contact.id === selectedContactId) || null;
 }
+
 
 /**
  * Binds the mobile back button to return from details to list view.
@@ -91,6 +97,7 @@ function bindMobileBackButton(backButton) {
 	});
 }
 
+
 /**
  * Binds the mobile action menu toggle button.
  * @param {HTMLElement | null} menuButton - Menu toggle button.
@@ -105,6 +112,7 @@ function bindMobileMenuToggle(menuButton, actionMenu) {
 		setMobileContactActionMenuState(!isOpen);
 	});
 }
+
 
 /**
  * Closes the mobile action menu when clicking outside of it.
@@ -122,6 +130,7 @@ function bindMobileMenuOutsideClose(menuButton, actionMenu) {
 	});
 }
 
+
 /**
  * Binds mobile edit action to open the edit overlay.
  * @param {HTMLElement | null} editButton - Mobile edit button.
@@ -137,6 +146,7 @@ function bindMobileEditButton(editButton) {
 		openEditContactOverlay(selectedContact.id, selectedContact);
 	});
 }
+
 
 /**
  * Binds mobile delete action for the currently selected contact.
@@ -155,6 +165,7 @@ function bindMobileDeleteButton(deleteButton) {
 	});
 }
 
+
 /**
  * Creates a viewport-change handler for mobile contact layout transitions.
  * @param {MediaQueryList} mediaQuery - Mobile breakpoint media query.
@@ -172,6 +183,7 @@ function createMobileViewportChangeHandler(mediaQuery) {
 	};
 }
 
+
 /**
  * Subscribes to viewport changes to reset mobile-only UI state.
  * @category Contacts
@@ -184,6 +196,7 @@ function bindMobileViewportChangeListener() {
 	if (typeof mediaQuery.addListener === 'function') mediaQuery.addListener(onViewportChange);
 }
 
+
 /**
  * Binds the Escape key to close the mobile action menu.
  * @category Contacts
@@ -195,6 +208,7 @@ function bindMobileEscapeHandler() {
 		setMobileContactActionMenuState(false);
 	});
 }
+
 
 /**
  * Initializes mobile-only controls for switching between list and details.
