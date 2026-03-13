@@ -1,10 +1,3 @@
-/**
- * @typedef {Object} UserProfile
- * @property {string} id - Unique user id.
- * @property {string} [name] - Display name.
- * @property {string} [email] - Email address.
- * @property {number} [createdAt] - Account creation timestamp.
- */
 
 /**
  * Initializes user context helpers and UI hydration.
@@ -12,9 +5,9 @@
  * @subcategory UI & Init
  */
 function initUserContext() {
-	if (typeof window === 'undefined') return;
-	window.userContext = { resolveUserId, getActiveUserProfile };
-	document.addEventListener('DOMContentLoaded', hydrateUserContext);
+    if (typeof window === 'undefined') return;
+    window.userContext = { resolveUserId, getActiveUserProfile };
+    hydrateUserContext(); // direkt aufrufen, DOM ist bei onload bereits bereit
 }
 
 
@@ -307,4 +300,3 @@ async function hydrateUserContext() {
 }
 
 
-initUserContext();
