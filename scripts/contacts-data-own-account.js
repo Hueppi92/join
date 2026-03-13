@@ -48,7 +48,7 @@ async function resolveCurrentUserIdForContacts() {
 		try {
 			return await window.userContext.resolveUserId();
 		} catch (error) {
-			// Fall back to session storage.
+		
 		}
 	}
 	return sessionStorage.getItem('userId');

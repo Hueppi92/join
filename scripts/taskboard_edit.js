@@ -58,7 +58,7 @@ async function saveTaskEdit(taskId) {
         openTaskDetail(taskId);
         renderBoard();
     } catch (e) {
-        console.error("Error saving task:", e);
+        console.error('Error saving task:', e);
     }
 }
 
@@ -73,20 +73,39 @@ function setEditPriority(prio) {
     document.getElementById('prio-' + prio)?.classList.add('active-' + prio);
 }
 
+/**
+ * Overrides core task building to include correct board column status.
+ * @returns {Object}
+ */
+function buildTaskObject() {
+    const status = (typeof currentSelectedStatus !== 'undefined' && currentSelectedStatus)
+        ? currentSelectedStatus : 'todo';
+    return {
+        title: document.getElementById('titleInput').value.trim(),
+        description: document.querySelector('textarea').value.trim(),
+        dueDate: document.getElementById('dateInput').value.trim(),
+        priority: getActivePriority(),
+        category: document.getElementById('categoryInput')?.dataset.value || '',
+        assignedTo: getAssignedContacts(),
+        subtasks: getSubtasks(),
+        status,
+        createdAt: Date.now()
+    };
+}
+
+/**
+ * Callback for successful task creation on the board page.
+ * @returns {void}
+ */
+function handleTaskCreatedSuccess() {
+    closeAddTaskModal();
+    resetTaskForm();
+    renderBoard();
+}
+
 /* ==========================================================================
    2. CONTACTS
    ========================================================================== */
-
-/**
- * Formats contact names for UI display and marks own account.
- * @param {string} contactId
- * @param {string} contactName
- * @returns {string}
- */
-function formatContactDisplayName(contactId, contactName) {
-    if (String(contactId || '').startsWith('self_')) return `${contactName} (You)`;
-    return contactName;
-}
 
 /**
  * Generates HTML for a single contact item in the dropdown list.
@@ -104,22 +123,6 @@ function buildContactItemHTML(contactId, badge, isAssigned) {
         </div>
         <img src="../assets/icons/checkbox_${isAssigned ? 'white' : 'empty'}.svg">
     </div>`;
-}
-
-/**
- * Sorts contact entries: own account first, then alphabetically.
- * @param {Object} allContacts
- * @returns {Array<[string, Object]>}
- */
-function getSortedEditContactEntries(allContacts) {
-    return Object.entries(allContacts || {}).sort(([leftId, leftContact], [rightId, rightContact]) => {
-        const leftIsOwn = String(leftId || '').startsWith('self_');
-        const rightIsOwn = String(rightId || '').startsWith('self_');
-        if (leftIsOwn !== rightIsOwn) return leftIsOwn ? -1 : 1;
-        const leftName = String(leftContact?.name || leftContact?.email || '').trim();
-        const rightName = String(rightContact?.name || rightContact?.email || '').trim();
-        return leftName.localeCompare(rightName, 'de', { sensitivity: 'base' });
-    });
 }
 
 /**
@@ -301,39 +304,8 @@ async function deleteTask(taskId) {
         clearTaskFromCache(taskId);
         closeTaskDetail();
         renderBoard();
-        showSuccessToast("Task gelöscht");
+        showSuccessToast('Task gelöscht');
     });
-}
-
-/**
- * Shows a delete confirmation toast overlay.
- * @param {Function} callback - Called on confirm.
- * @returns {void}
- */
-function showDeleteToast(callback) {
-    const overlay = document.getElementById("toastOverlay");
-    const confirmBtn = document.getElementById("toastConfirm");
-    const cancelBtn = document.getElementById("toastCancel");
-    overlay.classList.remove("hidden");
-    const close = () => overlay.classList.add("hidden");
-    confirmBtn.onclick = () => { callback(); close(); };
-    cancelBtn.onclick = close;
-}
-
-/**
- * Shows a brief success toast notification.
- * @param {string} [message="Task gelöscht"]
- * @returns {void}
- */
-function showSuccessToast(message = "Task gelöscht") {
-    const toast = document.getElementById("successToast");
-    toast.textContent = message;
-    toast.classList.remove("hidden");
-    setTimeout(() => toast.classList.add("show"), 10);
-    setTimeout(() => {
-        toast.classList.remove("show");
-        setTimeout(() => toast.classList.add("hidden"), 250);
-    }, 2500);
 }
 
 /**

@@ -21,7 +21,7 @@
   <title>Join - Task Board</title>
 </head>
 
-<body onload="initUserContext()">
+<body onload="initUserContext(); renderBoard();">
   <header>
     <h2>Kanban Project Management Tool</h2>
     <div class="header-btn">
@@ -279,7 +279,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
- <script src="../scripts/firebaseConfig.js"></script>
+
 <script src="../scripts/db.js"></script>
 <script src="../scripts/auth-guard.js"></script>
 <script src="../scripts/user-context.js"></script>

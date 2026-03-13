@@ -31,7 +31,99 @@ let currentEditContacts = [];
 let currentSelectedStatus = 'todo';
 
 /* ==========================================================================
-   2. CACHE READ / WRITE
+   2. GENERAL UTILITIES
+   ========================================================================== */
+
+/**
+ * Ensures that a value is returned as an array.
+ * Automatically converts Firebase objects (key-value) into an array.
+ * @param {*} data
+ * @returns {Array}
+ */
+function ensureArray(data) {
+    return Array.isArray(data) ? data : Object.values(data || {});
+}
+
+/**
+ * Calculates the completion progress of a task's subtasks.
+ * @param {Array|Object} subtasksRaw
+ * @returns {{ done: number, total: number, percent: number }}
+ */
+function getProgressData(subtasksRaw) {
+    const st = ensureArray(subtasksRaw);
+    const done = st.filter((s) => s?.completed || s?.done).length;
+    const percent = st.length > 0 ? (done / st.length) * 100 : 0;
+    return { done, total: st.length, percent };
+}
+
+/**
+ * Formats an ISO date string (YYYY-MM-DD) into European format (DD.MM.YYYY).
+ * @param {string} [dueDate='']
+ * @returns {string}
+ */
+function formatDate(dueDate = '') {
+    if (!dueDate) return '--.--.----';
+    return dueDate.includes('-') ? dueDate.split('-').reverse().join('.') : dueDate;
+}
+
+/**
+ * Generates a CSS-compatible class name from a category text string.
+ * @param {string} [category='']
+ * @returns {string}
+ */
+function buildCategoryClass(category = '') {
+    return (category || 'User Story').toLowerCase().replace(/\s+/g, '-');
+}
+
+/**
+ * Resolves display initials from a user badge object.
+ * @param {Object} u
+ * @returns {string}
+ */
+function resolveUserInitials(u) {
+    const name = u.name || '';
+    return u.initials || getInitials(name);
+}
+
+/**
+ * Resolves the title of a subtask entry.
+ * @param {string|Object} s
+ * @param {number} i
+ * @returns {string}
+ */
+function resolveSubtaskTitle(s, i) {
+    return typeof s === 'object' ? s.title || `Subtask ${i + 1}` : s;
+}
+
+/**
+ * Formats contact names for UI display and marks own account.
+ * @param {string} contactId
+ * @param {string} contactName
+ * @returns {string}
+ */
+function formatContactDisplayName(contactId, contactName) {
+    if (String(contactId || '').startsWith('self_')) return `${contactName} (You)`;
+    return contactName;
+}
+
+/**
+ * Sorts contact entries: own account first, then alphabetically.
+ * @param {Object} allContacts
+ * @returns {Array<[string, Object]>}
+ */
+function getSortedEditContactEntries(allContacts) {
+    return Object.entries(allContacts || {}).sort(([leftId, leftContact], [rightId, rightContact]) => {
+        const leftIsOwn = String(leftId || '').startsWith('self_');
+        const rightIsOwn = String(rightId || '').startsWith('self_');
+        if (leftIsOwn !== rightIsOwn) return leftIsOwn ? -1 : 1;
+        const leftName = String(leftContact?.name || leftContact?.email || '').trim();
+        const rightName = String(rightContact?.name || rightContact?.email || '').trim();
+        return leftName.localeCompare(rightName, 'de', { sensitivity: 'base' });
+    });
+}
+
+/* ==========================================================================
+   3. CACHE READ / WRITE
    ========================================================================== */
 
 /**
@@ -117,12 +209,6 @@ function buildColumnsFromCachedTasks(cachedTasks) {
     });
     return columns;
 }
-
-/* ==========================================================================
-   3. UTILS & HELPER FUNCTIONS
-   ========================================================================== */
-
-// getInitials is defined in taskeditor.js — do not redeclare here
 
 /**
  * Converts a Firebase contact object into a badge object for UI rendering.

@@ -1,105 +1,65 @@
 /**
  * @category Board
+ * @file taskboard_template.js
+ * HTML-Templates für Cards, Detail-Ansicht und Edit-Formular
  */
-
-/**
- * Ensures that a value is returned as an array.
- * Automatically converts Firebase objects (key-value) into an array.
- */
-function ensureArray(data) {
-  return Array.isArray(data) ? data : Object.values(data || {});
-}
-
-/**
- * Calculates the completion progress of a task's subtasks.
- */
-function getProgressData(subtasksRaw) {
-  const st = ensureArray(subtasksRaw);
-  const done = st.filter((s) => s?.completed || s?.done).length;
-  const percent = st.length > 0 ? (done / st.length) * 100 : 0;
-  return { done, total: st.length, percent };
-}
-
-/**
- * Formats an ISO date string (YYYY-MM-DD) into European format (DD.MM.YYYY).
- */
-function formatDate(dueDate = "") {
-  if (!dueDate) return "--.--.----";
-  return dueDate.includes("-") ? dueDate.split("-").reverse().join(".") : dueDate;
-}
-
-/**
- * Generates a CSS-compatible class name from a category text string.
- */
-function buildCategoryClass(category = "") {
-  return (category || "User Story").toLowerCase().replace(/\s+/g, "-");
-}
 
 /** --- USER BADGE HELPERS --- **/
 
-function resolveUserInitials(u) {
-  const name = u.name || "";
-  return u.initials || getInitials(name);
-}
-
 function renderCardBadge(u, index) {
-  const ml = index === 0 ? "0" : "-12px";
-  return `<div class="user-badge" style="background-color:${u.color || "#2A3647"};z-index:${10 - index};margin-left:${ml};">
+    const ml = index === 0 ? '0' : '-12px';
+    return `<div class="user-badge" style="background-color:${u.color || '#2A3647'};z-index:${10 - index};margin-left:${ml};">
     ${resolveUserInitials(u)}
   </div>`;
 }
 
 function renderDetailBadge(u) {
-  const name = u.name || "Unknown";
-  const displayName = String(u.id || "").startsWith("self_") ? `${name} (You)` : name;
-  const initials = resolveUserInitials(u);
-  return `<div class="assigned-user-badge-container">
-    <div class="user-badge" style="background-color:${u.color || "#2A3647"};">${initials}</div>
+    const name = u.name || 'Unknown';
+    const displayName = String(u.id || '').startsWith('self_') ? `${name} (You)` : name;
+    const initials = resolveUserInitials(u);
+    return `<div class="assigned-user-badge-container">
+    <div class="user-badge" style="background-color:${u.color || '#2A3647'};">${initials}</div>
     <span>${displayName}</span>
   </div>`;
 }
 
 function renderContactBadges(users, limit = 4, isDetail = false) {
-  const list = ensureArray(users).filter((u) => u && typeof u === "object");
-  if (isDetail) return list.map(renderDetailBadge).join("");
+    const list = ensureArray(users).filter((u) => u && typeof u === 'object');
+    if (isDetail) return list.map(renderDetailBadge).join('');
 
-  const visible = list.slice(0, limit);
-  const remaining = list.length - visible.length;
+    const visible = list.slice(0, limit);
+    const remaining = list.length - visible.length;
 
-  let html = visible.map(renderCardBadge).join("");
+    let html = visible.map(renderCardBadge).join('');
 
-  if (remaining > 0) {
-    html += `<div class="user-badge user-badge--more" style="z-index:1;margin-left:-12px;">+${remaining}</div>`;
-  }
+    if (remaining > 0) {
+        html += `<div class="user-badge user-badge--more" style="z-index:1;margin-left:-12px;">+${remaining}</div>`;
+    }
 
-  return html;
+    return html;
 }
 
 /** --- SUBTASK HELPERS --- **/
 
-function resolveSubtaskTitle(s, i) {
-  return typeof s === "object" ? s.title || `Subtask ${i + 1}` : s;
-}
-
 function renderSubtaskItems(subtasksRaw, taskId) {
-  const st = ensureArray(subtasksRaw);
-  if (st.length === 0) return "No subtasks";
-  return st.map((s, i) => {
-    const done = s?.completed || s?.done;
-    const title = resolveSubtaskTitle(s, i);
-    const icon = done ? "checked" : "empty";
-    return `<div class="subtask-row" onclick="updateSubtaskStatus('${taskId}', ${i}, ${!done})">
+    const st = ensureArray(subtasksRaw);
+    if (st.length === 0) return 'No subtasks';
+    return st.map((s, i) => {
+        const done = s?.completed || s?.done;
+        const title = resolveSubtaskTitle(s, i);
+        const icon = done ? 'checked' : 'empty';
+        return `<div class="subtask-row" onclick="updateSubtaskStatus('${taskId}', ${i}, ${!done})">
       <img src="../assets/icons/checkbox_${icon}.svg"><span>${title}</span>
     </div>`;
-  }).join("");
+    }).join('');
 }
 
 /** --- PROGRESS BAR HTML --- **/
 
 function renderProgressBar(subtasksRaw) {
-  const { done, total, percent } = getProgressData(subtasksRaw);
-  if (total === 0) return "";
-  return `<div class="progress-container">
+    const { done, total, percent } = getProgressData(subtasksRaw);
+    if (total === 0) return '';
+    return `<div class="progress-container">
     <div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div>
     <span class="subtask-text">${done}/${total} Subtasks</span>
   </div>`;
@@ -108,16 +68,16 @@ function renderProgressBar(subtasksRaw) {
 /** --- PRIORITY BUTTONS HTML --- **/
 
 function renderPrioButtons(currentPrio) {
-  return ["urgent", "medium", "low"].map((p) => {
-    const active = currentPrio === p ? `active-${p}` : "";
-    const label = p.charAt(0).toUpperCase() + p.slice(1);
-    return `<button class="prio-btn-edit ${active}" onclick="setEditPriority('${p}')" id="prio-${p}">
+    return ['urgent', 'medium', 'low'].map((p) => {
+        const active = currentPrio === p ? `active-${p}` : '';
+        const label = p.charAt(0).toUpperCase() + p.slice(1);
+        return `<button class="prio-btn-edit ${active}" onclick="setEditPriority('${p}')" id="prio-${p}">
       ${label}<img src="../assets/icons/prio-${p}.svg">
     </button>`;
-  }).join("");
+    }).join('');
 }
 
-/** --- MOVE-TO MENU --- **/
+
 
 /**
  * Renders the move-to context menu items for a card.
@@ -128,52 +88,26 @@ function renderPrioButtons(currentPrio) {
  * @returns {string} HTML string of the menu items.
  */
 function renderMoveToItems(id, currentStatus) {
-  const labels = {
-    "todo":           "To-do",
-    "in-progress":    "In Progress",
-    "await-feedback": "Await Feedback",
-    "done":           "Done",
-  };
+    const labels = {
+        'todo':           'To-do',
+        'in-progress':    'In Progress',
+        'await-feedback': 'Await Feedback',
+        'done':           'Done',
+    };
 
-  const currentIndex = BOARD_STATUSES.indexOf(currentStatus);
+    const currentIndex = BOARD_STATUSES.indexOf(currentStatus);
 
-  return BOARD_STATUSES
-    .filter(s => s !== currentStatus)
-    .map(s => {
-      const targetIndex = BOARD_STATUSES.indexOf(s);
-      const arrow = targetIndex < currentIndex ? "↑" : "↓";
-      const label = labels[s] || s;
-      return `<div class="move-to-item" onclick="event.stopPropagation();moveTaskToStatus('${id}','${s}');closeAllMoveToMenus()">
+    return BOARD_STATUSES
+        .filter(s => s !== currentStatus)
+        .map(s => {
+            const targetIndex = BOARD_STATUSES.indexOf(s);
+            const arrow = targetIndex < currentIndex ? '↑' : '↓';
+            const label = labels[s] || s;
+            return `<div class="move-to-item" onclick="event.stopPropagation();moveTaskToStatus('${id}','${s}');closeAllMoveToMenus()">
         <span class="move-to-arrow">${arrow}</span>${label}
       </div>`;
-    }).join("");
+        }).join('');
 }
-
-/**
- * Closes all open move-to menus on the board.
- */
-function closeAllMoveToMenus() {
-  document.querySelectorAll(".move-to-menu").forEach(m => m.classList.remove("open"));
-}
-
-/**
- * Toggles the move-to menu for a specific card.
- *
- * @param {Event} e - The click event.
- * @param {string} id - Task Firebase ID.
- */
-function toggleMoveToMenu(e, id) {
-  e.stopPropagation();
-  const menu = document.getElementById(`move-to-menu-${id}`);
-  const isOpen = menu.classList.contains("open");
-  closeAllMoveToMenus();
-  if (!isOpen) menu.classList.add("open");
-}
-
-// Close all menus when clicking anywhere on the document
-document.addEventListener("click", closeAllMoveToMenus);
-
-/** --- MAIN TEMPLATES --- **/
 
 /**
  * Generates the HTML for a task card on the board.
@@ -184,16 +118,16 @@ document.addEventListener("click", closeAllMoveToMenus);
  * @returns {string} HTML string of the task card.
  */
 function getCardTemplate(task, id) {
-  const prio = (task.priority || "low").toLowerCase();
-  const catClass = buildCategoryClass(task.category);
-  const catText = task.category || "User Story";
-  const currentStatus = task.status || "todo";
+    const prio = (task.priority || 'low').toLowerCase();
+    const catClass = buildCategoryClass(task.category);
+    const catText = task.category || 'User Story';
+    const currentStatus = task.status || 'todo';
 
-  return `<div class="card" draggable="true" onclick="event.stopPropagation();openTaskDetail('${id}')" ondragstart="event.dataTransfer.setData('text/plain','${id}')" style="position:relative;">
+    return `<div class="card" draggable="true" onclick="event.stopPropagation();openTaskDetail('${id}')" ondragstart="event.dataTransfer.setData('text/plain','${id}')" style="position:relative;">
     <div class="badge ${catClass}">${catText}</div>
     <div class="card-content">
-      <h2 class="card-title">${task.title || "No Title"}</h2>
-      <p class="card-description">${task.description || ""}</p>
+      <h2 class="card-title">${task.title || 'No Title'}</h2>
+      <p class="card-description">${task.description || ''}</p>
     </div>
     ${renderProgressBar(task.subtasks)}
     <div class="card-footer">
@@ -218,17 +152,17 @@ function getCardTemplate(task, id) {
  * Generates the HTML for the task detail view in the overlay.
  */
 function getTaskDetailTemplate(task, id) {
-  const prio = (task.priority || "low").toLowerCase();
-  const prioLabel = prio.charAt(0).toUpperCase() + prio.slice(1);
-  const catClass = buildCategoryClass(task.category);
-  const catText = task.category || "User Story";
-  return `<div class="task-detail-card">
+    const prio = (task.priority || 'low').toLowerCase();
+    const prioLabel = prio.charAt(0).toUpperCase() + prio.slice(1);
+    const catClass = buildCategoryClass(task.category);
+    const catText = task.category || 'User Story';
+    return `<div class="task-detail-card">
     <div class="detail-header">
       <div class="badge ${catClass}">${catText}</div>
       <button class="close-btn-overlay" onclick="closeTaskDetail()"><img src="../assets/icons/close.svg" alt="Close"></button>
     </div>
-    <h1 class="detail-title">${task.title || "No Title"}</h1>
-    <p class="detail-description">${task.description || ""}</p>
+    <h1 class="detail-title">${task.title || 'No Title'}</h1>
+    <p class="detail-description">${task.description || ''}</p>
     <div class="detail-info-row"><span class="info-label">Due date:</span><span class="info-value">${formatDate(task.dueDate)}</span></div>
     <div class="detail-prio-row"><span class="info-label">Priority:</span>
       <div class="info-value-prio"><span>${prioLabel}</span><img src="../assets/icons/prio-${prio}.svg" alt="${prioLabel}"></div>
@@ -251,16 +185,16 @@ function getTaskDetailTemplate(task, id) {
  * Generates the HTML for the task edit form in the overlay.
  */
 function getEditTaskTemplate(task, id) {
-  const curr = (task.priority || "low").toLowerCase();
-  return `<div class="card-inner">
+    const curr = (task.priority || 'low').toLowerCase();
+    return `<div class="card-inner">
     <button class="close-btn-overlay" onclick="closeTaskDetail()"><img src="../assets/icons/close.svg" alt="Close"></button>
     <div class="task-edit-container"><div class="edit-scroll-area">
       <label class="edit-label">Title</label>
-      <input type="text" id="edit-title" class="edit-input" value="${task.title || ""}">
+      <input type="text" id="edit-title" class="edit-input" value="${task.title || ''}">
       <label class="edit-label">Description</label>
-      <textarea id="edit-description" class="edit-textarea">${task.description || ""}</textarea>
+      <textarea id="edit-description" class="edit-textarea">${task.description || ''}</textarea>
       <label class="edit-label">Due date</label>
-      <input type="date" id="edit-date" class="edit-input" value="${task.dueDate || ""}">
+      <input type="date" id="edit-date" class="edit-input" value="${task.dueDate || ''}">
       <label class="edit-label edit-label-priority">Priority</label>
       <div class="priority-row-edit">${renderPrioButtons(curr)}</div>
       <label class="edit-label">Assigned to</label>

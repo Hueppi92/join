@@ -19,34 +19,22 @@ const SUMMARY_CACHE_KEY = "join_summary_cache_v1";
  */
 async function loadSummary() {
     setGreeting();
-
     const cachedSummary = readSummaryCache();
     if (cachedSummary) {
         renderUserName(cachedSummary.userName);
         renderSummary(cachedSummary.tasks);
-    } else {
-        renderUserName("Guest");
-        renderSummary({});
-    }
-
-    // Mobile Greeting nach initialem Render (Name aus Cache oder "Guest")
+    } else {  renderUserName("Guest"); renderSummary({});}
     showMobileGreetingIfNeeded();
-
     try {
         const userIdPromise = resolveActiveUserId();
         const tasksPromise = getTasks();
         const userId = await userIdPromise;
         const [userName, tasks] = await Promise.all([getUserName(userId), tasksPromise]);
-
         renderUserName(userName);
         renderSummary(tasks);
         writeSummaryCache({ userName, tasks, updatedAt: Date.now() });
-
-        // Overlay-Name aktualisieren falls es noch sichtbar ist
         updateMobileGreetingName(userName);
-    } catch (error) {
-        console.error("Error in loadSummary:", error);
-    }
+    } catch (error) {console.error("Error in loadSummary:", error);}
 }
 
 /**
@@ -175,14 +163,12 @@ function calculateTaskStats(tasks) {
  */
 function renderSummary(tasks) {
     const stats = calculateTaskStats(tasks);
-    
     document.getElementById("total-tasks").innerText = stats.totalTasks;
     document.getElementById("todo-tasks").innerText = stats.todoCount;
     document.getElementById("inprogress-tasks").innerText = stats.inProgressCount;
     document.getElementById("done-tasks").innerText = stats.doneCount;
     document.getElementById("urgent-tasks").innerText = stats.urgentCount;
     document.getElementById("awaitFeedback-tasks").innerText = stats.feedbackCount;
-
     renderNextDeadline(tasks);
 }
 
@@ -250,10 +236,6 @@ function renderNextDeadline(tasks) {
         : "No upcoming deadlines";
 }
 
-// ─────────────────────────────────────────────────────────────
-//  MOBILE GREETING OVERLAY
-// ─────────────────────────────────────────────────────────────
-
 /** Referenz auf das Overlay-Element, damit updateMobileGreetingName drauf zugreifen kann */
 let _mobileGreetingOverlay = null;
 
@@ -270,7 +252,7 @@ function showMobileGreetingIfNeeded() {
     const greetText = document.getElementById('greet')?.innerHTML || '';
     const nameText  = document.getElementById('user-name')?.innerText || '';
 
-    // Overlay bauen
+    
     const overlay = document.createElement('div');
     overlay.className = 'mobile-greeting-overlay';
     overlay.innerHTML = `
@@ -280,17 +262,16 @@ function showMobileGreetingIfNeeded() {
     document.body.appendChild(overlay);
     _mobileGreetingOverlay = overlay;
 
-    // Board zunächst unsichtbar
+   
     const board   = document.querySelector('.dashboard-wrapper');
     const header  = document.querySelector('.summary-header');
     if (board)  board.classList.add('board-hidden');
     if (header) header.classList.add('board-hidden');
 
-    // Overlay im nächsten Frame einblenden (CSS-Transition greift)
+   
     requestAnimationFrame(() => overlay.classList.add('visible'));
 
-    // Nach 2s Fade + 0.7s Animation → Board einblenden, Overlay entfernen
-    // Gesamtdauer: 2s Pause + 0.7s CSS-Fade = 2700ms
+   
     setTimeout(() => {
         if (board)  { board.classList.remove('board-hidden');  board.classList.add('board-visible'); }
         if (header) { header.classList.remove('board-hidden'); header.classList.add('board-visible'); }
@@ -315,5 +296,4 @@ function updateMobileGreetingName(name) {
     if (nameEl) nameEl.innerText = name;
 }
 
-// Initial call to start the page logic
-loadSummary();
+

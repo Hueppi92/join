@@ -1,9 +1,3 @@
-// db.js
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-
-
 const firebaseConfig = {
   apiKey: "AIzaSyBpgzyPWrtvfcmTmIr7wskgbj2-HiSxjqk",
   authDomain: "join-2483.firebaseapp.com",
@@ -13,3 +7,9 @@ const firebaseConfig = {
   messagingSenderId: "1015631608333",
   appId: "1:1015631608333:web:5dcfe60e31adb078aeb344"
 };
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+
+

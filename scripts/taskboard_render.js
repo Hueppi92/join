@@ -77,7 +77,7 @@ async function renderBoard(options = {}) {
         renderColumnHTML(columns);
         writeBoardCache(nextCache);
     } catch (error) {
-        console.error("Error rendering board:", error);
+        console.error('Error rendering board:', error);
     }
 }
 
@@ -97,7 +97,33 @@ function renderColumnHTML(columns) {
 }
 
 /* ==========================================================================
-   2. SEARCH
+   2. MOVE-TO MENU
+   ========================================================================== */
+
+/**
+ * Closes all open move-to menus on the board.
+ */
+function closeAllMoveToMenus() {
+    document.querySelectorAll('.move-to-menu').forEach(m => m.classList.remove('open'));
+}
+
+/**
+ * Toggles the move-to menu for a specific card.
+ * @param {Event} e - The click event.
+ * @param {string} id - Task Firebase ID.
+ */
+function toggleMoveToMenu(e, id) {
+    e.stopPropagation();
+    const menu = document.getElementById(`move-to-menu-${id}`);
+    const isOpen = menu.classList.contains('open');
+    closeAllMoveToMenus();
+    if (!isOpen) menu.classList.add('open');
+}
+
+document.addEventListener('click', closeAllMoveToMenus);
+
+/* ==========================================================================
+   3. SEARCH
    ========================================================================== */
 
 document.getElementById('task-search')?.addEventListener('input', (event) => {
@@ -112,9 +138,9 @@ document.getElementById('task-search')?.addEventListener('input', (event) => {
  * @returns {boolean}
  */
 function taskMatchesTerm(task, term) {
-    const title = (task.title || "").toLowerCase();
-    const description = (task.description || "").toLowerCase();
-    const euDate = (task.dueDate || "").split("-").reverse().join(".");
+    const title = (task.title || '').toLowerCase();
+    const description = (task.description || '').toLowerCase();
+    const euDate = (task.dueDate || '').split('-').reverse().join('.');
     return title.includes(term) || description.includes(term) || euDate.includes(term);
 }
 
@@ -140,7 +166,7 @@ async function filterTasks(term) {
 }
 
 /* ==========================================================================
-   3. MODAL MANAGEMENT (ADD TASK)
+   4. MODAL MANAGEMENT (ADD TASK)
    ========================================================================== */
 
 /**
@@ -200,7 +226,7 @@ function releaseAddTaskModalFocus(modal) {
 }
 
 /* ==========================================================================
-   4. TASK DETAIL
+   5. TASK DETAIL
    ========================================================================== */
 
 /**
@@ -265,38 +291,36 @@ function handleOverlayClick(event) {
 }
 
 /* ==========================================================================
-   5. OVERRIDES for taskeditor.js
+   6. TOASTS
    ========================================================================== */
 
 /**
- * Overrides core task building to include correct board column status.
- * @returns {Object}
+ * Shows a delete confirmation toast overlay.
+ * @param {Function} callback - Called on confirm.
+ * @returns {void}
  */
-function buildTaskObject() {
-    const status = (typeof currentSelectedStatus !== 'undefined' && currentSelectedStatus)
-        ? currentSelectedStatus : 'todo';
-    return {
-        title: document.getElementById("titleInput").value.trim(),
-        description: document.querySelector("textarea").value.trim(),
-        dueDate: document.getElementById("dateInput").value.trim(),
-        priority: getActivePriority(),
-        category: document.getElementById("categoryInput")?.dataset.value || "",
-        assignedTo: getAssignedContacts(),
-        subtasks: getSubtasks(),
-        status,
-        createdAt: Date.now()
-    };
+function showDeleteToast(callback) {
+    const overlay = document.getElementById('toastOverlay');
+    const confirmBtn = document.getElementById('toastConfirm');
+    const cancelBtn = document.getElementById('toastCancel');
+    overlay.classList.remove('hidden');
+    const close = () => overlay.classList.add('hidden');
+    confirmBtn.onclick = () => { callback(); close(); };
+    cancelBtn.onclick = close;
 }
 
 /**
- * Callback for successful task creation on the board page.
+ * Shows a brief success toast notification.
+ * @param {string} [message="Task gelöscht"]
  * @returns {void}
  */
-function handleTaskCreatedSuccess() {
-    closeAddTaskModal();
-    resetTaskForm();
-    renderBoard();
+function showSuccessToast(message = 'Task gelöscht') {
+    const toast = document.getElementById('successToast');
+    toast.textContent = message;
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.classList.add('hidden'), 250);
+    }, 2500);
 }
-
-// Initial board rendering on page load
-renderBoard();

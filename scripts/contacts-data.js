@@ -5,11 +5,11 @@
  * @subcategory Firebase Logic
  */
 function hasDb() {
-	return typeof db !== 'undefined' && db && typeof db.ref === 'function';
+  return typeof db !== "undefined" && db && typeof db.ref === "function";
 }
 
-const LOCAL_CONTACTS_KEY = 'join_contacts_local';
-const CONTACTS_CACHE_KEY = 'join_contacts_cache_v1';
+const LOCAL_CONTACTS_KEY = "join_contacts_local";
+const CONTACTS_CACHE_KEY = "join_contacts_cache_v1";
 /**
  * Reads local contacts map from localStorage.
  * @returns {Record<string, {name?: string, email?: string, phone?: string, createdAt?: number}>} Local contacts map.
@@ -17,16 +17,15 @@ const CONTACTS_CACHE_KEY = 'join_contacts_cache_v1';
  * @subcategory Data Handling
  */
 function readLocalContactsMap() {
-	try {
-		const raw = localStorage.getItem(LOCAL_CONTACTS_KEY);
-		if (!raw) return {};
-		const parsed = JSON.parse(raw);
-		return parsed && typeof parsed === 'object' ? parsed : {};
-	} catch (error) {
-		return {};
-	}
+  try {
+    const raw = localStorage.getItem(LOCAL_CONTACTS_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch (error) {
+    return {};
+  }
 }
-
 
 /**
  * Writes local contacts map into localStorage.
@@ -35,13 +34,12 @@ function readLocalContactsMap() {
  * @subcategory Data Handling
  */
 function writeLocalContactsMap(contactsMap) {
-	try {
-		localStorage.setItem(LOCAL_CONTACTS_KEY, JSON.stringify(contactsMap || {}));
-	} catch (error) {
-		return;
-	}
+  try {
+    localStorage.setItem(LOCAL_CONTACTS_KEY, JSON.stringify(contactsMap || {}));
+  } catch (error) {
+    return;
+  }
 }
-
 
 /**
  * Normalizes one cached contact item.
@@ -51,15 +49,14 @@ function writeLocalContactsMap(contactsMap) {
  * @subcategory Data Handling
  */
 function normalizeCachedContact(item) {
-	return {
-		id: item.id,
-		name: item.name || '',
-		email: item.email || '',
-		phone: item.phone || '',
-		createdAt: item.createdAt || 0,
-	};
+  return {
+    id: item.id,
+    name: item.name || "",
+    email: item.email || "",
+    phone: item.phone || "",
+    createdAt: item.createdAt || 0,
+  };
 }
-
 
 /**
  * Validates whether an unknown item can be treated as cached contact data.
@@ -69,9 +66,8 @@ function normalizeCachedContact(item) {
  * @subcategory Validation
  */
 function isValidCachedContact(item) {
-	return item && typeof item === 'object' && typeof item.id === 'string';
+  return item && typeof item === "object" && typeof item.id === "string";
 }
-
 
 /**
  * Parses serialized contact cache into normalized list data.
@@ -81,11 +77,10 @@ function isValidCachedContact(item) {
  * @subcategory Data Handling
  */
 function parseContactsCache(rawValue) {
-	const parsed = JSON.parse(rawValue);
-	if (!Array.isArray(parsed)) return [];
-	return parsed.filter(isValidCachedContact).map(normalizeCachedContact);
+  const parsed = JSON.parse(rawValue);
+  if (!Array.isArray(parsed)) return [];
+  return parsed.filter(isValidCachedContact).map(normalizeCachedContact);
 }
-
 
 /**
  * Reads cached contact list from localStorage.
@@ -94,15 +89,14 @@ function parseContactsCache(rawValue) {
  * @subcategory Data Handling
  */
 function readContactsCache() {
-	try {
-		const raw = localStorage.getItem(CONTACTS_CACHE_KEY);
-		if (!raw) return [];
-		return parseContactsCache(raw);
-	} catch (error) {
-		return [];
-	}
+  try {
+    const raw = localStorage.getItem(CONTACTS_CACHE_KEY);
+    if (!raw) return [];
+    return parseContactsCache(raw);
+  } catch (error) {
+    return [];
+  }
 }
-
 
 /**
  * Writes contact list cache to localStorage.
@@ -111,13 +105,15 @@ function readContactsCache() {
  * @subcategory Data Handling
  */
 function writeContactsCache(contacts) {
-	try {
-		localStorage.setItem(CONTACTS_CACHE_KEY, JSON.stringify(Array.isArray(contacts) ? contacts : []));
-	} catch (error) {
-		return;
-	}
+  try {
+    localStorage.setItem(
+      CONTACTS_CACHE_KEY,
+      JSON.stringify(Array.isArray(contacts) ? contacts : []),
+    );
+  } catch (error) {
+    return;
+  }
 }
-
 
 /**
  * Generates a local contact id.
@@ -126,9 +122,8 @@ function writeContactsCache(contacts) {
  * @subcategory Data Handling
  */
 function createLocalContactId() {
-	return `local_${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
+  return `local_${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
 }
-
 
 /**
  * Saves a new contact to the database.
@@ -138,19 +133,16 @@ function createLocalContactId() {
  * @subcategory Firebase Logic
  */
 async function saveContact(contact) {
-	if (hasDb()) {
-		try {
-			await db.ref('contacts').push(contact);
-			return;
-		} catch (error) {
-			// Fall through to local fallback.
-		}
-	}
-	const contactsMap = readLocalContactsMap();
-	contactsMap[createLocalContactId()] = contact;
-	writeLocalContactsMap(contactsMap);
+  if (hasDb()) {
+    try {
+      await db.ref("contacts").push(contact);
+      return;
+    } catch (error) {}
+  }
+  const contactsMap = readLocalContactsMap();
+  contactsMap[createLocalContactId()] = contact;
+  writeLocalContactsMap(contactsMap);
 }
-
 
 /**
  * Updates an existing contact in the database.
@@ -161,27 +153,22 @@ async function saveContact(contact) {
  * @subcategory Firebase Logic
  */
 async function updateContact(contactId, contact) {
-	if (!contactId) return;
-	if (isSelfContactId(contactId)) {
-		await updateOwnAccountContact(contactId, contact);
-		return;
-	}
-	if (hasDb()) {
-		try {
-			await db.ref(`contacts/${contactId}`).update(contact);
-			return;
-		} catch (error) {
-			// Fall through to local fallback.
-		}
-	}
-	const contactsMap = readLocalContactsMap();
-	if (!contactsMap[contactId]) return;
-	contactsMap[contactId] = { ...contactsMap[contactId], ...contact };
-	writeLocalContactsMap(contactsMap);
+  if (!contactId) return;
+  if (isSelfContactId(contactId)) {
+    await updateOwnAccountContact(contactId, contact);
+    return;
+  }
+  if (hasDb()) {
+    try {
+      await db.ref(`contacts/${contactId}`).update(contact);
+      return;
+    } catch (error) {}
+  }
+  const contactsMap = readLocalContactsMap();
+  if (!contactsMap[contactId]) return;
+  contactsMap[contactId] = { ...contactsMap[contactId], ...contact };
+  writeLocalContactsMap(contactsMap);
 }
-
-
-
 
 /**
  * Deletes a contact from the database.
@@ -191,23 +178,20 @@ async function updateContact(contactId, contact) {
  * @subcategory Firebase Logic
  */
 async function deleteContact(contactId) {
-	if (!contactId) return;
-	if (isSelfContactId(contactId)) return;
-	const contactData = await fetchContact(contactId);
-	if (hasDb()) {
-		try {
-			await cleanupDeletedContactAssignments(contactId, contactData);
-			await db.ref(`contacts/${contactId}`).remove();
-			return;
-		} catch (error) {
-			// Fall through to local fallback.
-		}
-	}
-	const contactsMap = readLocalContactsMap();
-	delete contactsMap[contactId];
-	writeLocalContactsMap(contactsMap);
+  if (!contactId) return;
+  if (isSelfContactId(contactId)) return;
+  const contactData = await fetchContact(contactId);
+  if (hasDb()) {
+    try {
+      await cleanupDeletedContactAssignments(contactId, contactData);
+      await db.ref(`contacts/${contactId}`).remove();
+      return;
+    } catch (error) {}
+  }
+  const contactsMap = readLocalContactsMap();
+  delete contactsMap[contactId];
+  writeLocalContactsMap(contactsMap);
 }
-
 
 /**
  * Fetches a contact by id.
@@ -217,22 +201,19 @@ async function deleteContact(contactId) {
  * @subcategory Firebase Logic
  */
 async function fetchContact(contactId) {
-	if (!contactId) return null;
-	if (isSelfContactId(contactId)) {
-		return fetchOwnAccountContactById(contactId);
-	}
-	if (hasDb()) {
-		try {
-			const snapshot = await db.ref(`contacts/${contactId}`).get();
-			return snapshot.val();
-		} catch (error) {
-			// Fall through to local fallback.
-		}
-	}
-	const contactsMap = readLocalContactsMap();
-	return contactsMap[contactId] || null;
+  if (!contactId) return null;
+  if (isSelfContactId(contactId)) {
+    return fetchOwnAccountContactById(contactId);
+  }
+  if (hasDb()) {
+    try {
+      const snapshot = await db.ref(`contacts/${contactId}`).get();
+      return snapshot.val();
+    } catch (error) {}
+  }
+  const contactsMap = readLocalContactsMap();
+  return contactsMap[contactId] || null;
 }
-
 
 /**
  * Sorts contacts by name for stable list rendering.
@@ -242,11 +223,12 @@ async function fetchContact(contactId) {
  * @subcategory UI & Init
  */
 function sortContactsByName(contacts) {
-	return [...contacts].sort((a, b) =>
-		String(a?.name || '').localeCompare(String(b?.name || ''), 'de', { sensitivity: 'base' })
-	);
+  return [...contacts].sort((a, b) =>
+    String(a?.name || "").localeCompare(String(b?.name || ""), "de", {
+      sensitivity: "base",
+    }),
+  );
 }
-
 
 /**
  * Normalizes one contact map entry to render-safe fields.
@@ -257,15 +239,14 @@ function sortContactsByName(contacts) {
  * @subcategory Data Handling
  */
 function toNormalizedContact(id, value) {
-	return {
-		id,
-		name: value?.name || '',
-		email: value?.email || '',
-		phone: value?.phone || '',
-		createdAt: value?.createdAt || 0,
-	};
+  return {
+    id,
+    name: value?.name || "",
+    email: value?.email || "",
+    phone: value?.phone || "",
+    createdAt: value?.createdAt || 0,
+  };
 }
-
 
 /**
  * Initializes validation for the name input field.
@@ -274,24 +255,24 @@ function toNormalizedContact(id, value) {
  * @subcategory UI & Validation
  */
 function initNameValidation() {
-    const nameInput =document.getElementById("name-input") ||document.querySelector('input[name="name"]');
-    if (!nameInput) return;
+  const nameInput =
+    document.getElementById("name-input") ||
+    document.querySelector('input[name="name"]');
+  if (!nameInput) return;
 
-    nameInput.addEventListener('input', (e) => {
-        const input = e.target;
-        const cursorPosition = input.selectionStart;
+  nameInput.addEventListener("input", (e) => {
+    const input = e.target;
+    const cursorPosition = input.selectionStart;
 
-        // Allows letters (including German umlauts), spaces, and hyphens. 
-        // Removes everything else, especially numbers.
-        const newValue = input.value.replace(/[^a-zA-ZäöüÄÖÜß \-]/g, '');
+    const newValue = input.value.replace(/[^a-zA-ZäöüÄÖÜß \-]/g, "");
 
-        if (input.value !== newValue) {
-            input.value = newValue;
-            input.setSelectionRange(cursorPosition, cursorPosition);
-        }
-    });
+    if (input.value !== newValue) {
+      input.value = newValue;
+      input.setSelectionRange(cursorPosition, cursorPosition);
+    }
+  });
 }
-document.addEventListener('DOMContentLoaded', initNameValidation);
+document.addEventListener("DOMContentLoaded", initNameValidation);
 
 /**
  * Initializes validation for the phone input field.
@@ -300,26 +281,27 @@ document.addEventListener('DOMContentLoaded', initNameValidation);
  * @subcategory UI & Validation
  */
 function initPhoneValidation() {
-    const phoneInput = document.getElementById('phone-input') || document.querySelector('input[name="phone"]');
-    if (!phoneInput) return;
-    /**
-     * Listens for input events to filter out disallowed characters in real-time.
-     */
-    phoneInput.addEventListener('input', (e) => {
-        const input = e.target;
-        const cursorPosition = input.selectionStart;       
-        // Remove everything that is NOT a digit (0-9) or a plus sign (+)
-        const newValue = input.value.replace(/[^0-9+]/g, '');        
-        if (input.value !== newValue) {
-            input.value = newValue;
-            // Restore cursor position to prevent jumping while typing
-            input.setSelectionRange(cursorPosition, cursorPosition);
-        }
-    });
+  const phoneInput =
+    document.getElementById("phone-input") ||
+    document.querySelector('input[name="phone"]');
+  if (!phoneInput) return;
+  /**
+   * Listens for input events to filter out disallowed characters in real-time.
+   */
+  phoneInput.addEventListener("input", (e) => {
+    const input = e.target;
+    const cursorPosition = input.selectionStart;
+
+    const newValue = input.value.replace(/[^0-9+]/g, "");
+    if (input.value !== newValue) {
+      input.value = newValue;
+
+      input.setSelectionRange(cursorPosition, cursorPosition);
+    }
+  });
 }
 
-// Rufe die Funktion beim Laden der Seite auf
-document.addEventListener('DOMContentLoaded', initPhoneValidation);
+document.addEventListener("DOMContentLoaded", initPhoneValidation);
 /**
  * Converts a contact map object into list form.
  * @param {Record<string, {name?: string, email?: string, phone?: string, createdAt?: number}>} contactsMap - Contacts map.
@@ -328,9 +310,10 @@ document.addEventListener('DOMContentLoaded', initPhoneValidation);
  * @subcategory Data Handling
  */
 function mapContactsObjectToList(contactsMap) {
-	return Object.entries(contactsMap || {}).map(([id, value]) => toNormalizedContact(id, value));
+  return Object.entries(contactsMap || {}).map(([id, value]) =>
+    toNormalizedContact(id, value),
+  );
 }
-
 
 /**
  * Reads contacts from Firebase or falls back to local storage.
@@ -339,15 +322,14 @@ function mapContactsObjectToList(contactsMap) {
  * @subcategory Firebase Logic
  */
 async function readContactsSource() {
-	if (!hasDb()) return readLocalContactsMap();
-	try {
-		const snapshot = await db.ref('contacts').get();
-		return snapshot.val() || {};
-	} catch (error) {
-		return readLocalContactsMap();
-	}
+  if (!hasDb()) return readLocalContactsMap();
+  try {
+    const snapshot = await db.ref("contacts").get();
+    return snapshot.val() || {};
+  } catch (error) {
+    return readLocalContactsMap();
+  }
 }
-
 
 /**
  * Fetches all contacts from Firebase.
@@ -356,13 +338,14 @@ async function readContactsSource() {
  * @subcategory Firebase Logic
  */
 async function fetchContacts() {
-	const contacts = await readContactsSource();
-	const normalizedContacts = mapContactsObjectToList(contacts);
-	const ownAccountContact = await fetchOwnAccountContact();
-	const mergedContacts = mergeOwnAccountContact(normalizedContacts, ownAccountContact);
-	const sortedContacts = sortContactsByName(mergedContacts);
-	writeContactsCache(sortedContacts);
-	return sortedContacts;
+  const contacts = await readContactsSource();
+  const normalizedContacts = mapContactsObjectToList(contacts);
+  const ownAccountContact = await fetchOwnAccountContact();
+  const mergedContacts = mergeOwnAccountContact(
+    normalizedContacts,
+    ownAccountContact,
+  );
+  const sortedContacts = sortContactsByName(mergedContacts);
+  writeContactsCache(sortedContacts);
+  return sortedContacts;
 }
-
-
