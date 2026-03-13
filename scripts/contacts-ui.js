@@ -238,4 +238,4 @@ async function loadContacts(options = {}) {
   }
 }
 
-window.loadContacts = loadContacts;
+/* window.loadContacts = loadContacts; */
