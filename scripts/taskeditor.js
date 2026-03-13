@@ -341,33 +341,30 @@ function initTaskEditor() {
 function shouldInitTaskEditorOnLoad() {
     return window.location.pathname.toLowerCase().includes("task-editor.html");
 }
-
+/**
+ * Validates the task form inputs.
+ * @returns {void}
+ */
 function validateTaskForm() {
     let title = document.getElementById("titleInput");
     let date = document.getElementById("dateInput");
     let category = document.getElementById("categoryInput");
-
     let titleWrapper = document.querySelector(".title_field");
     let dateWrapper = document.querySelector(".date_field");
     let categoryWrapper = document.getElementById("categorySelectWrapper");
-
     let valid = true;
-
     if (title.value.trim() === "") {
         titleWrapper.classList.add("error");
         valid = false;
     }
-
     if (date.value.trim() === "") {
         dateWrapper.classList.add("error");
         valid = false;
     }
-
     if (!category.dataset.value) {
         categoryWrapper.classList.add("error");
         valid = false;
     }
-
     return valid;
 }
 
