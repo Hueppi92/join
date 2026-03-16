@@ -1,21 +1,14 @@
-<<<<<<< HEAD
-const defaultFirebaseConfig = {
-=======
 const firebaseConfig = {
->>>>>>> b53e3a6494a412b686d294c9fc4755ccb708ae47
-  apiKey: "AIzaSyAPXuwNBWi8_c6MR99XE7eYniqLESEa9EQ",
-  authDomain: "join-d26ee.firebaseapp.com",
-  databaseURL: "https://join-d26ee-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "join-d26ee",
-  storageBucket: "join-d26ee.firebasestorage.app",
-  messagingSenderId: "311374228338",
-  appId: "1:311374228338:web:cb0bbe0d0d91d7a9e7cbeb",
-  measurementId: "G-FSMHHFLF0Q"
+  apiKey: "AIzaSyBpgzyPWrtvfcmTmIr7wskgbj2-HiSxjqk",
+  authDomain: "join-2483.firebaseapp.com",
+  databaseURL: "https://join-2483-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "join-2483",
+  storageBucket: "join-2483.firebasestorage.app",
+  messagingSenderId: "1015631608333",
+  appId: "1:1015631608333:web:5dcfe60e31adb078aeb344"
 };
 
-if (!firebase.apps.length) {
-  firebase.initializeApp(defaultFirebaseConfig);
-}
+firebase.initializeApp(firebaseConfig};
 
 const db = firebase.database();
 
