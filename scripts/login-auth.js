@@ -362,14 +362,35 @@ function initGuestLogin() {
 
 /**
  * Navigates to the summary page for guest access.
+ * Signs the guest into Firebase anonymously first so guest sessions
+ * use the same realtime database as authenticated accounts.
+ * @async
  * @category Login
  * @subcategory UI & Init
  */
-function handleGuestLogin() {
-	sessionStorage.setItem('guestLogin', '1');
-	localStorage.setItem('guestLogin', '1');
-	sessionStorage.removeItem('userId');
-	window.location.href = './sites/summary.html';
+async function handleGuestLogin() {
+	const guestButton = document.querySelector('.guest-login');
+	const authMessage = document.getElementById('login-error-message');
+	if (guestButton) guestButton.disabled = true;
+	if (authMessage) setFormMessage(authMessage, '');
+
+	try {
+		try {
+			await firebase.auth().signInAnonymously();
+		} catch (error) {
+			console.warn('Guest anonymous auth is unavailable. Continuing with guest session only.', error);
+		}
+		sessionStorage.setItem('guestLogin', '1');
+		localStorage.setItem('guestLogin', '1');
+		sessionStorage.removeItem('userId');
+		sessionStorage.setItem('skipSplash', '1');
+		window.location.href = './sites/summary.html';
+	} catch (error) {
+		if (authMessage) setFormMessage(authMessage, 'Guest login failed. Please try again.');
+		console.error('Guest login failed:', error);
+	} finally {
+		if (guestButton) guestButton.disabled = false;
+	}
 }
 
 document.addEventListener('DOMContentLoaded', () => {

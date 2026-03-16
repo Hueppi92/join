@@ -153,6 +153,131 @@ function clearUserSession() {
 }
 
 
+const GUEST_TASKS_STORAGE_KEY = 'join_guest_tasks_v1';
+
+
+/**
+ * Returns whether the current session runs in guest mode.
+ * @returns {boolean} True when guest mode is active.
+ * @category Shared
+ * @subcategory Guest Tasks
+ */
+function isGuestTaskMode() {
+	return sessionStorage.getItem('guestLogin') === '1' || localStorage.getItem('guestLogin') === '1';
+}
+
+
+/**
+ * Returns whether a task id belongs to locally stored guest tasks.
+ * @param {string} taskId - Task identifier.
+ * @returns {boolean} True when the id uses the guest prefix.
+ * @category Shared
+ * @subcategory Guest Tasks
+ */
+function isGuestTaskId(taskId) {
+	return String(taskId || '').startsWith('guest_');
+}
+
+
+/**
+ * Reads guest tasks from localStorage.
+ * @returns {Record<string, Object>} Guest task map.
+ * @category Shared
+ * @subcategory Guest Tasks
+ */
+function readGuestTasks() {
+	try {
+		const raw = localStorage.getItem(GUEST_TASKS_STORAGE_KEY);
+		if (!raw) return {};
+		const parsed = JSON.parse(raw);
+		return parsed && typeof parsed === 'object' ? parsed : {};
+	} catch (error) {
+		return {};
+	}
+}
+
+
+/**
+ * Writes guest tasks to localStorage.
+ * @param {Record<string, Object>} tasks - Guest task map.
+ * @returns {void}
+ * @category Shared
+ * @subcategory Guest Tasks
+ */
+function writeGuestTasks(tasks) {
+	try {
+		localStorage.setItem(GUEST_TASKS_STORAGE_KEY, JSON.stringify(tasks || {}));
+	} catch (error) {
+		return;
+	}
+}
+
+
+/**
+ * Merges locally stored guest tasks into a task map.
+ * @param {Record<string, Object>} tasks - Base task map.
+ * @returns {Record<string, Object>} Combined task map.
+ * @category Shared
+ * @subcategory Guest Tasks
+ */
+function mergeGuestTasks(tasks) {
+	if (!isGuestTaskMode()) return tasks || {};
+	return {
+		...(tasks || {}),
+		...readGuestTasks(),
+	};
+}
+
+
+/**
+ * Persists a new guest task and returns its id.
+ * @param {Object} task - Task payload.
+ * @returns {string} Created guest task id.
+ * @category Shared
+ * @subcategory Guest Tasks
+ */
+function createGuestTask(task) {
+	const guestTasks = readGuestTasks();
+	const taskId = `guest_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+	guestTasks[taskId] = task;
+	writeGuestTasks(guestTasks);
+	return taskId;
+}
+
+
+/**
+ * Updates an existing guest task.
+ * @param {string} taskId - Guest task id.
+ * @param {Object} updates - Partial task updates.
+ * @returns {void}
+ * @category Shared
+ * @subcategory Guest Tasks
+ */
+function updateGuestTask(taskId, updates) {
+	if (!isGuestTaskId(taskId)) return;
+	const guestTasks = readGuestTasks();
+	if (!guestTasks[taskId]) return;
+	guestTasks[taskId] = { ...guestTasks[taskId], ...(updates || {}) };
+	writeGuestTasks(guestTasks);
+}
+
+
+/**
+ * Removes a guest task from localStorage.
+ * @param {string} taskId - Guest task id.
+ * @returns {void}
+ * @category Shared
+ * @subcategory Guest Tasks
+ */
+function removeGuestTask(taskId) {
+	if (!isGuestTaskId(taskId)) return;
+	const guestTasks = readGuestTasks();
+	if (!guestTasks[taskId]) return;
+	delete guestTasks[taskId];
+	writeGuestTasks(guestTasks);
+}
+
+
 /**
  * Resolves the login path based on current page location.
  * @returns {string} Login page path.

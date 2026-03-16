@@ -54,6 +54,19 @@ function releaseAuthGuardVisibility() {
 
 
 /**
+ * Ensures guest sessions also have a Firebase auth session.
+ * @returns {Promise<void>} Resolves when anonymous auth is ready.
+ * @category Auth Guard
+ * @subcategory Firebase Logic
+ */
+async function ensureGuestFirebaseSession() {
+	const currentUser = firebase.auth().currentUser;
+	if (currentUser?.isAnonymous) return;
+	await firebase.auth().signInAnonymously();
+}
+
+
+/**
  * Enforces access control for protected pages.
  * Allows guest sessions, validates Firebase availability,
  * and redirects unauthenticated users to login.
@@ -62,16 +75,25 @@ function releaseAuthGuardVisibility() {
  * @subcategory Lifecycle
  */
 function enforceAuthGuard() {
-	if (isGuestSessionActive()) {
-		releaseAuthGuardVisibility();
-		return;
-	}
 	if (!isFirebaseAuthAvailable()) {
 		redirectToAuthGuardLogin();
 		return;
 	}
-	firebase.auth().onAuthStateChanged((user) => {
-		if (user || isGuestSessionActive()) {
+	firebase.auth().onAuthStateChanged(async (user) => {
+		if (isGuestSessionActive()) {
+			try {
+				if (!user?.isAnonymous) {
+					await ensureGuestFirebaseSession();
+				}
+				releaseAuthGuardVisibility();
+				return;
+			} catch (error) {
+				console.warn('Guest auth bootstrap failed. Continuing guest session without Firebase auth.', error);
+				releaseAuthGuardVisibility();
+				return;
+			}
+		}
+		if (user) {
 			releaseAuthGuardVisibility();
 			return;
 		}
