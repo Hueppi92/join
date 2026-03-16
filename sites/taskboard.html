@@ -154,7 +154,6 @@
             </label>
             <div class="left_single_row">
               <input id="dateInput" type="date" min="2024-01-01" required>
-             
             </div>
             <small class="error_text">This field is required</small>
           </div>
@@ -167,27 +166,24 @@
         <div class="task_settings">
 
           <div class="settings_block">
-             <label>Priority</label>
+            <label>Priority</label>
             <div class="priority_row" id="priorityRow">
               <button type="button" class="prio urgent_btn" data-prio="urgent">
                 Urgent
                 <div>
                   <img src="../assets/icons/prio-urgent.svg" class="urgent">
-                  
                 </div>
               </button>
               <button type="button" class="prio medium_btn active" data-prio="medium">
                 Medium
                 <div>
                   <img src="../assets/icons/prio-medium.svg" class="medium">
-                  
                 </div>
               </button>
               <button type="button" class="prio low_btn" data-prio="low">
                 Low
                 <div>
                   <img src="../assets/icons/prio-low.svg" class="low">
-                  
                 </div>
               </button>
             </div>
@@ -205,9 +201,9 @@
             <div id="assignedAvatars" class="assigned_avatars"></div>
           </div>
 
-          <div class="settings_block">
-            <label for="categoryInput">Category</label>
-            <div class="select_native category-select" id="categorySelectWrapper">
+          <div class="settings_block left_row" id="categorySelectWrapper">
+            <label for="categoryInput">Category <span class="error">*</span></label>
+            <div class="select_native category-select">
               <div class="selector_input">
                 <input type="text" id="categoryInput" placeholder="Select task category" readonly>
               </div>
@@ -216,6 +212,7 @@
                 <label class="dropdown_item" data-value="technical-task" role="option">Technical Task</label>
               </div>
             </div>
+            <small class="error_text">This field is required</small>
           </div>
 
           <div class="settings_block subtasks_block">
@@ -251,21 +248,20 @@
 
     </div><!-- END modal-content -->
   </div><!-- END addTaskModal -->
-  
+
   <!-- Toast -->
- <div id="toastOverlay" class="toast-overlay hidden">
+  <div id="toastOverlay" class="toast-overlay hidden">
     <div id="toast" class="toast">
-        <span>Really delete this task?</span>
-        <button id="toastConfirm">Delete</button>
-        <button id="toastCancel">Cancel</button>
+      <span>Really delete this task?</span>
+      <button id="toastConfirm">Delete</button>
+      <button id="toastCancel">Cancel</button>
     </div>
-</div>
-<div id="successToast" class="success-toast hidden">
+  </div>
+  <div id="successToast" class="success-toast hidden">
     Task gelöscht
-</div>
-<!--  -->
-  
-<div id="profile-menu" class="profile-overlay">
+  </div>
+
+  <div id="profile-menu" class="profile-overlay">
     <nav class="profile-menu">
       <ul class="flex-container">
         <li class="hover-container"><a href="./legal-notice.html">Legal Notice</a></li>
@@ -279,20 +275,19 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-
-<script src="../scripts/db.js"></script>
-<script src="../scripts/auth-guard.js"></script>
-<script src="../scripts/user-context.js"></script>
-<script src="../script.js"></script>
-<script src="../scripts/avatar-utils.js"></script>
-<script src="../scripts/taskboardTemplate.js"></script>
-<script src="../scripts/taskeditor.js"></script>
-<script src="../scripts/taskeditorSelections.js"></script>
-<script src="../scripts/taskeditorSubtasks.js"></script>
-<script src="../scripts/taskeditorButtons.js"></script>
-<script src="../scripts/taskboard_core.js"></script>
-<script src="../scripts/taskboard_render.js"></script>
-<script src="../scripts/taskboard_edit.js"></script>
+  <script src="../scripts/db.js"></script>
+  <script src="../scripts/auth-guard.js"></script>
+  <script src="../scripts/user-context.js"></script>
+  <script src="../script.js"></script>
+  <script src="../scripts/avatar-utils.js"></script>
+  <script src="../scripts/taskboardTemplate.js"></script>
+  <script src="../scripts/taskeditor.js"></script>
+  <script src="../scripts/taskeditorSelections.js"></script>
+  <script src="../scripts/taskeditorSubtasks.js"></script>
+  <script src="../scripts/taskeditorButtons.js"></script>
+  <script src="../scripts/taskboard_core.js"></script>
+  <script src="../scripts/taskboard_render.js"></script>
+  <script src="../scripts/taskboard_edit.js"></script>
 
 </body>
 
