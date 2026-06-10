@@ -8,7 +8,7 @@ A collaborative project management web app inspired by Kanban boards. Built with
 
 ## 🚀 Live Demo
 
-🔗 *[Link to Live Demo – to be added]*
+🔗 [Live Demo – join.andreas-huepgen.de](https://join.andreas-huepgen.de/)
 
 ---
 
@@ -65,10 +65,15 @@ The app uses a **multi-page architecture** with shared scripts and modular style
 ### Script Modules
 
 - **`script.js`** – App-wide utilities and shared logic
-- **`scripts/db.js`** – Firebase configuration & database helpers
-- **`scripts/login.js`** – Login form handling
-- **`scripts/login-auth.js`** – Firebase Authentication logic
-- **`scripts/seed.js`** – Demo data seeding
+- **`scripts/db.js`** – Firebase configuration *(gitignored, see db.example.js)*
+- **`scripts/auth-guard.js`** – Route protection for authenticated pages
+- **`scripts/login*.js`** – Login & Firebase Authentication
+- **`scripts/sign-up*.js`** – Registration & validation
+- **`scripts/summary.js`** – Dashboard data & rendering
+- **`scripts/contacts*.js`** – Contact management (data, UI, mobile)
+- **`scripts/taskboard*.js`** – Kanban board (core, render, edit)
+- **`scripts/taskeditor*.js`** – Task editor (buttons, selections, subtasks)
+- **`scripts/user-context.js`** – Current user state
 
 ---
 
@@ -80,7 +85,13 @@ The app uses a **multi-page architecture** with shared scripts and modular style
 git clone https://github.com/Hueppi92/join
 ```
 
-2. Open in browser:
+2. Copy the Firebase config template and fill in your own credentials:
+
+```bash
+cp scripts/db.example.js scripts/db.js
+```
+
+3. Open in browser:
 
 ```bash
 cd join && open index.html
@@ -92,7 +103,7 @@ Or use a local server:
 npx serve
 ```
 
-> **Note:** Firebase credentials are configured in `scripts/db.js`. For your own deployment, replace with your own Firebase project config.
+> **Note:** `scripts/db.js` is gitignored. Use `scripts/db.example.js` as a template and add your own Firebase project credentials.
 
 ---
 
@@ -104,23 +115,21 @@ join/
 │   ├── icons/                      # SVG icons (mail, lock, drag handles, etc.)
 │   └── img/                        # Logos, avatars, UI images
 │
-├── scripts/
-│   ├── db.js                       # Firebase config & DB helpers
-│   ├── login.js                    # Login form logic
-│   ├── login-auth.js               # Firebase Authentication
-│   └── seed.js                     # Demo data seeding
+├── scripts/                        # All JavaScript modules
+│   ├── db.example.js               # Firebase config template (fill & rename to db.js)
+│   ├── auth-guard.js               # Route protection
+│   ├── avatar-utils.js             # Avatar helpers
+│   ├── login.js / login-auth.js    # Login logic
+│   ├── sign-up*.js                 # Registration logic
+│   ├── summary.js                  # Dashboard
+│   ├── contacts*.js                # Contact management
+│   ├── taskboard*.js               # Kanban board
+│   ├── taskeditor*.js              # Task editor
+│   ├── user-context.js             # User state
 │
-├── sites/                          # Sub-pages (board, contacts, summary, etc.)
-│
-├── styles/
-│   ├── fonts.css                   # Custom font definitions
-│   ├── assets.css                  # Global asset styles
-│   ├── login.css                   # Login page styles
-│   ├── login-responsive.css        # Login responsive breakpoints
-│   └── ...                         # Further feature stylesheets
-│
+├── sites/                          # Sub-pages
+├── styles/                         # Modular CSS per feature
 ├── out/                            # Generated JSDoc documentation
-│
 ├── index.html                      # Entry point (Login)
 ├── script.js                       # Shared app logic
 ├── style.css                       # Global stylesheet
