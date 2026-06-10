@@ -3,3 +3,4 @@ firebaseConfig.js
 **/firebaseConfig.js
 node_modules
 db.js
+scripts/db.js
