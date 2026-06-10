@@ -4,10 +4,13 @@
  * @category User Context
  * @subcategory UI & Init
  */
+let userContextAuthUnsubscribe = null;
+
 function initUserContext() {
     if (typeof window === 'undefined') return;
     window.userContext = { resolveUserId, getActiveUserProfile };
     hydrateUserContext(); // direkt aufrufen, DOM ist bei onload bereits bereit
+    subscribeUserContextAuth();
 }
 
 
@@ -19,6 +22,18 @@ function initUserContext() {
  */
 function isGuestSessionActive() {
 	return sessionStorage.getItem('guestLogin') === '1' || localStorage.getItem('guestLogin') === '1';
+}
+
+
+/**
+ * Clears guest mode session markers.
+ * @returns {void}
+ * @category User Context
+ * @subcategory Session
+ */
+function clearGuestSessionFlags() {
+	sessionStorage.removeItem('guestLogin');
+	localStorage.removeItem('guestLogin');
 }
 
 
@@ -122,13 +137,20 @@ function deriveNameFromAuth() {
  * @subcategory Data Handling
  */
 async function resolveUserId() {
+	const authUser = getCurrentAuthUser();
+	if (authUser && !authUser.isAnonymous && isGuestSessionActive()) {
+		clearGuestSessionFlags();
+	}
 	if (isGuestSessionActive()) return null;
 	const storedId = getStoredUserId();
 	if (storedId) return storedId;
-	const authUserId = getCurrentAuthUserId();
+	const authUserId = authUser?.uid || getCurrentAuthUserId();
 	if (authUserId) return cacheAndReturnUserId(authUserId);
 	if (!hasFirebaseAuth()) return null;
-	return waitForAuthUserId();
+	const awaitedUserId = await waitForAuthUserId();
+	if (awaitedUserId) return cacheAndReturnUserId(awaitedUserId);
+	const lateAuthUserId = getCurrentAuthUserId();
+	return lateAuthUserId ? cacheAndReturnUserId(lateAuthUserId) : null;
 }
 
 
@@ -153,7 +175,8 @@ function cacheAndReturnUserId(userId) {
  */
 function waitForAuthUserId() {
 	return new Promise((resolve) => {
-		firebase.auth().onAuthStateChanged((user) => {
+		const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+			if (typeof unsubscribe === 'function') unsubscribe();
 			setStoredUserId(user?.uid);
 			resolve(user?.uid || null);
 		});
@@ -188,7 +211,7 @@ async function fetchUserProfile(userId) {
 	if (!userId || !hasDatabaseRef()) return null;
 	const snapshot = await db.ref(`users/${userId}`).get();
 	const data = snapshot.val();
-	if (data) return { id: userId, ...data };
+	if (data) return normalizeUserProfile(userId, data);
 	return createFallbackUserProfile(userId);
 }
 
@@ -241,6 +264,52 @@ function computeInitials(name, email) {
 
 
 /**
+ * Resolves the display name from profile data or auth fallbacks.
+ * @param {{name?: string, displayName?: string} | null} profile - Profile payload.
+ * @returns {string} Resolved display name or an empty string.
+ * @category User Context
+ * @subcategory Data Handling
+ */
+function resolveProfileName(profile) {
+	const profileName = String(profile?.name || profile?.displayName || '').trim();
+	return profileName || deriveNameFromAuth() || '';
+}
+
+
+/**
+ * Resolves the user email from profile data or auth fallbacks.
+ * @param {{email?: string} | null} profile - Profile payload.
+ * @returns {string} Resolved email or an empty string.
+ * @category User Context
+ * @subcategory Data Handling
+ */
+function resolveProfileEmail(profile) {
+	const profileEmail = String(profile?.email || '').trim();
+	return profileEmail || getAuthUserEmail();
+}
+
+
+/**
+ * Normalizes profile data from Firebase to the expected shape.
+ * Supports both legacy `displayName` and current `name`.
+ * @param {string} userId - Firebase user id.
+ * @param {Object} rawProfile - Raw Firebase profile payload.
+ * @returns {{id: string, name: string, email: string}} Normalized user profile.
+ * @category User Context
+ * @subcategory Data Handling
+ */
+function normalizeUserProfile(userId, rawProfile) {
+	const profile = rawProfile && typeof rawProfile === 'object' ? rawProfile : {};
+	return {
+		id: userId,
+		...profile,
+		name: resolveProfileName(profile) || 'User',
+		email: resolveProfileEmail(profile),
+	};
+}
+
+
+/**
  * Updates the header profile button initials and label.
  * @param {UserProfile | null} profile - Active user profile.
  * @returns {void}
@@ -250,8 +319,10 @@ function computeInitials(name, email) {
 function updateHeaderProfile(profile) {
 	const button = document.querySelector('.profile-btn');
 	if (!button) return;
-	button.textContent = computeInitials(profile?.name, profile?.email);
-	button.setAttribute('aria-label', profile?.name || 'Guest');
+	const displayName = resolveProfileName(profile);
+	const email = resolveProfileEmail(profile);
+	button.textContent = computeInitials(displayName, email);
+	button.setAttribute('aria-label', displayName || email || 'Guest');
 }
 
 
@@ -265,7 +336,8 @@ function updateHeaderProfile(profile) {
 function updateGreetingName(profile) {
 	const nameElement = document.getElementById('user-name');
 	if (!nameElement) return;
-	nameElement.textContent = profile?.name || 'Guest';
+	const displayName = resolveProfileName(profile);
+	nameElement.textContent = displayName || 'Guest';
 }
 
 
@@ -294,9 +366,43 @@ function escapeHtml(text = '') {
  * @subcategory UI & Init
  */
 async function hydrateUserContext() {
-	const profile = await getActiveUserProfile();
-	updateHeaderProfile(profile);
-	updateGreetingName(profile);
+	try {
+		const profile = await getActiveUserProfile();
+		updateHeaderProfile(profile);
+		updateGreetingName(profile);
+	} catch (error) {
+		updateHeaderProfile(null);
+		updateGreetingName(null);
+	}
+}
+
+
+/**
+ * Subscribes to Firebase auth updates to keep user UI in sync.
+ * @returns {void}
+ * @category User Context
+ * @subcategory UI & Init
+ */
+function subscribeUserContextAuth() {
+	if (!hasFirebaseAuth()) return;
+	if (typeof userContextAuthUnsubscribe === 'function') return;
+	userContextAuthUnsubscribe = firebase.auth().onAuthStateChanged((user) => {
+		if (user?.uid) {
+			setStoredUserId(user.uid);
+			if (!user.isAnonymous) clearGuestSessionFlags();
+		}
+		hydrateUserContext();
+	});
+	window.addEventListener(
+		'beforeunload',
+		() => {
+			if (typeof userContextAuthUnsubscribe === 'function') {
+				userContextAuthUnsubscribe();
+				userContextAuthUnsubscribe = null;
+			}
+		},
+		{ once: true }
+	);
 }
 
 

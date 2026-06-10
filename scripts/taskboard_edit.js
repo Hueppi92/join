@@ -304,7 +304,7 @@ async function deleteTask(taskId) {
         clearTaskFromCache(taskId);
         closeTaskDetail();
         renderBoard();
-        showSuccessToast('Task gelöscht');
+        showSuccessToast('Task geloescht');
     });
 }
 

@@ -48,13 +48,79 @@ function buildColumnsFromTasks(tasks, allContacts, legacyConnections) {
  * @async
  * @returns {Promise<{ tasks: Object, allContacts: Object, legacyConnections: Object }>}
  */
-async function fetchBoardData() {
-    const tasksPromise = firebase.database().ref('tasks').get();
-    const contactsPromise = getContactsMap();
-    const tasksSnapshot = await tasksPromise;
-    const tasks = tasksSnapshot.val() || {};
-    const [allContacts, legacyConnections] = await Promise.all([contactsPromise, getLegacyTaskConnections(tasks)]);
+async function fetchBoardData(options = {}) {
+    try {
+        const tasksSnapshot = await firebase.database().ref('tasks').get();
+        const tasks = tasksSnapshot.val() || {};
+        return resolveBoardData(tasks, options);
+    } catch (error) {
+        console.warn('Could not load Firebase tasks for board:', error);
+        return resolveBoardData({}, options);
+    }
+}
+
+/**
+ * Resolves all board-related datasets for a given task map.
+ * @async
+ * @param {Object} tasks
+ * @param {Object} [options]
+ * @returns {Promise<{ tasks: Object, allContacts: Object, legacyConnections: Object }>}
+ */
+async function resolveBoardData(tasks, options = {}) {
+    const [allContacts, legacyConnections] = await Promise.all([
+        getContactsMap(options),
+        getLegacyTaskConnections(tasks, options)
+    ]);
     return { tasks, allContacts, legacyConnections };
+}
+
+/**
+ * Applies normalized board data to the UI and updates caches.
+ * @param {Object} tasks
+ * @param {Object} allContacts
+ * @param {Object} legacyConnections
+ * @returns {void}
+ */
+function applyBoardDataToUI(tasks, allContacts, legacyConnections) {
+    const { columns, nextCache } = buildColumnsFromTasks(tasks, allContacts, legacyConnections);
+    boardTaskCache = nextCache;
+    renderColumnHTML(columns);
+    writeBoardCache(nextCache);
+}
+
+/**
+ * Removes an existing realtime board listener.
+ * @returns {void}
+ */
+function unsubscribeBoardUpdates() {
+    if (!boardTasksRef || !boardTasksListener) return;
+    boardTasksRef.off('value', boardTasksListener);
+    boardTasksListener = null;
+    boardTasksRef = null;
+}
+
+/**
+ * Subscribes the board to realtime task updates from Firebase.
+ * @returns {void}
+ */
+function subscribeToBoardUpdates() {
+    if (boardTasksListener) return;
+    boardTasksRef = firebase.database().ref('tasks');
+    boardTasksListener = async (snapshot) => {
+        const requestId = ++boardRenderRequestId;
+        const tasks = snapshot.val() || {};
+        try {
+            const { allContacts, legacyConnections } = await resolveBoardData(tasks, { forceRefresh: true });
+            if (requestId !== boardRenderRequestId) return;
+            applyBoardDataToUI(tasks, allContacts, legacyConnections);
+        } catch (error) {
+            console.error('Error syncing board updates:', error);
+        }
+    };
+    boardTasksRef.on('value', boardTasksListener, (error) => {
+        console.error('Error subscribing to board updates:', error);
+    });
+    window.addEventListener('beforeunload', unsubscribeBoardUpdates, { once: true });
 }
 
 /**
@@ -64,18 +130,18 @@ async function fetchBoardData() {
  * @returns {Promise<void>}
  */
 async function renderBoard(options = {}) {
-    const preferCache = options?.preferCache !== false;
+    const preferCache = options?.preferCache === true;
     const cachedTasks = preferCache ? readBoardCache() : {};
     if (Object.keys(cachedTasks).length) {
         boardTaskCache = cachedTasks;
         renderColumnHTML(buildColumnsFromCachedTasks(cachedTasks));
     }
     try {
-        const { tasks, allContacts, legacyConnections } = await fetchBoardData();
-        const { columns, nextCache } = buildColumnsFromTasks(tasks, allContacts, legacyConnections);
-        boardTaskCache = nextCache;
-        renderColumnHTML(columns);
-        writeBoardCache(nextCache);
+        const requestId = ++boardRenderRequestId;
+        const { tasks, allContacts, legacyConnections } = await fetchBoardData({ forceRefresh: true });
+        if (requestId !== boardRenderRequestId) return;
+        applyBoardDataToUI(tasks, allContacts, legacyConnections);
+        subscribeToBoardUpdates();
     } catch (error) {
         console.error('Error rendering board:', error);
     }

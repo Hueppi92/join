@@ -127,27 +127,28 @@ function saveTaskToFirebase(task) {
 }
 
 /**
- * Initializes the "Create Task" button behavior.
- * Attaches a click handler that validates the form and triggers task creation.
+ * Initializes the task form submit behavior.
+ * Attaches a submit handler that validates the form and triggers task creation.
  *
  * @returns {void}
  */
 function setupCreateTaskButton() {
-    let btn = document.querySelector(".create_btn");
     let form = document.getElementById("taskForm");
+    if (!form || form.dataset.createTaskBound === "1") return;
 
-    btn.addEventListener("click", e => handleCreateTaskClick(e, form));
+    form.addEventListener("submit", e => handleCreateTaskSubmit(e, form));
+    form.dataset.createTaskBound = "1";
 }
 
 /**
- * Handles the create-task button click event.
+ * Handles the task form submit event.
  * Validates the form and triggers saving the task to the database.
  *
- * @param {Event} e - Click event triggered by the create button.
+ * @param {SubmitEvent} e - Submit event triggered by the task form.
  * @param {HTMLFormElement} form - Task form element that will be validated.
  * @returns {void}
  */
-function handleCreateTaskClick(e, form) {
+function handleCreateTaskSubmit(e, form) {
     e.preventDefault();
 
     let valid = validateTaskForm();
@@ -237,6 +238,26 @@ function redirectToBoardAfterDelay() {
  */
 function handleFirebaseError(err) {
     console.error("Firebase error:", err);
+    window.alert(getTaskSaveErrorMessage(err));
+}
+
+/**
+ * Maps task save errors to a readable message.
+ *
+ * @param {Error & { code?: string }} err - Error object returned while saving the task.
+ * @returns {string} User-facing error message.
+ */
+function getTaskSaveErrorMessage(err) {
+    switch (err?.code) {
+        case "PERMISSION_DENIED":
+        case "permission-denied":
+            return "Task konnte nicht gespeichert werden. Bitte pruefe die Firebase-Schreibrechte.";
+        case "NETWORK_ERROR":
+        case "auth/network-request-failed":
+            return "Task konnte wegen eines Netzwerkfehlers nicht gespeichert werden.";
+        default:
+            return "Task konnte nicht gespeichert werden. Bitte pruefe die Browser-Konsole fuer Details.";
+    }
 }
 
 // MODAL

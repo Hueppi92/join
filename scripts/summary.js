@@ -7,6 +7,13 @@
  */
 
 const SUMMARY_CACHE_KEY = "join_summary_cache_v1";
+let summaryTasksRef = null;
+let summaryTasksListener = null;
+let summaryUserRef = null;
+let summaryUserListener = null;
+let summaryLoadRequestId = 0;
+let currentSummaryTasks = {};
+let currentSummaryUserName = "Guest";
 
 /**
  * Main initialization function for the summary page.
@@ -19,22 +26,118 @@ const SUMMARY_CACHE_KEY = "join_summary_cache_v1";
  */
 async function loadSummary() {
     setGreeting();
-    const cachedSummary = readSummaryCache();
-    if (cachedSummary) {
-        renderUserName(cachedSummary.userName);
-        renderSummary(cachedSummary.tasks);
-    } else {  renderUserName("Guest"); renderSummary({});}
+    clearSummaryCache();
+    applySummaryState({
+        userName: "Guest",
+        tasks: {},
+        writeCache: false,
+    });
     showMobileGreetingIfNeeded();
     try {
+        const requestId = ++summaryLoadRequestId;
         const userIdPromise = resolveActiveUserId();
         const tasksPromise = getTasks();
         const userId = await userIdPromise;
         const [userName, tasks] = await Promise.all([getUserName(userId), tasksPromise]);
-        renderUserName(userName);
-        renderSummary(tasks);
-        writeSummaryCache({ userName, tasks, updatedAt: Date.now() });
-        updateMobileGreetingName(userName);
-    } catch (error) {console.error("Error in loadSummary:", error);}
+        if (requestId !== summaryLoadRequestId) return;
+        applySummaryState({ userName, tasks, writeCache: false });
+        subscribeToSummaryUpdates(userId);
+    } catch (error) {
+        console.error("Error in loadSummary:", error);
+        applySummaryState({ userName: "Guest", tasks: {}, writeCache: false });
+    }
+}
+
+/**
+ * Applies the latest summary state to the UI and optional cache.
+ *
+ * @param {{ userName?: string, tasks?: Object, writeCache?: boolean }} nextState
+ * @returns {void}
+ */
+function applySummaryState(nextState = {}) {
+    currentSummaryUserName = typeof nextState.userName === "string"
+        ? nextState.userName
+        : currentSummaryUserName;
+    currentSummaryTasks = nextState.tasks && typeof nextState.tasks === "object"
+        ? nextState.tasks
+        : currentSummaryTasks;
+
+    renderUserName(currentSummaryUserName);
+    renderSummary(currentSummaryTasks);
+    updateMobileGreetingName(currentSummaryUserName);
+
+    if (nextState.writeCache === false) {
+        clearSummaryCache();
+        return;
+    }
+    writeSummaryCache({
+        userName: currentSummaryUserName,
+        tasks: currentSummaryTasks,
+        updatedAt: Date.now(),
+    });
+}
+
+/**
+ * Removes existing Firebase listeners for the summary page.
+ *
+ * @returns {void}
+ */
+function unsubscribeSummaryUpdates() {
+    if (summaryTasksRef && summaryTasksListener) {
+        summaryTasksRef.off("value", summaryTasksListener);
+    }
+    if (summaryUserRef && summaryUserListener) {
+        summaryUserRef.off("value", summaryUserListener);
+    }
+    summaryTasksRef = null;
+    summaryTasksListener = null;
+    summaryUserRef = null;
+    summaryUserListener = null;
+}
+
+/**
+ * Removes the local summary cache to avoid stale dashboard metrics.
+ *
+ * @returns {void}
+ */
+function clearSummaryCache() {
+    try {
+        localStorage.removeItem(SUMMARY_CACHE_KEY);
+    } catch (error) {
+        return;
+    }
+}
+
+/**
+ * Subscribes the summary page to realtime updates for tasks and active user.
+ *
+ * @param {string|null} userId
+ * @returns {void}
+ */
+function subscribeToSummaryUpdates(userId) {
+    unsubscribeSummaryUpdates();
+    summaryTasksRef = db.ref("tasks");
+    summaryTasksListener = (snapshot) => {
+        const tasks = snapshot.val() || {};
+        applySummaryState({ tasks, writeCache: false });
+    };
+    summaryTasksRef.on("value", summaryTasksListener, (error) => {
+        console.error("Error subscribing to summary tasks:", error);
+    });
+
+    if (userId) {
+        summaryUserRef = db.ref(`users/${userId}`);
+        summaryUserListener = (snapshot) => {
+            applySummaryState({ userName: snapshot.val()?.name || "Guest", writeCache: false });
+        };
+        summaryUserRef.on("value", summaryUserListener, (error) => {
+            console.error("Error subscribing to summary user:", error);
+        });
+    } else {
+        applySummaryState({ userName: "Guest", writeCache: false });
+    }
+
+    window.addEventListener("beforeunload", unsubscribeSummaryUpdates, { once: true });
 }
 
 /**
@@ -96,9 +199,14 @@ async function resolveActiveUserId() {
  * @returns {Promise<Object>} An object containing all tasks from the database.
  */
 async function getTasks() {
-    const tasksRef = db.ref("tasks");
-    const snapshot = await tasksRef.get();
-    return snapshot.val() || {};
+    try {
+        const tasksRef = db.ref("tasks");
+        const snapshot = await tasksRef.get();
+        return snapshot.val() || {};
+    } catch (error) {
+        console.warn("Could not load Firebase tasks for summary:", error);
+        return {};
+    }
 }
 
 /**

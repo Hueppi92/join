@@ -220,11 +220,11 @@
             <div class="subtask_input">
               <input id="subtaskInput" type="text" placeholder="Add new subtask">
               <div class="subtask_actions">
-                <button id="subtaskClear" aria-label="Clear subtask">
+                <button id="subtaskClear" type="button" aria-label="Clear subtask">
                   <img src="../assets/icons/close.svg" alt="">
                 </button>
                 <div class="separator"></div>
-                <button id="subtaskAdd" aria-label="Add subtask">
+                <button id="subtaskAdd" type="button" aria-label="Add subtask">
                   <img src="../assets/icons/check.svg" alt="">
                 </button>
               </div>
@@ -241,8 +241,8 @@
           This field is required
         </p>
         <div class="footer_actions">
-          <button class="clear_btn">Clear ✕</button>
-          <button class="create_btn">Create Task ✓</button>
+          <button class="clear_btn" type="button">Clear ✕</button>
+          <button class="create_btn" type="submit" form="taskForm">Create Task ✓</button>
         </div>
       </div>
 
